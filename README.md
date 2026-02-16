@@ -187,4 +187,3 @@ Contributions are welcome! Please:
 ---
 
 **HJS: A Protocol for Responsibility Tracing**
-```

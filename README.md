@@ -1,11 +1,16 @@
+<p align="center">
+  <a href="README.zh-CN.md">中文</a> | <strong>English</strong>
+</p>
+
 # HJS: A Protocol for Responsibility Tracing
 
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
-[![Render Deployment](https://img.shields.io/badge/Deployed%20on-Render-blue)](https://render.com)
+[![Deployed on Render](https://img.shields.io/badge/Deployed%20on-Render-blue)](https://render.com)
 
 **Implementation layer API service.** A reference implementation for recording judgment events, based on the HJS protocol family.
 
 Base URL: `https://hjs-api.onrender.com`
+
 
 ---
 

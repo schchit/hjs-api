@@ -1,21 +1,21 @@
 <p align="center">
-  <a href="README.zh-CN.md">中文</a> | <strong>English</strong>
+  <strong>中文</strong> | <a href="README.md">English</a>
 </p>
 
-# HJS JavaScript Client
+# HJS JavaScript 客户端
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-JavaScript client for [HJS API](https://hjs-api.onrender.com) — a responsibility tracing service.
+适用于 [HJS API](https://hjs-api.onrender.com) 的 JavaScript 客户端库 — 一个责任追溯服务。
 
-## 📦 Installation
+## 📦 安装
 
-### From GitHub (current)
+### 从 GitHub 安装（当前）
 ```bash
 npm install https://github.com/schchit/hjs-api/tree/main/client-js
 ```
 
-## 🚀 Quick Start
+## 🚀 快速开始
 
 ```javascript
 const HJSClient = require('hjs-client');
@@ -23,41 +23,47 @@ const HJSClient = require('hjs-client');
 const client = new HJSClient('https://hjs-api.onrender.com');
 
 async function example() {
-  // Record a judgment
+  // 记录一次判断
   const record = await client.recordJudgment(
     'alice@bank.com',
     'loan_approved',
     { amount: 100000 }
   );
-  console.log('✅ Recorded:', record);
+  console.log('✅ 记录成功:', record);
 
-  // Retrieve it
+  // 根据 ID 查询
   const judgment = await client.getJudgment(record.id);
-  console.log('✅ Retrieved:', judgment);
+  console.log('✅ 查询成功:', judgment);
 }
 
 example();
 ```
 
-## 📚 API
+## 📚 API 说明
 
 ### `new HJSClient(baseURL)`
-Create a new client. `baseURL` defaults to `https://hjs-api.onrender.com`.
+创建客户端实例。`baseURL` 默认指向 `https://hjs-api.onrender.com`。
 
 ### `recordJudgment(entity, action, scope)`
-Record a judgment. Returns `{ id, status, timestamp }`.
+记录一次判断。返回 `{ id, status, timestamp }`。
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `entity` | string | ✅ | 做出判断的主体 |
+| `action` | string | ✅ | 判断的动作 |
+| `scope` | object | ❌ | 附加信息（如金额、权限等） |
 
 ### `getJudgment(id)`
-Get a judgment by ID.
+根据 ID 获取判断记录。
 
-## 🧪 Test
+## 🧪 测试
 
 ```bash
 cd /workspaces/hjs-api/test-client
 node test.js
 ```
 
-Expected output:
+预期输出：
 
 ```
 ✅ 记录成功: { id: 'jgd_...', status: 'recorded', timestamp: '...' }

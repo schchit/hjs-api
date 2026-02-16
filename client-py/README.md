@@ -1,16 +1,37 @@
+<p align="center">
+  <a href="README.zh-CN.md">中文</a> | <strong>English</strong>
+</p>
+
 # HJS Python Client
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python Version](https://img.shields.io/badge/python-3.7%2B-blue)](https://www.python.org/)
 
 Python client for [HJS API](https://hjs-api.onrender.com) — a responsibility tracing service.
 
-## Installation
+## 📦 Installation
 
+### From PyPI (when published)
 ```bash
-pip install requests
-# or from source:
-pip install -e /workspaces/hjs-api/client-py
-Usage
-Basic Example
-python
+pip install hjs-client
+```
+
+### From GitHub (current)
+```bash
+pip install git+https://github.com/schchit/hjs-api.git#subdirectory=client-py
+```
+
+### From local source
+```bash
+cd /workspaces/hjs-api/client-py
+pip install -e .
+```
+
+## 🚀 Quick Start
+
+### Basic Example
+
+```python
 from hjs_client import HJSClient
 
 # Create client
@@ -22,20 +43,26 @@ result = client.record_judgment(
     action="loan_approved",
     scope={"amount": 100000}
 )
-print("Recorded:", result)
+print("✅ Recorded:", result)
 
 # Retrieve it
 judgment = client.get_judgment(result['id'])
-print("Retrieved:", judgment)
-Using Context Manager
-python
+print("✅ Retrieved:", judgment)
+```
+
+### Using Context Manager
+
+```python
 from hjs_client import HJSClient
 
 with HJSClient() as client:
     result = client.record_judgment("alice@bank.com", "test_action")
-    print("Recorded:", result)
-Error Handling
-python
+    print("✅ Recorded:", result)
+```
+
+### Error Handling
+
+```python
 from hjs_client import HJSClient
 import requests
 
@@ -43,45 +70,82 @@ client = HJSClient()
 
 try:
     result = client.record_judgment("alice@bank.com", "test_action")
-    print("Success:", result)
+    print("✅ Success:", result)
 except ValueError as e:
-    print("Validation error:", e)
+    print("❌ Validation error:", e)
 except requests.RequestException as e:
-    print("API error:", e)
-API Reference
-HJSClient(base_url, timeout)
+    print("❌ API error:", e)
+```
+
+## 📚 API Reference
+
+### `HJSClient(base_url, timeout)`
+
 Create a new client instance.
 
-base_url: API base URL (default: https://hjs-api.onrender.com)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `base_url` | str | `"https://hjs-api.onrender.com"` | API base URL |
+| `timeout` | int | `30` | Request timeout in seconds |
 
-timeout: Request timeout in seconds (default: 30)
+### `record_judgment(entity, action, scope)`
 
-record_judgment(entity, action, scope)
 Record a judgment.
 
-entity: Who made the judgment
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `entity` | str | ✅ | Who made the judgment |
+| `action` | str | ✅ | What action was judged |
+| `scope` | dict | ❌ | Optional additional context |
 
-action: What action was judged
+**Returns**: `{ id, status, timestamp }`
 
-scope: Optional additional context
+**Raises**:
+- `ValueError`: If required parameters are missing
+- `requests.RequestException`: If API request fails
 
-Returns: { id, status, timestamp }
+### `get_judgment(id)`
 
-get_judgment(id)
 Retrieve a judgment by ID.
 
-Returns: Complete judgment record
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | str | ✅ | Judgment ID from `record_judgment` |
 
-Testing
-bash
+**Returns**: Complete judgment record
+
+**Raises**:
+- `ValueError`: If ID is missing or not found
+- `requests.RequestException`: If API request fails
+
+## 🧪 Testing
+
+```bash
 cd /workspaces/hjs-api/client-py
 python -c "
 from hjs_client import HJSClient
 client = HJSClient()
 result = client.record_judgment('test@example.com', 'test_action')
-print('Recorded:', result)
+print('✅ Recorded:', result)
 judgment = client.get_judgment(result['id'])
-print('Retrieved:', judgment)
+print('✅ Retrieved:', judgment)
 "
-License
-MIT
+```
+
+Expected output:
+```
+✅ Recorded: {'id': 'jgd_...', 'status': 'recorded', 'timestamp': '...'}
+✅ Retrieved: {'id': 'jgd_...', 'entity': 'test@example.com', 'action': 'test_action', ...}
+```
+
+## 📄 License
+
+MIT © HJS Contributors
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+- Open an [Issue](https://github.com/schchit/hjs-api/issues) for bugs or suggestions
+- Submit Pull Requests for improvements
+
+---

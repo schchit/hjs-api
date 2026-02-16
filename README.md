@@ -13,7 +13,7 @@ Base URL: `https://hjs-api.onrender.com`
 
 This project is the first implementation layer service of the [HJS Protocol Family](https://github.com/hjs-spec/spec). It implements the **Judgment** primitive from the HJS core protocol, providing a REST API for recording and tracing human judgment events in irreversible automated decisions.
 
-HJS protocols are governed by the [Human Judgment Systems Foundation Ltd.](https://humanjudgment.org). This implementation is open source under the CC BY-SA 4.0 license.
+HJS protocols are governed by the Human Judgment Systems Foundation Ltd. (in formation).(https://humanjudgment.org). This implementation is open source under the CC BY-SA 4.0 license.
 
 ---
 

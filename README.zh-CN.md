@@ -1,7 +1,11 @@
-# HJS: 责任追溯协议
+<p align="center">
+  <strong>中文</strong> | <a href="README.md">English</a>
+</p>
+
+# HJS：责任追溯协议
 
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
-[![Render Deployment](https://img.shields.io/badge/Deployed%20on-Render-blue)](https://render.com)
+[![Deployed on Render](https://img.shields.io/badge/Deployed%20on-Render-blue)](https://render.com)
 
 **实现层 API 服务**。基于 HJS 协议家族的参考实现，用于记录判断事件。
 

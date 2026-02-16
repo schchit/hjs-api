@@ -1,8 +1,9 @@
 # HJS API
+
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 [![Render Deployment](https://img.shields.io/badge/Deployed%20on-Render-blue)](https://render.com)
 
-**HJS (Human Judgment System) implementation layer API service.** A reference implementation for recording judgment events, based on the HJS protocol family.
+**HJS (A Protocol for Responsibility Tracing) implementation layer API service.** A reference implementation for recording judgment events, based on the HJS protocol family.
 
 Base URL: `https://hjs-api.onrender.com`
 

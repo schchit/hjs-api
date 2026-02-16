@@ -8,8 +8,6 @@
 
 JavaScript client for [HJS API](https://hjs-api.onrender.com) — a responsibility tracing service.
 
-...
-
 ## 📦 Installation
 
 ### From GitHub (current)

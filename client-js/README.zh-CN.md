@@ -69,3 +69,91 @@ node test.js
 ✅ 记录成功: { id: 'jgd_...', status: 'recorded', timestamp: '...' }
 ✅ 查询成功: { id: 'jgd_...', entity: 'test@example.com', action: 'test_action', ... }
 ```
+## 📘 TypeScript 使用示例
+
+客户端包含完整的 TypeScript 类型定义。以下是一个完整的示例：
+
+### 安装
+
+```bash
+npm install /workspaces/hjs-api/client-js
+# 或发布后：
+# npm install hjs-client
+```
+
+### 示例代码
+
+```typescript
+import HJSClient from 'hjs-client';
+
+const client = new HJSClient('https://hjs-api.onrender.com');
+
+async function runTest() {
+  try {
+    // 记录一次判断
+    console.log('🧪 测试 recordJudgment...');
+    const record = await client.recordJudgment(
+      'test@example.com',
+      'test_action',
+      { test: true, source: 'typescript-test' }
+    );
+    
+    console.log('✅ 记录成功:', record);
+    console.log('   ID:', record.id);
+    console.log('   状态:', record.status);  // TypeScript 知道这里只能是 'recorded'
+
+    // 查询判断记录
+    console.log('\n🧪 测试 getJudgment...');
+    const judgment = await client.getJudgment(record.id);
+    
+    console.log('✅ 查询成功:', judgment);
+    console.log('   主体:', judgment.entity);
+    console.log('   动作:', judgment.action);
+    console.log('   范围:', judgment.scope);
+    console.log('   记录时间:', judgment.recorded_at);
+
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('❌ 测试失败:', error.message);
+    }
+  }
+}
+
+runTest();
+```
+
+### 预期输出
+
+```
+🧪 测试 recordJudgment...
+✅ 记录成功: { id: 'jgd_...', status: 'recorded', timestamp: '...' }
+
+🧪 测试 getJudgment...
+✅ 查询成功: { 
+  id: 'jgd_...', 
+  entity: 'test@example.com', 
+  action: 'test_action', 
+  scope: { test: true, source: 'typescript-test' },
+  timestamp: '...', 
+  recorded_at: '...' 
+}
+```
+
+### 类型定义
+
+客户端导出以下类型：
+
+```typescript
+interface JudgmentRecord {
+  id: string
+  status: 'recorded'
+  timestamp: string
+}
+
+interface FullJudgment extends JudgmentRecord {
+  entity: string
+  action: string
+  scope: Record<string, any>
+  recorded_at: string
+}
+```

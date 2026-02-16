@@ -1,4 +1,10 @@
+<p align="center">
+  <strong>中文</strong> | <a href="README.md">English</a>
+</p>
+
 # HJS JavaScript 客户端
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 适用于 [HJS API](https://hjs-api.onrender.com) 的 JavaScript 客户端库 — 一个责任追溯服务。
 

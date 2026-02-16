@@ -27,9 +27,9 @@ curl -X POST https://hjs-api.onrender.com/judgments \
   -d '{"entity": "alice@bank.com", "action": "loan_approved", "scope": {"amount": 100000}}'
 ```
 
-Example response:
+**Example response**:
 
-json
+```json
 {
   "id": "jgd_1742318412345_abc1",
   "status": "recorded",
@@ -37,14 +37,15 @@ json
 }
 ```
 
-2. Retrieve a judgment
-bash
+### 2. Retrieve a judgment
+
+```bash
 curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1
 ```
 
-Example response:
+**Example response**:
 
-json
+```json
 {
   "id": "jgd_1742318412345_abc1",
   "entity": "alice@bank.com",
@@ -55,115 +56,135 @@ json
 }
 ```
 
-📚 API Reference
-Record a judgment
-POST /judgments
+---
 
-Headers:
+## 📚 API Reference
 
-Content-Type: application/json
+### Record a judgment
 
-Request body:
+`POST /judgments`
 
-Field	Type	Required	Description
-entity	string	Yes	Identifier of the entity making the judgment
-action	string	Yes	The action being judged (e.g., loan_approved)
-scope	object	No	Scope of the judgment (e.g., amount, permissions)
-timestamp	string	No	Judgment time (ISO 8601). Server time used if omitted.
-Response:
+**Headers**:
+- `Content-Type: application/json`
 
-Field	Type	Description
-id	string	Unique credential ID for this judgment
-status	string	Always recorded
-timestamp	string	When the record was stored
-Retrieve a judgment
-GET /judgments/{id}
+**Request body**:
 
-Path parameters:
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `entity` | string | Yes | Identifier of the entity making the judgment |
+| `action` | string | Yes | The action being judged (e.g., `loan_approved`) |
+| `scope` | object | No | Scope of the judgment (e.g., amount, permissions) |
+| `timestamp` | string | No | Judgment time (ISO 8601). Server time used if omitted. |
 
-id: The unique credential ID returned from a POST request.
+**Response**:
 
-Response: The complete judgment record object.
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique credential ID for this judgment |
+| `status` | string | Always `recorded` |
+| `timestamp` | string | When the record was stored |
 
-Error responses:
+### Retrieve a judgment
 
-400 Bad Request: Missing required fields
+`GET /judgments/{id}`
 
-404 Not Found: Judgment ID not found
+**Path parameters**:
+- `id`: The unique credential ID returned from a POST request.
 
-🛠️ Local Development
-Requirements
-Node.js 18+
+**Response**: The complete judgment record object.
 
-npm 9+
+**Error responses**:
+- `400 Bad Request`: Missing required fields
+- `404 Not Found`: Judgment ID not found
 
-Setup
-bash
+---
+
+## 🛠️ Local Development
+
+### Requirements
+- Node.js 18+
+- npm 9+
+
+### Setup
+
+```bash
 git clone https://github.com/schchit/hjs-api.git
 cd hjs-api
 npm install
-Run locally
-bash
-node index.js
-Server runs at http://localhost:3000.
+```
 
-Environment variables
-Variable	Description	Default
-PORT	Server port	3000
-☁️ Deployment
+### Run locally
+
+```bash
+node index.js
+```
+
+Server runs at `http://localhost:3000`.
+
+### Environment variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PORT` | Server port | `3000` |
+
+---
+
+## ☁️ Deployment
+
 This project is configured for one‑click deployment on Render:
 
-https://render.com/images/deploy-to-render-button.svg
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
-Manual deployment steps
-Fork this repository.
+### Manual deployment steps
+1. Fork this repository.
+2. Create a new **Web Service** on Render.
+3. Connect your GitHub repository.
+4. Use these settings:
+   - **Build Command**: `npm install`
+   - **Start Command**: `node index.js`
+5. Click **Create Web Service**.
 
-Create a new Web Service on Render.
+---
 
-Connect your GitHub repository.
+## 📄 License
 
-Use these settings:
+This project is licensed under **CC BY-SA 4.0**.
 
-Build Command: npm install
+### You are free to:
+- ✅ **Share** – copy and redistribute the material in any medium or format
+- ✅ **Adapt** – remix, transform, and build upon the material for any purpose, even commercially
 
-Start Command: node index.js
+### Under the following terms:
+- ⚠️ **Attribution** – You must give appropriate credit, provide a link to the license, and indicate if changes were made
+- ⚠️ **ShareAlike** – If you remix, transform, or build upon the material, you must distribute your contributions under the same license
 
-Click Create Web Service.
+Full license text: [https://creativecommons.org/licenses/by-sa/4.0/legalcode](https://creativecommons.org/licenses/by-sa/4.0/legalcode)
 
-📄 License
-This project is licensed under CC BY-SA 4.0.
+---
 
-You are free to:
-✅ Share – copy and redistribute the material in any medium or format
+## 🤝 Contributing
 
-✅ Adapt – remix, transform, and build upon the material for any purpose, even commercially
-
-Under the following terms:
-⚠️ Attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made
-
-⚠️ ShareAlike – If you remix, transform, or build upon the material, you must distribute your contributions under the same license
-
-Full license text: https://creativecommons.org/licenses/by-sa/4.0/legalcode
-
-🤝 Contributing
 Contributions are welcome! Please:
+- Open an [Issue](https://github.com/schchit/hjs-api/issues) for bugs or suggestions
+- Submit Pull Requests for code or documentation improvements
+- Join protocol discussions at [HJS Discussion Forum](https://github.com/hjs-spec/spec/discussions)
 
-Open an Issue for bugs or suggestions
+---
 
-Submit Pull Requests for code or documentation improvements
+## 📬 Contact
 
-Join protocol discussions at HJS Discussion Forum
+- Protocol questions: `signal@humanjudgment.org`
+- Implementation issues: via [GitHub Issues](https://github.com/schchit/hjs-api/issues)
 
-📬 Contact
-Protocol questions: signal@humanjudgment.org
+---
 
-Implementation issues: via GitHub Issues
+## 🌟 Acknowledgments
 
-🌟 Acknowledgments
-HJS Protocol Family for the core design
+- [HJS Protocol Family](https://github.com/hjs-spec/spec) for the core design
+- Render for free hosting
+- All contributors and users
 
-Render for free hosting
+---
 
-All contributors and users
-
-HJS: A Protocol for Responsibility Tracing
+**HJS: A Protocol for Responsibility Tracing**
+```

@@ -1,0 +1,24 @@
+{
+  "name": "hjs-api",
+  "version": "1.0.0",
+  "description": "Implementation layer for HJS – API for recording judgment events",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schchit/hjs-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/schchit/hjs-api/issues"
+  },
+  "homepage": "https://github.com/schchit/hjs-api#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

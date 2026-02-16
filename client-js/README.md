@@ -5,7 +5,6 @@
 # HJS JavaScript Client
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![npm version](https://img.shields.io/npm/v/hjs-client.svg)](https://www.npmjs.com/package/hjs-client)
 
 JavaScript client for [HJS API](https://hjs-api.onrender.com) — a responsibility tracing service.
 

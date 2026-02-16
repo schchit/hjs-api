@@ -1,4 +1,3 @@
-markdown
 # HJS: A Protocol for Responsibility Tracing
 
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
@@ -26,6 +25,8 @@ HJS protocols are governed by the [Human Judgment Systems Foundation Ltd.](https
 curl -X POST https://hjs-api.onrender.com/judgments \
   -H "Content-Type: application/json" \
   -d '{"entity": "alice@bank.com", "action": "loan_approved", "scope": {"amount": 100000}}'
+```
+
 Example response:
 
 json
@@ -34,9 +35,13 @@ json
   "status": "recorded",
   "timestamp": "2026-02-16T09:30:15.123Z"
 }
+```
+
 2. Retrieve a judgment
 bash
 curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1
+```
+
 Example response:
 
 json
@@ -48,6 +53,8 @@ json
   "timestamp": "2026-02-16T09:30:15.083Z",
   "recorded_at": "2026-02-16T09:30:15.123Z"
 }
+```
+
 📚 API Reference
 Record a judgment
 POST /judgments

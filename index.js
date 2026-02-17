@@ -2,7 +2,7 @@ const { Pool } = require('pg');
 const express = require('express');
 const { generateRecordHash } = require('./lib/canonical');
 const { submitToOTS } = require('./lib/ots-utils');
-
+const rateLimit = require('express-rate-limit');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -12,7 +12,21 @@ const pool = new Pool({
 });
 
 app.use(express.json());
-
+// 速率限制中间件
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15分钟
+  max: 100, // 每个 IP 最多 100 次请求
+  keyGenerator: (req) => {
+    // 优先用 API Key 区分用户，如果没有则用 IP
+    return req.headers['x-api-key'] || req.ip;
+  },
+  handler: (req, res) => {
+    res.status(429).json({ error: 'Too many requests, please slow down' });
+  },
+  standardHeaders: true, // 返回 RateLimit-* 头
+  legacyHeaders: false,
+  message: '请求过于频繁，请稍后再试'
+});
 // API Key 认证中间件
 const authenticateApiKey = async (req, res, next) => {
   const apiKey = req.headers['x-api-key'];
@@ -40,7 +54,7 @@ const authenticateApiKey = async (req, res, next) => {
   }
 };
 // POST /judgments - 记录判断
-app.post('/judgments',authenticateApiKey,async (req, res) => {
+app.post('/judgments',limiter,authenticateApiKey,async (req, res) => {
   const { entity, action, scope, timestamp } = req.body;
 
   if (!entity || !action) {
@@ -95,7 +109,7 @@ app.post('/judgments',authenticateApiKey,async (req, res) => {
 });
 
 // GET /judgments/:id - 查询记录
-app.get('/judgments/:id',authenticateApiKey, async (req, res) => {
+app.get('/judgments/:id',limiter,authenticateApiKey, async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM judgments WHERE id = $1', [req.params.id]);
     if (rows.length === 0) {

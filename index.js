@@ -3,6 +3,7 @@ const express = require('express');
 const { generateRecordHash } = require('./lib/canonical');
 const { submitToOTS } = require('./lib/ots-utils');
 const rateLimit = require('express-rate-limit');
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -13,13 +14,13 @@ const pool = new Pool({
 
 app.use(express.json());
 
-// 速率限制中间件
+// ==================== 中间件定义 ====================
+
+// 1. 速率限制中间件
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15分钟
   max: 100, // 每个 IP 最多 100 次请求
-  keyGenerator: (req) => {
-    return req.headers['x-api-key'] || req.ip;
-  },
+  keyGenerator: (req) => req.headers['x-api-key'] || req.ip,
   handler: (req, res) => {
     res.status(429).json({ error: 'Too many requests, please slow down' });
   },
@@ -28,7 +29,7 @@ const limiter = rateLimit({
   message: '请求过于频繁，请稍后再试'
 });
 
-// API Key 认证中间件
+// 2. API Key 认证中间件
 const authenticateApiKey = async (req, res, next) => {
   const apiKey = req.headers['x-api-key'];
   if (!apiKey) {
@@ -45,8 +46,11 @@ const authenticateApiKey = async (req, res, next) => {
     }
     req.userId = rows[0].user_id;
     req.apiKey = apiKey;
+    
+    // 异步更新最后使用时间
     pool.query('UPDATE api_keys SET last_used = NOW() WHERE key = $1', [apiKey])
       .catch(err => console.error('Failed to update last_used:', err));
+    
     next();
   } catch (err) {
     console.error('Auth error:', err);
@@ -54,15 +58,15 @@ const authenticateApiKey = async (req, res, next) => {
   }
 };
 
-// ========== ✨ 新增：审计日志中间件 ==========
+// 3. 审计日志中间件
 const auditLog = async (req, res, next) => {
   const originalJson = res.json;
   res.json = function(data) {
     // 只记录成功的 POST 和 GET 请求
     if ((req.method === 'POST' && req.path === '/judgments') ||
-        (req.method === 'GET' && req.path.startsWith('/judgments/'))) {
+        (req.method === 'GET' && (req.path === '/judgments' || req.path.startsWith('/judgments/')))) {
       
-      const resourceId = req.method === 'POST' ? data?.id : req.params.id;
+      const resourceId = req.method === 'POST' ? data?.id : (req.params.id || 'list');
       
       setImmediate(async () => {
         try {
@@ -81,10 +85,10 @@ const auditLog = async (req, res, next) => {
   };
   next();
 };
-// ========================================
+
+// ==================== 路由 ====================
 
 // POST /judgments - 记录判断
-// ✨ 在路由中间件里加上 auditLog
 app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) => {
   const { entity, action, scope, timestamp } = req.body;
 
@@ -135,8 +139,7 @@ app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =
   }
 });
 
-// GET /judgments/:id - 查询记录
-// ✨ 在路由中间件里加上 auditLog
+// GET /judgments/:id - 查询单条记录
 app.get('/judgments/:id', limiter, authenticateApiKey, auditLog, async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM judgments WHERE id = $1', [req.params.id]);
@@ -150,11 +153,54 @@ app.get('/judgments/:id', limiter, authenticateApiKey, auditLog, async (req, res
   }
 });
 
-// 启动服务器
+// ========== ✨ 新增：GET /judgments - 按条件查询 ==========
+app.get('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) => {
+  const { entity, from, to, page = 1, limit = 20 } = req.query;
+  const offset = (page - 1) * limit;
+  
+  let query = 'SELECT * FROM judgments WHERE 1=1';
+  const params = [];
+  let paramIdx = 1;
+  
+  if (entity) {
+    query += ` AND entity = $${paramIdx++}`;
+    params.push(entity);
+  }
+  if (from) {
+    query += ` AND recorded_at >= $${paramIdx++}`;
+    params.push(from);
+  }
+  if (to) {
+    query += ` AND recorded_at <= $${paramIdx++}`;
+    params.push(to);
+  }
+  
+  // 先查询总数
+  const countQuery = query.replace('SELECT *', 'SELECT COUNT(*)');
+  const countResult = await pool.query(countQuery, params);
+  const total = parseInt(countResult.rows[0].count);
+  
+  // 再查询数据
+  query += ` ORDER BY recorded_at DESC LIMIT $${paramIdx++} OFFSET $${paramIdx++}`;
+  params.push(limit, offset);
+  const { rows } = await pool.query(query, params);
+  
+  res.json({
+    page: Number(page),
+    limit: Number(limit),
+    total,
+    data: rows
+  });
+});
+// ==================================================
+
+// ==================== 启动服务 ====================
+
 app.listen(port, () => {
   console.log(`🚀 HJS API running at http://localhost:${port}`);
 });
 
+// 启动定时任务（只在生产环境运行）
 if (process.env.NODE_ENV === 'production') {
   require('./cron/upgrade-proofs');
 } else {

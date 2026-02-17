@@ -13,8 +13,34 @@ const pool = new Pool({
 
 app.use(express.json());
 
+// API Key 认证中间件
+const authenticateApiKey = async (req, res, next) => {
+  const apiKey = req.headers['x-api-key'];
+  if (!apiKey) {
+    return res.status(401).json({ error: 'API key required' });
+  }
+
+  try {
+    const { rows } = await pool.query(
+      'SELECT user_id FROM api_keys WHERE key = $1',
+      [apiKey]
+    );
+    if (rows.length === 0) {
+      return res.status(403).json({ error: 'Invalid API key' });
+    }
+    req.userId = rows[0].user_id;
+    req.apiKey = apiKey;
+    // 异步更新最后使用时间（不阻塞）
+    pool.query('UPDATE api_keys SET last_used = NOW() WHERE key = $1', [apiKey])
+      .catch(err => console.error('Failed to update last_used:', err));
+    next();
+  } catch (err) {
+    console.error('Auth error:', err);
+    res.status(500).json({ error: 'Authentication failed' });
+  }
+};
 // POST /judgments - 记录判断
-app.post('/judgments', async (req, res) => {
+app.post('/judgments',authenticateApiKey,async (req, res) => {
   const { entity, action, scope, timestamp } = req.body;
 
   if (!entity || !action) {
@@ -69,7 +95,7 @@ app.post('/judgments', async (req, res) => {
 });
 
 // GET /judgments/:id - 查询记录
-app.get('/judgments/:id', async (req, res) => {
+app.get('/judgments/:id',authenticateApiKey, async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM judgments WHERE id = $1', [req.params.id]);
     if (rows.length === 0) {

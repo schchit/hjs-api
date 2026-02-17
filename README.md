@@ -11,7 +11,6 @@
 
 Base URL: `https://hjs-api.onrender.com`
 
-
 ---
 
 ## 📖 About
@@ -104,6 +103,56 @@ curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1
 
 ---
 
+## 🔐 Record Verification
+
+Each record includes an OpenTimestamps proof, providing cryptographic evidence that the record existed at a specific point in time and hasn't been tampered with.
+
+### Download proof
+
+```
+GET /judgments/:id/proof
+```
+
+Returns a `.ots` file containing the timestamp proof.
+
+### Verify a record
+
+#### Method 1: Online verifier
+
+Visit `/verify.html` and upload your record JSON and proof file.
+
+#### Method 2: OTS command line
+
+```bash
+# Install OTS client
+pip3 install opentimestamps-client
+
+# Verify proof
+ots verify record.json.ots
+
+# View proof info
+ots info record.json.ots
+```
+
+#### Method 3: Programmatic verification
+
+```javascript
+const ots = require('opentimestamps');
+const fs = require('fs');
+
+const proof = fs.readFileSync('record.json.ots');
+const detached = ots.DetachedTimestampProof.deserialize(proof);
+const isValid = detached.verifyHash(hashBuffer);
+```
+
+### Proof lifecycle
+
+1. **Freshly created**: Proof generated, not yet anchored to blockchain
+2. **~1 hour later**: Automatic upgrade anchors proof to Bitcoin blockchain
+3. **Permanent**: Once anchored, proof remains valid forever
+
+---
+
 ## 🛠️ Local Development
 
 ### Requirements
@@ -172,8 +221,6 @@ Full license text: [https://creativecommons.org/licenses/by-sa/4.0/legalcode](ht
 Contributions are welcome! Please:
 - Open an [Issue](https://github.com/schchit/hjs-api/issues) for bugs or suggestions
 - Submit Pull Requests for code or documentation improvements
-- Join protocol discussions at [HJS Discussion Forum](https://github.com/hjs-spec/spec/discussions)
-
 ---
 
 ## 📬 Contact
@@ -192,3 +239,4 @@ Contributions are welcome! Please:
 ---
 
 **HJS: A Protocol for Responsibility Tracing**
+```

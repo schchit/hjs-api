@@ -367,18 +367,26 @@
         }
 
         const root = document.getElementById('root');
-        ReactDOM.createRoot(root).render(React.createElement(PublicLookup));
+        if (root) {
+            ReactDOM.createRoot(root).render(React.createElement(PublicLookup));
+        }
     </script>
 
     <!-- React and ReactDOM - 稳定 CDN -->
     <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
     <script>
-        // 等待 React 加载完成
+        // 等待 React 和 ReactDOM 都加载完成
         (function checkReact() {
             if (window.React && window.ReactDOM) {
-                console.log('React loaded successfully');
+                console.log('React and ReactDOM loaded successfully');
+                // 手动触发渲染（如果还没渲染的话）
+                const root = document.getElementById('root');
+                if (root && !root.hasChildNodes()) {
+                    ReactDOM.createRoot(root).render(React.createElement(PublicLookup));
+                }
             } else {
+                console.log('Waiting for React...');
                 setTimeout(checkReact, 100);
             }
         })();

@@ -11,7 +11,6 @@
 
 Base URL: `https://hjs-api.onrender.com`
 
-
 ---
 
 ## 📖 About
@@ -192,3 +191,4 @@ Contributions are welcome! Please:
 ---
 
 **HJS: A Protocol for Responsibility Tracing**
+```

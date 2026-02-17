@@ -370,23 +370,18 @@
         ReactDOM.createRoot(root).render(React.createElement(PublicLookup));
     </script>
 
-    <!-- React and ReactDOM - 全球 CDN -->
-     <!-- React and ReactDOM - 多重备援 CDN -->
-<script>
-    window.__REACT_READY = false;
-    function loadReact() {
-        if (window.__REACT_READY) return;
-        window.__REACT_READY = true;
-    }
-</script>
-<!-- 主用：jsDelivr (全球) -->
-<script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js" onload="loadReact()"></script>
-<script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js" onload="loadReact()"></script>
-<!-- 备用：BootCDN (国内) -->
-<script src="https://cdn.bootcdn.net/ajax/libs/react/18.2.0/umd/react.production.min.js" onload="loadReact()"></script>
-<script src="https://cdn.bootcdn.net/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" onload="loadReact()"></script>
-<!-- 备用：Cloudflare CDN (全球) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" onload="loadReact()"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" onload="loadReact()"></script>
+    <!-- React and ReactDOM - 稳定 CDN -->
+    <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script>
+        // 等待 React 加载完成
+        (function checkReact() {
+            if (window.React && window.ReactDOM) {
+                console.log('React loaded successfully');
+            } else {
+                setTimeout(checkReact, 100);
+            }
+        })();
+    </script>
 </body>
 </html>

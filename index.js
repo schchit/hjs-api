@@ -5,6 +5,7 @@ const { submitToOTS } = require('./lib/ots-utils');
 const rateLimit = require('express-rate-limit');
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
+const crypto = require('crypto');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -16,11 +17,15 @@ const pool = new Pool({
 
 app.use(express.json());
 
+// ==================== 静态文件服务 ====================
+app.use(express.static('public'));
+
 // ==================== 中间件定义 ====================
 
+// 1. 速率限制中间件
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
+  windowMs: 15 * 60 * 1000, // 15分钟
+  max: 100, // 每个 IP 最多 100 次请求
   keyGenerator: (req) => req.headers['x-api-key'] || req.ip,
   handler: (req, res) => {
     res.status(429).json({ error: 'Too many requests, please slow down' });
@@ -29,6 +34,7 @@ const limiter = rateLimit({
   legacyHeaders: false
 });
 
+// 2. API Key 认证中间件
 const authenticateApiKey = async (req, res, next) => {
   const apiKey = req.headers['x-api-key'];
   if (!apiKey) {
@@ -56,6 +62,7 @@ const authenticateApiKey = async (req, res, next) => {
   }
 };
 
+// 3. 审计日志中间件
 const auditLog = async (req, res, next) => {
   const originalJson = res.json;
   res.json = function(data) {
@@ -85,18 +92,13 @@ const auditLog = async (req, res, next) => {
 // ==================== 工具函数：生成 PDF ====================
 
 async function generateJudgmentPDF(record, res) {
-  // 生成验证页面的二维码
   const verifyUrl = `https://hjs-api.onrender.com/verify.html?id=${record.id}`;
   const qrBuffer = await QRCode.toBuffer(verifyUrl, {
     width: 150,
     margin: 1,
-    color: {
-      dark: '#000000',
-      light: '#ffffff'
-    }
+    color: { dark: '#000000', light: '#ffffff' }
   });
   
-  // 创建 PDF 文档
   const doc = new PDFDocument({ 
     margin: 50,
     size: 'A4',
@@ -108,40 +110,27 @@ async function generateJudgmentPDF(record, res) {
     }
   });
   
-  // 设置响应头
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Disposition', `attachment; filename="${record.id}.pdf"`);
-  
-  // 将 PDF 流式输出到响应
   doc.pipe(res);
   
-  // ===== PDF 内容开始 =====
-  
-  // 标题
   doc.fontSize(24).font('Helvetica-Bold')
      .text('HJS Judgment Record', { align: 'center' })
      .moveDown(1.5);
   
-  // 二维码和验证信息并排
   const qrY = doc.y;
   doc.image(qrBuffer, 50, qrY, { width: 100 });
   
   doc.fontSize(10).font('Helvetica')
      .text('Scan to verify online', 160, qrY + 10)
      .text('or visit:', 160, qrY + 25)
-     .text(verifyUrl, 160, qrY + 40, { 
-       color: 'blue', 
-       underline: true,
-       width: 300
-     });
+     .text(verifyUrl, 160, qrY + 40, { color: 'blue', underline: true, width: 300 });
   
   doc.moveDown(6);
   
-  // 记录详情
   doc.fontSize(14).font('Helvetica-Bold').text('Record Details', { underline: true });
   doc.moveDown(0.5);
   
-  // 用表格形式展示
   const formatField = (label, value) => {
     doc.font('Helvetica-Bold').text(`${label}:`, { continued: true });
     doc.font('Helvetica').text(` ${value}`);
@@ -161,7 +150,6 @@ async function generateJudgmentPDF(record, res) {
   
   doc.moveDown(0.5);
   
-  // OTS 证明状态
   doc.fontSize(14).font('Helvetica-Bold').text('OpenTimestamps Proof', { underline: true });
   doc.moveDown(0.5);
   
@@ -183,14 +171,12 @@ async function generateJudgmentPDF(record, res) {
   
   doc.moveDown(1.5);
   
-  // 计算哈希值（用于验证）
   const hash = generateRecordHash(record);
   doc.fontSize(10).font('Helvetica-Bold').text('Record Hash (SHA-256):');
   doc.font('Helvetica').fontSize(8).text(hash, { color: 'grey' });
   
   doc.moveDown(1);
   
-  // 脚注
   doc.fontSize(9).font('Helvetica')
      .fillColor('gray')
      .text('This document is a representation of a record stored in the HJS system.', { align: 'center' })
@@ -200,7 +186,84 @@ async function generateJudgmentPDF(record, res) {
   doc.end();
 }
 
-// ==================== 路由 ====================
+// ==================== 开发者密钥管理 API ====================
+
+// 生成新密钥
+app.post('/developer/keys', express.json(), async (req, res) => {
+  const { email, name } = req.body;
+  
+  if (!email || !email.includes('@')) {
+    return res.status(400).json({ error: 'Valid email required' });
+  }
+  
+  const apiKey = crypto.randomBytes(32).toString('hex');
+  
+  try {
+    await pool.query(
+      'INSERT INTO api_keys (key, user_id, name) VALUES ($1, $2, $3)',
+      [apiKey, email, name || 'default']
+    );
+    
+    res.json({
+      success: true,
+      key: apiKey,
+      email,
+      name: name || 'default',
+      created: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('Key generation error:', err);
+    res.status(500).json({ error: 'Failed to generate key' });
+  }
+});
+
+// 查询某邮箱下的所有密钥
+app.get('/developer/keys', async (req, res) => {
+  const { email } = req.query;
+  
+  if (!email) {
+    return res.status(400).json({ error: 'Email required' });
+  }
+  
+  try {
+    const { rows } = await pool.query(
+      'SELECT key, name, created_at, last_used FROM api_keys WHERE user_id = $1 ORDER BY created_at DESC',
+      [email]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error('Query error:', err);
+    res.status(500).json({ error: 'Failed to fetch keys' });
+  }
+});
+
+// 吊销密钥
+app.delete('/developer/keys/:key', async (req, res) => {
+  const { email } = req.query;
+  const { key } = req.params;
+  
+  if (!email) {
+    return res.status(400).json({ error: 'Email required' });
+  }
+  
+  try {
+    const result = await pool.query(
+      'DELETE FROM api_keys WHERE key = $1 AND user_id = $2',
+      [key, email]
+    );
+    
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Key not found or not owned by you' });
+    }
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete error:', err);
+    res.status(500).json({ error: 'Failed to delete key' });
+  }
+});
+
+// ==================== 核心 API 路由 ====================
 
 // POST /judgments - 记录判断
 app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) => {
@@ -244,6 +307,7 @@ app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =
     res.json({
       id,
       status: 'recorded',
+      protocol: 'HJS/1.0',
       timestamp: recordedAt
     });
 
@@ -263,19 +327,16 @@ app.get('/judgments/:id', limiter, authenticateApiKey, auditLog, async (req, res
     
     const record = rows[0];
     
-    // JSON 导出
     if (req.query.format === 'json') {
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Content-Disposition', `attachment; filename="${req.params.id}.json"`);
       return res.json(record);
     }
     
-    // PDF 导出（带二维码、哈希、完整信息）
     if (req.query.format === 'pdf') {
       return await generateJudgmentPDF(record, res);
     }
     
-    // 默认返回 JSON
     res.json(record);
   } catch (err) {
     console.error('Error:', err);
@@ -320,7 +381,6 @@ app.get('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =>
     data: rows
   };
   
-  // 列表 JSON 导出
   if (format === 'json') {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Content-Disposition', `attachment; filename="judgments_export.json"`);

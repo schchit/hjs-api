@@ -221,8 +221,6 @@ Full license text: [https://creativecommons.org/licenses/by-sa/4.0/legalcode](ht
 Contributions are welcome! Please:
 - Open an [Issue](https://github.com/schchit/hjs-api/issues) for bugs or suggestions
 - Submit Pull Requests for code or documentation improvements
-- Join protocol discussions at [HJS Discussion Forum](https://github.com/hjs-spec/spec/discussions)
-
 ---
 
 ## 📬 Contact

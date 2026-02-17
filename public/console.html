@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HJS API · Developer Console</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        
+        * {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        
+        code, pre, .font-mono {
+            font-family: 'JetBrains Mono', monospace !important;
+        }
+
+        :root {
+            color-scheme: dark;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #e5e5e5;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #404040;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
+    <div id="root"></div>
+
+    <script type="text/javascript">
+        // API Base URL - 修改为你的实际域名
+        const API_BASE = "https://hjs-api.onrender.com";
+
+        // ---------- Utility Functions ----------
+        function maskKey(key) {
+            if (!key || key.length <= 8) return key;
+            return key.slice(0, 4) + '..........' + key.slice(-4);
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return 'Never';
+            return new Date(dateStr).toLocaleDateString();
+        }
+
+        // ---------- Main Component ----------
+        function DeveloperConsole() {
+            // Generate key state
+            const [genEmail, setGenEmail] = React.useState('');
+            const [genName, setGenName] = React.useState('');
+            const [generating, setGenerating] = React.useState(false);
+            const [newKey, setNewKey] = React.useState(null);
+            const [showKeyDialog, setShowKeyDialog] = React.useState(false);
+            const [copied, setCopied] = React.useState(false);
+            const [genError, setGenError] = React.useState(null);
+
+            // List keys state
+            const [listEmail, setListEmail] = React.useState('');
+            const [keys, setKeys] = React.useState([]);
+            const [loadingKeys, setLoadingKeys] = React.useState(false);
+            const [listError, setListError] = React.useState(null);
+            const [visibleKeys, setVisibleKeys] = React.useState(new Set());
+
+            // Revoke state
+            const [revokeKey, setRevokeKey] = React.useState(null);
+            const [revoking, setRevoking] = React.useState(false);
+
+            // Current tab
+            const [activeTab, setActiveTab] = React.useState('generate');
+
+            const handleGenerate = async () => {
+                if (!genEmail || !genName) return;
+                setGenerating(true);
+                setGenError(null);
+                try {
+                    const res = await fetch(API_BASE + '/developer/keys', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: genEmail, name: genName })
+                    });
+                    if (!res.ok) {
+                        const err = await res.json().catch(() => ({}));
+                        throw new Error(err.error || err.detail || `Request failed (${res.status})`);
+                    }
+                    const data = await res.json();
+                    setNewKey(data.key);
+                    setShowKeyDialog(true);
+                    setGenName('');
+                } catch (err) {
+                    setGenError(err.message);
+                } finally {
+                    setGenerating(false);
+                }
+            };
+
+            const handleListKeys = async () => {
+                if (!listEmail) return;
+                setLoadingKeys(true);
+                setListError(null);
+                try {
+                    const res = await fetch(API_BASE + `/developer/keys?email=${encodeURIComponent(listEmail)}`);
+                    if (!res.ok) {
+                        const err = await res.json().catch(() => ({}));
+                        throw new Error(err.error || err.detail || `Request failed (${res.status})`);
+                    }
+                    const data = await res.json();
+                    setKeys(Array.isArray(data) ? data : []);
+                } catch (err) {
+                    setListError(err.message);
+                    setKeys([]);
+                } finally {
+                    setLoadingKeys(false);
+                }
+            };
+
+            const handleRevoke = async () => {
+                if (!revokeKey || !listEmail) return;
+                setRevoking(true);
+                try {
+                    const res = await fetch(API_BASE + `/developer/keys/${revokeKey}?email=${encodeURIComponent(listEmail)}`, {
+                        method: 'DELETE'
+                    });
+                    if (!res.ok) {
+                        const err = await res.json().catch(() => ({}));
+                        throw new Error(err.error || err.detail || `Revoke failed (${res.status})`);
+                    }
+                    setKeys(keys.filter(k => k.key !== revokeKey));
+                } catch (err) {
+                    setListError(err.message);
+                } finally {
+                    setRevoking(false);
+                    setRevokeKey(null);
+                }
+            };
+
+            const copyToClipboard = async (text) => {
+                await navigator.clipboard.writeText(text);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            };
+
+            const toggleKeyVisibility = (key) => {
+                const newSet = new Set(visibleKeys);
+                if (newSet.has(key)) {
+                    newSet.delete(key);
+                } else {
+                    newSet.add(key);
+                }
+                setVisibleKeys(newSet);
+            };
+
+            return React.createElement('div', { className: 'mx-auto max-w-5xl px-4 py-8' }, [
+                // Header
+                React.createElement('div', { className: 'mb-8', key: 'header' }, [
+                    React.createElement('h1', { className: 'text-3xl font-bold tracking-tight text-white', key: 'h1' }, 'Developer Console'),
+                    React.createElement('p', { className: 'mt-2 text-sm text-gray-400', key: 'p' }, 'Manage your HJS API keys. Generate, view, and revoke access credentials.')
+                ]),
+
+                // Tabs
+                React.createElement('div', { className: 'mb-6 border-b border-gray-800', key: 'tabs' }, [
+                    React.createElement('div', { className: 'flex gap-1' }, [
+                        React.createElement('button', {
+                            className: `px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${activeTab === 'generate' ? 'bg-gray-800 text-white border-b-2 border-teal-500' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`,
+                            onClick: () => setActiveTab('generate'),
+                            key: 'tab-gen'
+                        }, [
+                            React.createElement('span', { className: 'inline-flex items-center gap-2' }, [
+                                React.createElement('svg', { className: 'size-4', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, key: 'icon' }, React.createElement('path', { d: 'M12 4v16m8-8H4' })),
+                                'Generate Key'
+                            ])
+                        ]),
+                        React.createElement('button', {
+                            className: `px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${activeTab === 'list' ? 'bg-gray-800 text-white border-b-2 border-teal-500' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`,
+                            onClick: () => setActiveTab('list'),
+                            key: 'tab-list'
+                        }, [
+                            React.createElement('span', { className: 'inline-flex items-center gap-2' }, [
+                                React.createElement('svg', { className: 'size-4', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, key: 'icon' }, React.createElement('path', { d: 'M4 6h16M4 12h16M4 18h16' })),
+                                'My Keys'
+                            ])
+                        ])
+                    ])
+                ]),
+
+                // Generate Tab
+                activeTab === 'generate' && React.createElement('div', { className: 'rounded-lg border border-gray-800 bg-gray-900/50 p-6', key: 'gen-tab' }, [
+                    React.createElement('h2', { className: 'flex items-center gap-2 text-lg font-semibold text-white mb-4', key: 'title' }, [
+                        React.createElement('svg', { className: 'size-5 text-teal-500', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z' })),
+                        'Generate New API Key'
+                    ]),
+                    React.createElement('p', { className: 'text-sm text-gray-400 mb-4', key: 'desc' }, 'Enter your email and a name for this key. The full key will only be shown once.'),
+                    
+                    React.createElement('div', { className: 'space-y-4', key: 'form' }, [
+                        React.createElement('div', { key: 'email-field' }, [
+                            React.createElement('label', { className: 'block text-sm font-medium text-gray-300 mb-1' }, 'Email'),
+                            React.createElement('input', {
+                                type: 'email',
+                                value: genEmail,
+                                onChange: (e) => setGenEmail(e.target.value),
+                                className: 'w-full rounded-md border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-teal-500 focus:outline-none',
+                                placeholder: 'you@example.com'
+                            })
+                        ]),
+                        React.createElement('div', { key: 'name-field' }, [
+                            React.createElement('label', { className: 'block text-sm font-medium text-gray-300 mb-1' }, 'Key Name'),
+                            React.createElement('input', {
+                                type: 'text',
+                                value: genName,
+                                onChange: (e) => setGenName(e.target.value),
+                                className: 'w-full rounded-md border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-teal-500 focus:outline-none',
+                                placeholder: 'e.g. production-server'
+                            })
+                        ]),
+                        genError && React.createElement('div', { className: 'flex items-center gap-2 rounded-md border border-red-800 bg-red-900/20 px-3 py-2 text-sm text-red-400' }, [
+                            React.createElement('svg', { className: 'size-4 shrink-0', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' })),
+                            genError
+                        ]),
+                        React.createElement('button', {
+                            onClick: handleGenerate,
+                            disabled: !genEmail || !genName || generating,
+                            className: 'inline-flex items-center justify-center gap-2 rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed'
+                        }, generating ? [
+                            React.createElement('svg', { className: 'size-4 animate-spin', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z' })),
+                            'Generating...'
+                        ] : [
+                            React.createElement('svg', { className: 'size-4', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M12 4v16m8-8H4' })),
+                            'Generate Key'
+                        ])
+                    ])
+                ]),
+
+                // List Tab
+                activeTab === 'list' && React.createElement('div', { className: 'rounded-lg border border-gray-800 bg-gray-900/50 p-6', key: 'list-tab' }, [
+                    React.createElement('h2', { className: 'flex items-center gap-2 text-lg font-semibold text-white mb-4', key: 'title' }, [
+                        React.createElement('svg', { className: 'size-5 text-teal-500', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M4 6h16M4 12h16M4 18h16' })),
+                        'Your API Keys'
+                    ]),
+                    React.createElement('p', { className: 'text-sm text-gray-400 mb-4', key: 'desc' }, 'Enter your email to view and manage your existing API keys.'),
+
+                    React.createElement('div', { className: 'space-y-4', key: 'list-form' }, [
+                        React.createElement('div', { className: 'flex gap-2', key: 'search' }, [
+                            React.createElement('input', {
+                                type: 'email',
+                                value: listEmail,
+                                onChange: (e) => setListEmail(e.target.value),
+                                onKeyDown: (e) => e.key === 'Enter' && handleListKeys(),
+                                className: 'flex-1 rounded-md border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-teal-500 focus:outline-none',
+                                placeholder: 'you@example.com'
+                            }),
+                            React.createElement('button', {
+                                onClick: handleListKeys,
+                                disabled: !listEmail || loadingKeys,
+                                className: 'inline-flex items-center justify-center gap-2 rounded-md bg-gray-700 px-4 py-2 text-sm font-medium text-white hover:bg-gray-600 disabled:opacity-50'
+                            }, loadingKeys ? [
+                                React.createElement('svg', { className: 'size-4 animate-spin', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z' }))
+                            ] : 'Fetch Keys')
+                        ]),
+
+                        listError && React.createElement('div', { className: 'flex items-center gap-2 rounded-md border border-red-800 bg-red-900/20 px-3 py-2 text-sm text-red-400' }, [
+                            React.createElement('svg', { className: 'size-4 shrink-0', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' })),
+                            listError
+                        ]),
+
+                        keys.length > 0 && React.createElement('div', { className: 'rounded-md border border-gray-800 overflow-hidden' }, [
+                            React.createElement('table', { className: 'min-w-full divide-y divide-gray-800' }, [
+                                React.createElement('thead', { className: 'bg-gray-800/50' }, [
+                                    React.createElement('tr', {}, [
+                                        React.createElement('th', { className: 'px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider' }, 'Name'),
+                                        React.createElement('th', { className: 'px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider' }, 'Key'),
+                                        React.createElement('th', { className: 'px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider' }, 'Created'),
+                                        React.createElement('th', { className: 'px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider' }, 'Actions')
+                                    ])
+                                ]),
+                                React.createElement('tbody', { className: 'divide-y divide-gray-800' }, keys.map(k => 
+                                    React.createElement('tr', { key: k.key, className: 'hover:bg-gray-800/50' }, [
+                                        React.createElement('td', { className: 'px-4 py-3 text-sm font-medium text-white' }, k.name || '-'),
+                                        React.createElement('td', { className: 'px-4 py-3 text-sm' }, [
+                                            React.createElement('div', { className: 'flex items-center gap-2' }, [
+                                                React.createElement('code', { className: 'rounded bg-gray-800 px-2 py-1 font-mono text-xs text-gray-300' },
+                                                    visibleKeys.has(k.key) ? k.key : maskKey(k.key)
+                                                ),
+                                                React.createElement('button', {
+                                                    onClick: () => toggleKeyVisibility(k.key),
+                                                    className: 'text-gray-400 hover:text-white'
+                                                }, visibleKeys.has(k.key) ? 
+                                                    React.createElement('svg', { className: 'size-4', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21' })) :
+                                                    React.createElement('svg', { className: 'size-4', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' }))
+                                                )
+                                            ])
+                                        ]),
+                                        React.createElement('td', { className: 'px-4 py-3 text-sm text-gray-400' }, formatDate(k.created_at)),
+                                        React.createElement('td', { className: 'px-4 py-3 text-right' }, [
+                                            React.createElement('button', {
+                                                onClick: () => setRevokeKey(k.key),
+                                                className: 'text-red-400 hover:text-red-300'
+                                            }, [
+                                                React.createElement('svg', { className: 'size-5', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' }))
+                                            ])
+                                        ])
+                                    ])
+                                ))
+                            ])
+                        ]),
+
+                        keys.length === 0 && !loadingKeys && listEmail && !listError && 
+                            React.createElement('div', { className: 'flex flex-col items-center justify-center py-12 text-center' }, [
+                                React.createElement('svg', { className: 'size-12 text-gray-600', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5 }, React.createElement('path', { d: 'M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z' })),
+                                React.createElement('p', { className: 'mt-3 text-sm text-gray-500' }, 'No keys found. Click "Fetch Keys" to load your keys.')
+                            ])
+                    ])
+                ])
+            ]);
+
+            // New Key Dialog
+            const dialog = showKeyDialog && React.createElement('div', {
+                className: 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50',
+                onClick: () => setShowKeyDialog(false)
+            }, [
+                React.createElement('div', {
+                    className: 'w-full max-w-md rounded-lg border border-gray-800 bg-gray-900 p-6 shadow-xl',
+                    onClick: (e) => e.stopPropagation()
+                }, [
+                    React.createElement('div', { className: 'mb-4 flex items-center gap-2 text-yellow-500' }, [
+                        React.createElement('svg', { className: 'size-6', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' })),
+                        React.createElement('h3', { className: 'text-lg font-semibold text-white' }, 'Save Your API Key')
+                    ]),
+                    React.createElement('p', { className: 'mb-4 text-sm text-gray-400' }, 'This key will only be displayed once. Please copy and store it in a secure location immediately.'),
+                    React.createElement('div', { className: 'mb-4 rounded-md border border-gray-800 bg-gray-800 p-3' }, [
+                        React.createElement('code', { className: 'break-all font-mono text-sm text-teal-400' }, newKey)
+                    ]),
+                    React.createElement('button', {
+                        onClick: () => copyToClipboard(newKey),
+                        className: 'w-full inline-flex items-center justify-center gap-2 rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700'
+                    }, copied ? [
+                        React.createElement('svg', { className: 'size-4', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M5 13l4 4L19 7' })),
+                        'Copied!'
+                    ] : [
+                        React.createElement('svg', { className: 'size-4', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3' })),
+                        'Copy Key'
+                    ])
+                ])
+            ]);
+
+            // Revoke Confirmation Dialog
+            const revokeDialog = revokeKey && React.createElement('div', {
+                className: 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50',
+                onClick: () => setRevokeKey(null)
+            }, [
+                React.createElement('div', {
+                    className: 'w-full max-w-md rounded-lg border border-gray-800 bg-gray-900 p-6 shadow-xl',
+                    onClick: (e) => e.stopPropagation()
+                }, [
+                    React.createElement('h3', { className: 'mb-2 text-lg font-semibold text-white' }, 'Revoke API Key'),
+                    React.createElement('p', { className: 'mb-4 text-sm text-gray-400' }, 'This action is irreversible. The API key will stop working immediately. Are you sure you want to revoke this key?'),
+                    React.createElement('div', { className: 'mb-4 rounded-md border border-gray-800 bg-gray-800 px-3 py-2' }, [
+                        React.createElement('code', { className: 'font-mono text-xs text-gray-400' }, maskKey(revokeKey))
+                    ]),
+                    React.createElement('div', { className: 'flex justify-end gap-2' }, [
+                        React.createElement('button', {
+                            onClick: () => setRevokeKey(null),
+                            className: 'rounded-md bg-gray-700 px-4 py-2 text-sm font-medium text-white hover:bg-gray-600'
+                        }, 'Cancel'),
+                        React.createElement('button', {
+                            onClick: handleRevoke,
+                            disabled: revoking,
+                            className: 'inline-flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50'
+                        }, revoking ? [
+                            React.createElement('svg', { className: 'size-4 animate-spin', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z' })),
+                            'Revoking...'
+                        ] : 'Yes, Revoke Key')
+                    ])
+                ])
+            ]);
+
+            return [DeveloperConsole(), dialog, revokeDialog];
+        }
+
+        // Render
+        const root = document.getElementById('root');
+        ReactDOM.createRoot(root).render(React.createElement(DeveloperConsole));
+    </script>
+
+    <!-- React and ReactDOM -->
+    <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+</body>
+</html>

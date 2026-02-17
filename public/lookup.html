@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HJS API · Public Lookup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        
+        * {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        
+        code, pre, .font-mono {
+            font-family: 'JetBrains Mono', monospace !important;
+        }
+
+        :root {
+            color-scheme: dark;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #e5e5e5;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #404040;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* JSON syntax highlighting */
+        .json-key { color: #5ee0c0; }
+        .json-string { color: #f9c096; }
+        .json-number { color: #96c0f9; }
+        .json-boolean { color: #f996b5; }
+        .json-null { color: #b096f9; }
+        .json-punctuation { color: #808080; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
+    <div id="root"></div>
+
+    <script type="text/javascript">
+        const API_BASE = "https://hjs-api.onrender.com";
+        const PUBLIC_API_KEY = "hjs_public_lookup_key";
+
+        const EXAMPLE_IDS = [
+            "jgd_1771313790343osf2",
+            "jgd_1771312310200pbtx",
+            "jgd_1771309413724aqeh"
+        ];
+
+        function JsonHighlight({ json }) {
+            if (!json) return null;
+
+            // Simple tokenizer for syntax highlighting
+            const tokenize = (str) => {
+                const tokens = [];
+                let i = 0;
+                const len = str.length;
+
+                while (i < len) {
+                    // Skip whitespace
+                    if (str[i].match(/\s/)) {
+                        let ws = '';
+                        while (i < len && str[i].match(/\s/)) {
+                            ws += str[i];
+                            i++;
+                        }
+                        tokens.push({ type: 'whitespace', value: ws });
+                        continue;
+                    }
+
+                    // String
+                    if (str[i] === '"') {
+                        let s = '"';
+                        i++;
+                        while (i < len) {
+                            s += str[i];
+                            if (str[i] === '"' && str[i-1] !== '\\') break;
+                            i++;
+                        }
+                        i++;
+                        tokens.push({ type: 'string', value: s });
+                        continue;
+                    }
+
+                    // Numbers
+                    if (str[i].match(/[0-9\-]/)) {
+                        let num = '';
+                        while (i < len && str[i].match(/[0-9.eE\-+]/)) {
+                            num += str[i];
+                            i++;
+                        }
+                        tokens.push({ type: 'number', value: num });
+                        continue;
+                    }
+
+                    // Booleans and null
+                    if (str.startsWith('true', i)) {
+                        tokens.push({ type: 'boolean', value: 'true' });
+                        i += 4;
+                        continue;
+                    }
+                    if (str.startsWith('false', i)) {
+                        tokens.push({ type: 'boolean', value: 'false' });
+                        i += 5;
+                        continue;
+                    }
+                    if (str.startsWith('null', i)) {
+                        tokens.push({ type: 'null', value: 'null' });
+                        i += 4;
+                        continue;
+                    }
+
+                    // Punctuation
+                    if ('{}[],:'.includes(str[i])) {
+                        tokens.push({ type: 'punctuation', value: str[i] });
+                        i++;
+                        continue;
+                    }
+
+                    // Object key detection (look ahead for colon)
+                    if (str[i] === '"') {
+                        let key = '';
+                        let j = i;
+                        while (j < len) {
+                            key += str[j];
+                            if (str[j] === '"' && str[j-1] !== '\\') break;
+                            j++;
+                        }
+                        // Look ahead for colon
+                        let k = j + 1;
+                        while (k < len && str[k].match(/\s/)) k++;
+                        if (str[k] === ':') {
+                            // It's a key
+                            tokens.push({ type: 'key', value: key });
+                            i = j + 1;
+                            continue;
+                        }
+                    }
+
+                    // Fallback
+                    tokens.push({ type: 'text', value: str[i] });
+                    i++;
+                }
+                return tokens;
+            };
+
+            const tokens = React.useMemo(() => tokenize(json), [json]);
+
+            const getClassName = (type) => {
+                switch(type) {
+                    case 'key': return 'json-key';
+                    case 'string': return 'json-string';
+                    case 'number': return 'json-number';
+                    case 'boolean': return 'json-boolean';
+                    case 'null': return 'json-null';
+                    case 'punctuation': return 'json-punctuation';
+                    default: return 'text-gray-300';
+                }
+            };
+
+            return React.createElement('pre', { className: 'overflow-x-auto rounded-md bg-gray-800 p-4 font-mono text-sm leading-relaxed' },
+                React.createElement('code', null,
+                    tokens.map((token, i) => 
+                        React.createElement('span', { key: i, className: getClassName(token.type) }, token.value)
+                    )
+                )
+            );
+        }
+
+        function PublicLookup() {
+            const [recordId, setRecordId] = React.useState('');
+            const [result, setResult] = React.useState(null);
+            const [rawJson, setRawJson] = React.useState('');
+            const [loading, setLoading] = React.useState(false);
+            const [error, setError] = React.useState(null);
+
+            const handleLookup = async () => {
+                const id = recordId.trim();
+                if (!id) return;
+                setLoading(true);
+                setError(null);
+                setResult(null);
+                setRawJson('');
+                try {
+                    const res = await fetch(`${API_BASE}/judgments/${id}`, {
+                        headers: {
+                            'X-API-Key': PUBLIC_API_KEY
+                        }
+                    });
+                    if (!res.ok) {
+                        const err = await res.json().catch(() => ({}));
+                        throw new Error(err.error || err.message || `Record not found (${res.status})`);
+                    }
+                    const data = await res.json();
+                    setResult(data);
+                    setRawJson(JSON.stringify(data, null, 2));
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleDownloadJson = () => {
+                if (!rawJson || !recordId) return;
+                const blob = new Blob([rawJson], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${recordId}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            };
+
+            const handleDownloadPdf = () => {
+                if (!recordId) return;
+                window.open(`${API_BASE}/judgments/${recordId}?format=pdf`, '_blank');
+            };
+
+            const handleDownloadOts = () => {
+                if (!recordId) return;
+                window.open(`${API_BASE}/judgments/${recordId}/proof`, '_blank');
+            };
+
+            return React.createElement('div', { className: 'mx-auto max-w-5xl px-4 py-8' }, [
+                // Header
+                React.createElement('div', { className: 'mb-8', key: 'header' }, [
+                    React.createElement('h1', { className: 'text-3xl font-bold tracking-tight text-white' }, 'Public Record Lookup'),
+                    React.createElement('p', { className: 'mt-2 text-sm text-gray-400' }, 'Query judgment records by ID. Results are displayed with full detail and available for download.')
+                ]),
+
+                // Search Card
+                React.createElement('div', { className: 'mb-6 rounded-lg border border-gray-800 bg-gray-900/50 p-6', key: 'search-card' }, [
+                    React.createElement('h2', { className: 'flex items-center gap-2 text-lg font-semibold text-white mb-4' }, [
+                        React.createElement('svg', { className: 'size-5 text-teal-500', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' })),
+                        'Search Record'
+                    ]),
+                    React.createElement('p', { className: 'text-sm text-gray-400 mb-4' }, 'Enter a record ID in the format jgd_xxx to query the database.'),
+
+                    React.createElement('div', { className: 'space-y-4' }, [
+                        React.createElement('div', { className: 'flex gap-2' }, [
+                            React.createElement('div', { className: 'relative flex-1' }, [
+                                React.createElement('input', {
+                                    type: 'text',
+                                    value: recordId,
+                                    onChange: (e) => setRecordId(e.target.value),
+                                    onKeyDown: (e) => e.key === 'Enter' && handleLookup(),
+                                    className: 'w-full rounded-md border border-gray-700 bg-gray-800 px-3 py-2 font-mono text-sm text-white placeholder-gray-500 focus:border-teal-500 focus:outline-none',
+                                    placeholder: 'jgd_xxx'
+                                }),
+                                recordId && React.createElement('button', {
+                                    onClick: () => { setRecordId(''); setResult(null); setRawJson(''); setError(null); },
+                                    className: 'absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white'
+                                }, '×')
+                            ]),
+                            React.createElement('button', {
+                                onClick: handleLookup,
+                                disabled: !recordId.trim() || loading,
+                                className: 'inline-flex items-center justify-center gap-2 rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50'
+                            }, loading ? [
+                                React.createElement('svg', { className: 'size-4 animate-spin', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z' })),
+                                'Searching...'
+                            ] : [
+                                React.createElement('svg', { className: 'size-4', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' })),
+                                'Lookup'
+                            ])
+                        ]),
+
+                        // Example IDs
+                        React.createElement('div', { className: 'flex flex-wrap items-center gap-2' }, [
+                            React.createElement('span', { className: 'text-xs text-gray-500' }, 'Try an example:'),
+                            ...EXAMPLE_IDS.map(id => 
+                                React.createElement('button', {
+                                    key: id,
+                                    onClick: () => setRecordId(id),
+                                    className: 'inline-flex items-center gap-1 rounded-md border border-gray-800 bg-gray-800/50 px-2 py-1 font-mono text-xs text-gray-400 hover:border-teal-500/50 hover:text-white transition-colors'
+                                }, [
+                                    id,
+                                    React.createElement('svg', { className: 'size-3', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M9 5l7 7-7 7' }))
+                                ])
+                            )
+                        ])
+                    ])
+                ]),
+
+                // Error
+                error && React.createElement('div', { className: 'mb-6 rounded-lg border border-red-800 bg-red-900/20 p-4', key: 'error' }, [
+                    React.createElement('div', { className: 'flex items-center gap-3' }, [
+                        React.createElement('div', { className: 'flex size-10 shrink-0 items-center justify-center rounded-full bg-red-900/30' }, [
+                            React.createElement('svg', { className: 'size-5 text-red-400', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }))
+                        ]),
+                        React.createElement('div', null, [
+                            React.createElement('p', { className: 'font-medium text-white' }, 'Lookup Failed'),
+                            React.createElement('p', { className: 'text-sm text-red-300' }, error)
+                        ])
+                    ])
+                ]),
+
+                // Result
+                result && React.createElement('div', { className: 'rounded-lg border border-gray-800 bg-gray-900/50 p-6', key: 'result' }, [
+                    React.createElement('div', { className: 'mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between' }, [
+                        React.createElement('div', { className: 'flex items-center gap-2' }, [
+                            React.createElement('h2', { className: 'text-lg font-semibold text-white' }, 'Result'),
+                            React.createElement('span', { className: 'rounded-md border border-gray-800 bg-gray-800 px-2 py-0.5 font-mono text-xs text-gray-400' }, recordId)
+                        ]),
+                        React.createElement('div', { className: 'flex flex-wrap gap-2' }, [
+                            React.createElement('button', {
+                                onClick: handleDownloadJson,
+                                className: 'inline-flex items-center gap-1.5 rounded-md bg-gray-800 px-3 py-1.5 text-sm text-gray-300 hover:bg-gray-700'
+                            }, [
+                                React.createElement('svg', { className: 'size-4', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 11l5 5 5-5m-5 5V4' })),
+                                'JSON'
+                            ]),
+                            React.createElement('button', {
+                                onClick: handleDownloadPdf,
+                                className: 'inline-flex items-center gap-1.5 rounded-md bg-gray-800 px-3 py-1.5 text-sm text-gray-300 hover:bg-gray-700'
+                            }, [
+                                React.createElement('svg', { className: 'size-4', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z' })),
+                                'PDF'
+                            ]),
+                            React.createElement('button', {
+                                onClick: handleDownloadOts,
+                                className: 'inline-flex items-center gap-1.5 rounded-md bg-gray-800 px-3 py-1.5 text-sm text-gray-300 hover:bg-gray-700'
+                            }, [
+                                React.createElement('svg', { className: 'size-4', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' })),
+                                'OTS Proof'
+                            ])
+                        ])
+                    ]),
+                    React.createElement(JsonHighlight, { json: rawJson })
+                ]),
+
+                // Empty state
+                !result && !error && !loading && React.createElement('div', { className: 'rounded-lg border border-dashed border-gray-800 p-12 text-center', key: 'empty' }, [
+                    React.createElement('div', { className: 'flex flex-col items-center justify-center' }, [
+                        React.createElement('div', { className: 'flex size-14 items-center justify-center rounded-full bg-gray-800' }, [
+                            React.createElement('svg', { className: 'size-6 text-gray-500', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, React.createElement('path', { d: 'M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 11l5 5 5-5m-5 5V4' }))
+                        ]),
+                        React.createElement('p', { className: 'mt-4 text-sm font-medium text-white' }, 'No record loaded'),
+                        React.createElement('p', { className: 'mt-1 max-w-sm text-xs text-gray-500' }, 'Enter a judgment record ID above and click Lookup to retrieve its details. You can download results as JSON, PDF, or OTS proof.')
+                    ])
+                ])
+            ]);
+        }
+
+        const root = document.getElementById('root');
+        ReactDOM.createRoot(root).render(React.createElement(PublicLookup));
+    </script>
+
+    <!-- React and ReactDOM -->
+    <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+</body>
+</html>

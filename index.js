@@ -12,21 +12,22 @@ const pool = new Pool({
 });
 
 app.use(express.json());
+
 // 速率限制中间件
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15分钟
   max: 100, // 每个 IP 最多 100 次请求
   keyGenerator: (req) => {
-    // 优先用 API Key 区分用户，如果没有则用 IP
     return req.headers['x-api-key'] || req.ip;
   },
   handler: (req, res) => {
     res.status(429).json({ error: 'Too many requests, please slow down' });
   },
-  standardHeaders: true, // 返回 RateLimit-* 头
+  standardHeaders: true,
   legacyHeaders: false,
   message: '请求过于频繁，请稍后再试'
 });
+
 // API Key 认证中间件
 const authenticateApiKey = async (req, res, next) => {
   const apiKey = req.headers['x-api-key'];
@@ -44,7 +45,6 @@ const authenticateApiKey = async (req, res, next) => {
     }
     req.userId = rows[0].user_id;
     req.apiKey = apiKey;
-    // 异步更新最后使用时间（不阻塞）
     pool.query('UPDATE api_keys SET last_used = NOW() WHERE key = $1', [apiKey])
       .catch(err => console.error('Failed to update last_used:', err));
     next();
@@ -53,8 +53,39 @@ const authenticateApiKey = async (req, res, next) => {
     res.status(500).json({ error: 'Authentication failed' });
   }
 };
+
+// ========== ✨ 新增：审计日志中间件 ==========
+const auditLog = async (req, res, next) => {
+  const originalJson = res.json;
+  res.json = function(data) {
+    // 只记录成功的 POST 和 GET 请求
+    if ((req.method === 'POST' && req.path === '/judgments') ||
+        (req.method === 'GET' && req.path.startsWith('/judgments/'))) {
+      
+      const resourceId = req.method === 'POST' ? data?.id : req.params.id;
+      
+      setImmediate(async () => {
+        try {
+          await pool.query(
+            `INSERT INTO audit_logs (user_id, api_key, action, resource_id, ip, user_agent)
+             VALUES ($1, $2, $3, $4, $5, $6)`,
+            [req.userId, req.apiKey, req.method + ' ' + req.path, resourceId,
+             req.ip, req.headers['user-agent']]
+          );
+        } catch (err) {
+          console.error('Audit log failed:', err);
+        }
+      });
+    }
+    originalJson.call(this, data);
+  };
+  next();
+};
+// ========================================
+
 // POST /judgments - 记录判断
-app.post('/judgments',limiter,authenticateApiKey,async (req, res) => {
+// ✨ 在路由中间件里加上 auditLog
+app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) => {
   const { entity, action, scope, timestamp } = req.body;
 
   if (!entity || !action) {
@@ -66,14 +97,12 @@ app.post('/judgments',limiter,authenticateApiKey,async (req, res) => {
   const recordedAt = new Date().toISOString();
 
   try {
-    // 1. 保存到数据库
     const query = `
       INSERT INTO judgments (id, entity, action, scope, timestamp, recorded_at)
       VALUES ($1, $2, $3, $4, $5, $6)
     `;
     await pool.query(query, [id, entity, action, scope || {}, judgmentTime, recordedAt]);
 
-    // 2. 构造完整的记录对象（用于生成哈希）
     const record = {
       id,
       entity,
@@ -83,7 +112,6 @@ app.post('/judgments',limiter,authenticateApiKey,async (req, res) => {
       recorded_at: recordedAt
     };
 
-    // 3. 生成哈希并异步提交 OTS
     const hash = generateRecordHash(record);
     
     (async () => {
@@ -95,7 +123,6 @@ app.post('/judgments',limiter,authenticateApiKey,async (req, res) => {
       }
     })();
 
-    // 4. 返回成功响应
     res.json({
       id,
       status: 'recorded',
@@ -109,7 +136,8 @@ app.post('/judgments',limiter,authenticateApiKey,async (req, res) => {
 });
 
 // GET /judgments/:id - 查询记录
-app.get('/judgments/:id',limiter,authenticateApiKey, async (req, res) => {
+// ✨ 在路由中间件里加上 auditLog
+app.get('/judgments/:id', limiter, authenticateApiKey, auditLog, async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM judgments WHERE id = $1', [req.params.id]);
     if (rows.length === 0) {
@@ -126,7 +154,7 @@ app.get('/judgments/:id',limiter,authenticateApiKey, async (req, res) => {
 app.listen(port, () => {
   console.log(`🚀 HJS API running at http://localhost:${port}`);
 });
-// 启动定时任务（只在生产环境运行）
+
 if (process.env.NODE_ENV === 'production') {
   require('./cron/upgrade-proofs');
 } else {

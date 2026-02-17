@@ -28,6 +28,7 @@ HJS 协议由 [Human Judgment Systems Foundation Ltd.](https://humanjudgment.org
 ```bash
 curl -X POST https://hjs-api.onrender.com/judgments \
   -H "Content-Type: application/json" \
+  -H "X-API-Key: 你的密钥" \
   -d '{"entity": "alice@bank.com", "action": "loan_approved", "scope": {"amount": 100000}}'
 ```
 
@@ -37,6 +38,7 @@ curl -X POST https://hjs-api.onrender.com/judgments \
 {
   "id": "jgd_1742318412345_abc1",
   "status": "recorded",
+  "protocol": "HJS/1.0",
   "timestamp": "2026-02-16T09:30:15.123Z"
 }
 ```
@@ -44,7 +46,8 @@ curl -X POST https://hjs-api.onrender.com/judgments \
 ### 2. 查询一条判断
 
 ```bash
-curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1
+curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1 \
+  -H "X-API-Key: 你的密钥"
 ```
 
 **返回示例**：
@@ -56,7 +59,9 @@ curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1
   "action": "loan_approved",
   "scope": {"amount": 100000},
   "timestamp": "2026-02-16T09:30:15.083Z",
-  "recorded_at": "2026-02-16T09:30:15.123Z"
+  "recorded_at": "2026-02-16T09:30:15.123Z",
+  "ots_proof": null,
+  "ots_verified": false
 }
 ```
 
@@ -69,10 +74,12 @@ curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1
 所有 API 端点（除了根路径）都需要 API 密钥。请在请求头中携带：
 
 ```
-X-API-Key: 你的-api-密钥
+X-API-Key: 你的密钥
 ```
 
 如需获取 API 密钥，请联系项目维护者。
+
+---
 
 ### 记录一条判断
 
@@ -80,7 +87,7 @@ X-API-Key: 你的-api-密钥
 
 **请求头**：
 - `Content-Type: application/json`
-- `X-API-Key`: 你的 API 密钥
+- `X-API-Key`: 你的密钥
 
 **请求体**：
 
@@ -97,26 +104,74 @@ X-API-Key: 你的-api-密钥
 |------|------|------|
 | `id` | string | 本次判断的唯一凭证 ID |
 | `status` | string | 固定为 `recorded` |
+| `protocol` | string | 协议版本 (HJS/1.0) |
 | `timestamp` | string | 记录存储时间 |
 
-### 查询单条判断
+---
+
+### 查询单条记录
 
 `GET /judgments/{id}`
 
 **请求头**：
-- `X-API-Key`: 你的 API 密钥
+- `X-API-Key`: 你的密钥
 
 **路径参数**：
 - `id`: 创建记录时返回的唯一凭证 ID
 
 **返回**：完整的判断记录对象
 
+---
+
+### 导出为 JSON
+
+`GET /judgments/{id}?format=json`
+
+**请求头**：
+- `X-API-Key`: 你的密钥
+
+下载 JSON 格式的记录文件，便于程序处理或集成到其他系统。
+
+**示例**：
+```bash
+curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc?format=json" \
+  -H "X-API-Key: 你的密钥" \
+  --output record.json
+```
+
+---
+
+### 导出为 PDF（含二维码）
+
+`GET /judgments/{id}?format=pdf`
+
+**请求头**：
+- `X-API-Key`: 你的密钥
+
+下载格式化的 PDF 文件，包含：
+- 完整的记录详情
+- 二维码（扫码直达验证页面）
+- 记录哈希值（SHA-256）
+- OpenTimestamps 证明状态
+- 生成时间戳和验证说明
+
+适合打印、存档、提交给审计或监管。
+
+**示例**：
+```bash
+curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc?format=pdf" \
+  -H "X-API-Key: 你的密钥" \
+  --output record.pdf
+```
+
+---
+
 ### 查询记录列表（支持筛选）
 
 `GET /judgments`
 
 **请求头**：
-- `X-API-Key`: 你的 API 密钥
+- `X-API-Key`: 你的密钥
 
 **查询参数**：
 
@@ -132,7 +187,7 @@ X-API-Key: 你的-api-密钥
 
 ```bash
 curl "https://hjs-api.onrender.com/judgments?entity=alice@bank.com&limit=5&page=1" \
-  -H "X-API-Key: 你的-api-密钥"
+  -H "X-API-Key: 你的密钥"
 ```
 
 **返回示例**：
@@ -157,20 +212,53 @@ curl "https://hjs-api.onrender.com/judgments?entity=alice@bank.com&limit=5&page=
 }
 ```
 
-### 下载证明文件
+---
+
+### 导出列表为 JSON
+
+`GET /judgments?format=json`（可附加筛选参数）
+
+**请求头**：
+- `X-API-Key`: 你的密钥
+
+下载筛选后的列表结果，包含分页信息，保存为 JSON 文件。
+
+**示例**：
+```bash
+curl -X GET "https://hjs-api.onrender.com/judgments?entity=test&limit=5&format=json" \
+  -H "X-API-Key: 你的密钥" \
+  --output judgments.json
+```
+
+---
+
+### 下载 OTS 证明文件
 
 `GET /judgments/:id/proof`
 
 **请求头**：
-- `X-API-Key`: 你的 API 密钥
+- `X-API-Key`: 你的密钥
 
-返回一个 `.ots` 文件，包含该记录的 OpenTimestamps 时间戳证明。
+返回一个 `.ots` 文件，包含该记录的 OpenTimestamps 时间戳证明。此文件可用于任何兼容 OpenTimestamps 的工具进行独立验证。
 
-**错误响应**：
-- `400 Bad Request`: 缺少必填字段
-- `401 Unauthorized`: 缺少或无效的 API 密钥
-- `404 Not Found`: 判断 ID 不存在
-- `429 Too Many Requests`: 请求过于频繁，超出限制
+**示例**：
+```bash
+curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc/proof" \
+  -H "X-API-Key: 你的密钥" \
+  --output record.ots
+```
+
+---
+
+### 错误响应
+
+| 状态码 | 说明 |
+|--------|------|
+| `400 Bad Request` | 缺少必填字段 |
+| `401 Unauthorized` | 缺少或无效的 API 密钥 |
+| `404 Not Found` | 判断 ID 不存在 |
+| `429 Too Many Requests` | 请求过于频繁，超出限制 |
+| `500 Internal Server Error` | 服务器错误 |
 
 ---
 
@@ -313,9 +401,6 @@ node index.js
 - 所有贡献者和用户
 
 ---
-
-**HJS：责任追溯协议**
-```
 
 **HJS：责任追溯协议**
 ```

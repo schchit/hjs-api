@@ -28,6 +28,7 @@ HJS protocols are governed by the [Human Judgment Systems Foundation Ltd.](https
 ```bash
 curl -X POST https://hjs-api.onrender.com/judgments \
   -H "Content-Type: application/json" \
+  -H "X-API-Key: your-api-key" \
   -d '{"entity": "alice@bank.com", "action": "loan_approved", "scope": {"amount": 100000}}'
 ```
 
@@ -37,6 +38,7 @@ curl -X POST https://hjs-api.onrender.com/judgments \
 {
   "id": "jgd_1742318412345_abc1",
   "status": "recorded",
+  "protocol": "HJS/1.0",
   "timestamp": "2026-02-16T09:30:15.123Z"
 }
 ```
@@ -44,7 +46,8 @@ curl -X POST https://hjs-api.onrender.com/judgments \
 ### 2. Retrieve a judgment
 
 ```bash
-curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1
+curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1 \
+  -H "X-API-Key: your-api-key"
 ```
 
 **Example response**:
@@ -56,7 +59,9 @@ curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1
   "action": "loan_approved",
   "scope": {"amount": 100000},
   "timestamp": "2026-02-16T09:30:15.083Z",
-  "recorded_at": "2026-02-16T09:30:15.123Z"
+  "recorded_at": "2026-02-16T09:30:15.123Z",
+  "ots_proof": null,
+  "ots_verified": false
 }
 ```
 
@@ -73,6 +78,8 @@ X-API-Key: your-api-key-here
 ```
 
 To obtain an API key, please contact the project maintainers.
+
+---
 
 ### Record a judgment
 
@@ -97,7 +104,10 @@ To obtain an API key, please contact the project maintainers.
 |-------|------|-------------|
 | `id` | string | Unique credential ID for this judgment |
 | `status` | string | Always `recorded` |
+| `protocol` | string | Protocol version (HJS/1.0) |
 | `timestamp` | string | When the record was stored |
+
+---
 
 ### Retrieve a judgment
 
@@ -110,6 +120,51 @@ To obtain an API key, please contact the project maintainers.
 - `id`: The unique credential ID returned from a POST request.
 
 **Response**: The complete judgment record object.
+
+---
+
+### Export a judgment as JSON
+
+`GET /judgments/{id}?format=json`
+
+**Headers**:
+- `X-API-Key`: Your API key
+
+Downloads the judgment record as a JSON file for easy integration with other systems.
+
+**Example**:
+```bash
+curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc?format=json" \
+  -H "X-API-Key: your-api-key" \
+  --output record.json
+```
+
+---
+
+### Export a judgment as PDF (with QR code)
+
+`GET /judgments/{id}?format=pdf`
+
+**Headers**:
+- `X-API-Key`: Your API key
+
+Downloads a beautifully formatted PDF containing:
+- Complete judgment details
+- QR code linking to the online verification page
+- Record hash (SHA-256)
+- OpenTimestamps proof status
+- Timestamp and verification instructions
+
+Perfect for printing, archiving, or submitting to auditors/regulators.
+
+**Example**:
+```bash
+curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc?format=pdf" \
+  -H "X-API-Key: your-api-key" \
+  --output record.pdf
+```
+
+---
 
 ### List judgments with filters
 
@@ -157,20 +212,53 @@ curl "https://hjs-api.onrender.com/judgments?entity=alice@bank.com&limit=5&page=
 }
 ```
 
-### Download proof
+---
+
+### Export list results as JSON
+
+`GET /judgments?format=json` (plus any filters)
+
+**Headers**:
+- `X-API-Key`: Your API key
+
+Downloads the filtered judgment list as a JSON file, including pagination metadata.
+
+**Example**:
+```bash
+curl -X GET "https://hjs-api.onrender.com/judgments?entity=test&limit=5&format=json" \
+  -H "X-API-Key: your-api-key" \
+  --output judgments.json
+```
+
+---
+
+### Download OpenTimestamps proof
 
 `GET /judgments/:id/proof`
 
 **Headers**:
 - `X-API-Key`: Your API key
 
-Returns a `.ots` file containing the OpenTimestamps proof for the record.
+Returns a `.ots` file containing the OpenTimestamps proof for the record. This file can be used with any OpenTimestamps-compatible tool for independent verification.
 
-**Error responses**:
-- `400 Bad Request`: Missing required fields
-- `401 Unauthorized`: Missing or invalid API key
-- `404 Not Found`: Judgment ID not found
-- `429 Too Many Requests`: Rate limit exceeded
+**Example**:
+```bash
+curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc/proof" \
+  -H "X-API-Key: your-api-key" \
+  --output record.ots
+```
+
+---
+
+### Error responses
+
+| Status Code | Description |
+|-------------|-------------|
+| `400 Bad Request` | Missing required fields |
+| `401 Unauthorized` | Missing or invalid API key |
+| `404 Not Found` | Judgment ID not found |
+| `429 Too Many Requests` | Rate limit exceeded |
+| `500 Internal Server Error` | Server error |
 
 ---
 

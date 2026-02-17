@@ -20,6 +20,7 @@
   "homepage": "https://github.com/schchit/hjs-api#readme",
   "dependencies": {
     "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
     "opentimestamps": "^0.4.9",

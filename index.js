@@ -20,107 +20,400 @@ app.use(express.json());
 // ==================== 静态文件服务 ====================
 app.use(express.static('public'));
 
-// ==================== 根路径处理 ====================
+// ==================== 根路径处理（中英文双语，可切换，带快速测试） ====================
 app.get('/', (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="zh-CN">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>HJS API · 责任追溯协议</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-            * { font-family: 'Inter', system-ui, sans-serif; }
-            body { background: #0a0a0a; }
-            .glow { text-shadow: 0 0 20px rgba(94, 224, 192, 0.5); }
-        </style>
-    </head>
-    <body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
-        <div class="min-h-screen flex items-center justify-center p-4">
-            <div class="max-w-4xl w-full">
-                <!-- 头部 Logo 区域 -->
-                <div class="text-center mb-12">
-                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-500/20 to-emerald-500/20 mb-6">
-                        <span class="text-4xl font-bold text-teal-400 glow">H</span>
-                    </div>
-                    <h1 class="text-5xl font-bold mb-3 bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
-                        HJS API
-                    </h1>
-                    <p class="text-xl text-gray-400">责任追溯协议 · 实现层服务</p>
-                </div>
+  // 默认中文，如果用户选了英文就显示英文
+  const lang = req.query.lang || 'zh';
+  
+  if (lang === 'en') {
+    // 英文版（带快速测试）
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>HJS API · Responsibility Tracing Protocol</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+          <style>
+              @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+              * { font-family: 'Inter', system-ui, sans-serif; }
+              body { background: #0a0a0a; }
+              .glow { text-shadow: 0 0 20px rgba(94, 224, 192, 0.5); }
+              .test-input { background: #1a1a1a; border: 1px solid #333; color: white; }
+              .test-input:focus { border-color: #5ee0c0; outline: none; }
+          </style>
+      </head>
+      <body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
+          <div class="min-h-screen flex items-center justify-center p-4">
+              <div class="max-w-4xl w-full">
+                  <!-- Language Switcher -->
+                  <div class="text-right mb-4 space-x-2">
+                      <a href="/?lang=zh" class="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-gray-800 text-sm text-gray-300 hover:bg-gray-700">🇨🇳 中文</a>
+                      <a href="/?lang=en" class="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-teal-600 text-sm text-white hover:bg-teal-700">🇺🇸 English</a>
+                  </div>
+                  
+                  <!-- Header -->
+                  <div class="text-center mb-8">
+                      <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-500/20 to-emerald-500/20 mb-6">
+                          <span class="text-4xl font-bold text-teal-400 glow">H</span>
+                      </div>
+                      <h1 class="text-5xl font-bold mb-3 bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
+                          HJS API
+                      </h1>
+                      <p class="text-xl text-gray-400">Responsibility Tracing Protocol · Implementation Layer</p>
+                  </div>
 
-                <!-- 卡片网格 -->
-                <div class="grid md:grid-cols-2 gap-6 mb-12">
-                    <!-- 开发者控制台 -->
-                    <a href="/console.html" class="group block p-8 rounded-2xl border border-gray-800 bg-gray-900/50 hover:bg-gray-900 hover:border-teal-500/50 transition-all duration-300">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="p-3 rounded-xl bg-teal-500/10 text-teal-400 group-hover:scale-110 transition-transform">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                                </svg>
-                            </div>
-                            <h2 class="text-2xl font-semibold text-white">开发者控制台</h2>
-                        </div>
-                        <p class="text-gray-400 mb-4">管理你的 API 密钥 · 生成、查看、吊销</p>
-                        <div class="flex items-center text-teal-400 group-hover:translate-x-2 transition-transform">
-                            <span class="text-sm font-medium">进入控制台</span>
-                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </div>
-                    </a>
+                  <!-- Cards -->
+                  <div class="grid md:grid-cols-2 gap-6 mb-8">
+                      <!-- Developer Console -->
+                      <a href="/console.html" class="group block p-8 rounded-2xl border border-gray-800 bg-gray-900/50 hover:bg-gray-900 hover:border-teal-500/50 transition-all duration-300">
+                          <div class="flex items-center gap-4 mb-4">
+                              <div class="p-3 rounded-xl bg-teal-500/10 text-teal-400 group-hover:scale-110 transition-transform">
+                                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                                  </svg>
+                              </div>
+                              <h2 class="text-2xl font-semibold text-white">Developer Console</h2>
+                          </div>
+                          <p class="text-gray-400 mb-4">Manage your API keys · Generate, view, revoke</p>
+                          <div class="flex items-center text-teal-400 group-hover:translate-x-2 transition-transform">
+                              <span class="text-sm font-medium">Open Console</span>
+                              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                              </svg>
+                          </div>
+                      </a>
 
-                    <!-- 公开查询页 -->
-                    <a href="/lookup.html" class="group block p-8 rounded-2xl border border-gray-800 bg-gray-900/50 hover:bg-gray-900 hover:border-emerald-500/50 transition-all duration-300">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 group-hover:scale-110 transition-transform">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
-                            <h2 class="text-2xl font-semibold text-white">公开查询页</h2>
-                        </div>
-                        <p class="text-gray-400 mb-4">根据记录 ID 查询 · 下载 JSON/PDF/OTS 证明</p>
-                        <div class="flex items-center text-emerald-400 group-hover:translate-x-2 transition-transform">
-                            <span class="text-sm font-medium">开始查询</span>
-                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </div>
-                    </a>
-                </div>
+                      <!-- Public Lookup -->
+                      <a href="/lookup.html" class="group block p-8 rounded-2xl border border-gray-800 bg-gray-900/50 hover:bg-gray-900 hover:border-emerald-500/50 transition-all duration-300">
+                          <div class="flex items-center gap-4 mb-4">
+                              <div class="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 group-hover:scale-110 transition-transform">
+                                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                  </svg>
+                              </div>
+                              <h2 class="text-2xl font-semibold text-white">Public Lookup</h2>
+                          </div>
+                          <p class="text-gray-400 mb-4">Query by record ID · Download JSON/PDF/OTS proof</p>
+                          <div class="flex items-center text-emerald-400 group-hover:translate-x-2 transition-transform">
+                              <span class="text-sm font-medium">Start Query</span>
+                              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                              </svg>
+                          </div>
+                      </a>
+                  </div>
 
-                <!-- 快速链接和状态 -->
-                <div class="grid md:grid-cols-3 gap-4 text-center">
-                    <div class="p-4 rounded-xl bg-gray-900/30 border border-gray-800">
-                        <div class="text-2xl font-bold text-teal-400 mb-1">REST API</div>
-                        <div class="text-sm text-gray-500">基于 HJS 协议族</div>
-                    </div>
-                    <div class="p-4 rounded-xl bg-gray-900/30 border border-gray-800">
-                        <div class="text-2xl font-bold text-emerald-400 mb-1">OTS 证明</div>
-                        <div class="text-sm text-gray-500">锚定到比特币区块链</div>
-                    </div>
-                    <div class="p-4 rounded-xl bg-gray-900/30 border border-gray-800">
-                        <div class="text-2xl font-bold text-purple-400 mb-1">开源</div>
-                        <div class="text-sm text-gray-500">CC BY-SA 4.0</div>
-                    </div>
-                </div>
+                  <!-- Quick Test Area -->
+                  <div class="mb-8 p-6 rounded-xl border border-gray-800 bg-gray-900/30">
+                      <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                          <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                          Quick Test
+                      </h3>
+                      
+                      <div class="grid md:grid-cols-2 gap-4">
+                          <!-- Generate Test Key -->
+                          <div class="p-4 rounded-lg bg-gray-800/50">
+                              <h4 class="text-sm font-medium text-gray-300 mb-3">Generate a test API key</h4>
+                              <div class="flex gap-2">
+                                  <input type="email" id="test-email" placeholder="your@email.com" 
+                                         class="flex-1 test-input rounded px-3 py-2 text-sm">
+                                  <button onclick="generateTestKey()" 
+                                          class="px-4 py-2 bg-teal-600 text-white text-sm rounded hover:bg-teal-700">
+                                      Generate
+                                  </button>
+                              </div>
+                              <div id="test-key-result" class="mt-2 text-xs text-gray-400"></div>
+                          </div>
+                          
+                          <!-- Quick Lookup -->
+                          <div class="p-4 rounded-lg bg-gray-800/50">
+                              <h4 class="text-sm font-medium text-gray-300 mb-3">Try an example record</h4>
+                              <div class="flex gap-2">
+                                  <input type="text" id="test-id" value="jgd_1771313790343osf2" 
+                                         class="flex-1 test-input rounded px-3 py-2 text-sm font-mono">
+                                  <button onclick="quickLookup()" 
+                                          class="px-4 py-2 bg-emerald-600 text-white text-sm rounded hover:bg-emerald-700">
+                                      Lookup
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                      
+                      <div class="mt-4 text-center">
+                          <a href="/docs.html" class="inline-flex items-center gap-1 text-sm text-teal-400 hover:text-teal-300">
+                              <span>View full API documentation</span>
+                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                              </svg>
+                          </a>
+                      </div>
+                  </div>
 
-                <!-- 底部链接 -->
-                <div class="mt-12 text-center text-sm text-gray-600">
-                    <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 transition-colors mx-3">GitHub</a>
-                    <span class="text-gray-700">|</span>
-                    <a href="https://hjs-api.onrender.com/console.html" class="hover:text-gray-400 transition-colors mx-3">Console</a>
-                    <span class="text-gray-700">|</span>
-                    <a href="https://hjs-api.onrender.com/lookup.html" class="hover:text-gray-400 transition-colors mx-3">Lookup</a>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>
-  `);
+                  <!-- Features -->
+                  <div class="grid md:grid-cols-3 gap-4 text-center mb-8">
+                      <div class="p-4 rounded-xl bg-gray-900/30 border border-gray-800">
+                          <div class="text-2xl font-bold text-teal-400 mb-1">REST API</div>
+                          <div class="text-sm text-gray-500">Based on HJS Protocol</div>
+                      </div>
+                      <div class="p-4 rounded-xl bg-gray-900/30 border border-gray-800">
+                          <div class="text-2xl font-bold text-emerald-400 mb-1">OTS Proof</div>
+                          <div class="text-sm text-gray-500">Anchored to Bitcoin Blockchain</div>
+                      </div>
+                      <div class="p-4 rounded-xl bg-gray-900/30 border border-gray-800">
+                          <div class="text-2xl font-bold text-purple-400 mb-1">Open Source</div>
+                          <div class="text-sm text-gray-500">CC BY-SA 4.0</div>
+                      </div>
+                  </div>
+
+                  <!-- Footer -->
+                  <div class="text-center text-sm text-gray-600">
+                      <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 transition-colors mx-3">GitHub</a>
+                      <span class="text-gray-700">|</span>
+                      <a href="/console.html" class="hover:text-gray-400 transition-colors mx-3">Console</a>
+                      <span class="text-gray-700">|</span>
+                      <a href="/lookup.html" class="hover:text-gray-400 transition-colors mx-3">Lookup</a>
+                      <span class="text-gray-700">|</span>
+                      <a href="/docs.html" class="hover:text-gray-400 transition-colors mx-3">API Docs</a>
+                  </div>
+              </div>
+          </div>
+
+          <script>
+              async function generateTestKey() {
+                  const email = document.getElementById('test-email').value;
+                  if (!email) {
+                      alert('Please enter your email');
+                      return;
+                  }
+                  const resultDiv = document.getElementById('test-key-result');
+                  resultDiv.textContent = 'Generating...';
+                  
+                  try {
+                      const res = await fetch('/developer/keys', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ email, name: 'quick-test' })
+                      });
+                      const data = await res.json();
+                      if (data.key) {
+                          resultDiv.innerHTML = \`✅ Key generated: <code class="bg-gray-900 px-1 py-0.5 rounded">\${data.key.substring(0, 8)}...\${data.key.substring(56)}</code>\`;
+                      } else {
+                          resultDiv.textContent = '❌ Failed to generate key';
+                      }
+                  } catch (err) {
+                      resultDiv.textContent = '❌ Error: ' + err.message;
+                  }
+              }
+
+              function quickLookup() {
+                  const id = document.getElementById('test-id').value;
+                  if (id) {
+                      window.location.href = '/lookup.html?id=' + id;
+                  }
+              }
+          </script>
+      </body>
+      </html>
+    `);
+  } else {
+    // 中文版（带快速测试）
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="zh-CN">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>HJS API · 责任追溯协议</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+          <style>
+              @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+              * { font-family: 'Inter', system-ui, sans-serif; }
+              body { background: #0a0a0a; }
+              .glow { text-shadow: 0 0 20px rgba(94, 224, 192, 0.5); }
+              .test-input { background: #1a1a1a; border: 1px solid #333; color: white; }
+              .test-input:focus { border-color: #5ee0c0; outline: none; }
+          </style>
+      </head>
+      <body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
+          <div class="min-h-screen flex items-center justify-center p-4">
+              <div class="max-w-4xl w-full">
+                  <!-- 语言切换 -->
+                  <div class="text-right mb-4 space-x-2">
+                      <a href="/?lang=zh" class="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-teal-600 text-sm text-white hover:bg-teal-700">🇨🇳 中文</a>
+                      <a href="/?lang=en" class="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-gray-800 text-sm text-gray-300 hover:bg-gray-700">🇺🇸 English</a>
+                  </div>
+                  
+                  <!-- 头部 Logo 区域 -->
+                  <div class="text-center mb-8">
+                      <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-500/20 to-emerald-500/20 mb-6">
+                          <span class="text-4xl font-bold text-teal-400 glow">H</span>
+                      </div>
+                      <h1 class="text-5xl font-bold mb-3 bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
+                          HJS API
+                      </h1>
+                      <p class="text-xl text-gray-400">责任追溯协议 · 实现层服务</p>
+                  </div>
+
+                  <!-- 卡片网格 -->
+                  <div class="grid md:grid-cols-2 gap-6 mb-8">
+                      <!-- 开发者控制台 -->
+                      <a href="/console.html" class="group block p-8 rounded-2xl border border-gray-800 bg-gray-900/50 hover:bg-gray-900 hover:border-teal-500/50 transition-all duration-300">
+                          <div class="flex items-center gap-4 mb-4">
+                              <div class="p-3 rounded-xl bg-teal-500/10 text-teal-400 group-hover:scale-110 transition-transform">
+                                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                                  </svg>
+                              </div>
+                              <h2 class="text-2xl font-semibold text-white">开发者控制台</h2>
+                          </div>
+                          <p class="text-gray-400 mb-4">管理你的 API 密钥 · 生成、查看、吊销</p>
+                          <div class="flex items-center text-teal-400 group-hover:translate-x-2 transition-transform">
+                              <span class="text-sm font-medium">进入控制台</span>
+                              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                              </svg>
+                          </div>
+                      </a>
+
+                      <!-- 公开查询页 -->
+                      <a href="/lookup.html" class="group block p-8 rounded-2xl border border-gray-800 bg-gray-900/50 hover:bg-gray-900 hover:border-emerald-500/50 transition-all duration-300">
+                          <div class="flex items-center gap-4 mb-4">
+                              <div class="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 group-hover:scale-110 transition-transform">
+                                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                  </svg>
+                              </div>
+                              <h2 class="text-2xl font-semibold text-white">公开查询页</h2>
+                          </div>
+                          <p class="text-gray-400 mb-4">根据记录 ID 查询 · 下载 JSON/PDF/OTS 证明</p>
+                          <div class="flex items-center text-emerald-400 group-hover:translate-x-2 transition-transform">
+                              <span class="text-sm font-medium">开始查询</span>
+                              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                              </svg>
+                          </div>
+                      </a>
+                  </div>
+
+                  <!-- 快速测试区域 -->
+                  <div class="mb-8 p-6 rounded-xl border border-gray-800 bg-gray-900/30">
+                      <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                          <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                          快速体验
+                      </h3>
+                      
+                      <div class="grid md:grid-cols-2 gap-4">
+                          <!-- 生成测试密钥 -->
+                          <div class="p-4 rounded-lg bg-gray-800/50">
+                              <h4 class="text-sm font-medium text-gray-300 mb-3">生成测试 API 密钥</h4>
+                              <div class="flex gap-2">
+                                  <input type="email" id="test-email" placeholder="your@email.com" 
+                                         class="flex-1 test-input rounded px-3 py-2 text-sm">
+                                  <button onclick="generateTestKey()" 
+                                          class="px-4 py-2 bg-teal-600 text-white text-sm rounded hover:bg-teal-700">
+                                      生成
+                                  </button>
+                              </div>
+                              <div id="test-key-result" class="mt-2 text-xs text-gray-400"></div>
+                          </div>
+                          
+                          <!-- 快速查询 -->
+                          <div class="p-4 rounded-lg bg-gray-800/50">
+                              <h4 class="text-sm font-medium text-gray-300 mb-3">试试示例记录</h4>
+                              <div class="flex gap-2">
+                                  <input type="text" id="test-id" value="jgd_1771313790343osf2" 
+                                         class="flex-1 test-input rounded px-3 py-2 text-sm font-mono">
+                                  <button onclick="quickLookup()" 
+                                          class="px-4 py-2 bg-emerald-600 text-white text-sm rounded hover:bg-emerald-700">
+                                      查询
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                      
+                      <div class="mt-4 text-center">
+                          <a href="/docs.html" class="inline-flex items-center gap-1 text-sm text-teal-400 hover:text-teal-300">
+                              <span>查看完整 API 文档</span>
+                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                              </svg>
+                          </a>
+                      </div>
+                  </div>
+
+                  <!-- 快速链接和状态 -->
+                  <div class="grid md:grid-cols-3 gap-4 text-center mb-8">
+                      <div class="p-4 rounded-xl bg-gray-900/30 border border-gray-800">
+                          <div class="text-2xl font-bold text-teal-400 mb-1">REST API</div>
+                          <div class="text-sm text-gray-500">基于 HJS 协议族</div>
+                      </div>
+                      <div class="p-4 rounded-xl bg-gray-900/30 border border-gray-800">
+                          <div class="text-2xl font-bold text-emerald-400 mb-1">OTS 证明</div>
+                          <div class="text-sm text-gray-500">锚定到比特币区块链</div>
+                      </div>
+                      <div class="p-4 rounded-xl bg-gray-900/30 border border-gray-800">
+                          <div class="text-2xl font-bold text-purple-400 mb-1">开源</div>
+                          <div class="text-sm text-gray-500">CC BY-SA 4.0</div>
+                      </div>
+                  </div>
+
+                  <!-- 底部链接 -->
+                  <div class="text-center text-sm text-gray-600">
+                      <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 transition-colors mx-3">GitHub</a>
+                      <span class="text-gray-700">|</span>
+                      <a href="/console.html" class="hover:text-gray-400 transition-colors mx-3">控制台</a>
+                      <span class="text-gray-700">|</span>
+                      <a href="/lookup.html" class="hover:text-gray-400 transition-colors mx-3">查询</a>
+                      <span class="text-gray-700">|</span>
+                      <a href="/docs.html" class="hover:text-gray-400 transition-colors mx-3">API文档</a>
+                  </div>
+              </div>
+          </div>
+
+          <script>
+              async function generateTestKey() {
+                  const email = document.getElementById('test-email').value;
+                  if (!email) {
+                      alert('请输入邮箱');
+                      return;
+                  }
+                  const resultDiv = document.getElementById('test-key-result');
+                  resultDiv.textContent = '生成中...';
+                  
+                  try {
+                      const res = await fetch('/developer/keys', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ email, name: '快速测试' })
+                      });
+                      const data = await res.json();
+                      if (data.key) {
+                          resultDiv.innerHTML = \`✅ 密钥生成成功: <code class="bg-gray-900 px-1 py-0.5 rounded">\${data.key.substring(0, 8)}...\${data.key.substring(56)}</code>\`;
+                      } else {
+                          resultDiv.textContent = '❌ 生成失败';
+                      }
+                  } catch (err) {
+                      resultDiv.textContent = '❌ 错误: ' + err.message;
+                  }
+              }
+
+              function quickLookup() {
+                  const id = document.getElementById('test-id').value;
+                  if (id) {
+                      window.location.href = '/lookup.html?id=' + id;
+                  }
+              }
+          </script>
+      </body>
+      </html>
+    `);
+  }
 });
 
 // ==================== 中间件定义 ====================

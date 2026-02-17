@@ -221,7 +221,6 @@ node index.js
 欢迎贡献！你可以：
 - 提出 [Issue](https://github.com/schchit/hjs-api/issues) 报告问题或建议
 - 提交 Pull Request 改进代码或文档
-- 在 [HJS 讨论区](https://github.com/hjs-spec/spec/discussions)参与协议讨论
 
 ---
 

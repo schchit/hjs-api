@@ -20,6 +20,109 @@ app.use(express.json());
 // ==================== 静态文件服务 ====================
 app.use(express.static('public'));
 
+// ==================== 根路径处理 ====================
+app.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>HJS API · 责任追溯协议</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+            * { font-family: 'Inter', system-ui, sans-serif; }
+            body { background: #0a0a0a; }
+            .glow { text-shadow: 0 0 20px rgba(94, 224, 192, 0.5); }
+        </style>
+    </head>
+    <body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
+        <div class="min-h-screen flex items-center justify-center p-4">
+            <div class="max-w-4xl w-full">
+                <!-- 头部 Logo 区域 -->
+                <div class="text-center mb-12">
+                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-500/20 to-emerald-500/20 mb-6">
+                        <span class="text-4xl font-bold text-teal-400 glow">H</span>
+                    </div>
+                    <h1 class="text-5xl font-bold mb-3 bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
+                        HJS API
+                    </h1>
+                    <p class="text-xl text-gray-400">责任追溯协议 · 实现层服务</p>
+                </div>
+
+                <!-- 卡片网格 -->
+                <div class="grid md:grid-cols-2 gap-6 mb-12">
+                    <!-- 开发者控制台 -->
+                    <a href="/console.html" class="group block p-8 rounded-2xl border border-gray-800 bg-gray-900/50 hover:bg-gray-900 hover:border-teal-500/50 transition-all duration-300">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="p-3 rounded-xl bg-teal-500/10 text-teal-400 group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-semibold text-white">开发者控制台</h2>
+                        </div>
+                        <p class="text-gray-400 mb-4">管理你的 API 密钥 · 生成、查看、吊销</p>
+                        <div class="flex items-center text-teal-400 group-hover:translate-x-2 transition-transform">
+                            <span class="text-sm font-medium">进入控制台</span>
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </a>
+
+                    <!-- 公开查询页 -->
+                    <a href="/lookup.html" class="group block p-8 rounded-2xl border border-gray-800 bg-gray-900/50 hover:bg-gray-900 hover:border-emerald-500/50 transition-all duration-300">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-semibold text-white">公开查询页</h2>
+                        </div>
+                        <p class="text-gray-400 mb-4">根据记录 ID 查询 · 下载 JSON/PDF/OTS 证明</p>
+                        <div class="flex items-center text-emerald-400 group-hover:translate-x-2 transition-transform">
+                            <span class="text-sm font-medium">开始查询</span>
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- 快速链接和状态 -->
+                <div class="grid md:grid-cols-3 gap-4 text-center">
+                    <div class="p-4 rounded-xl bg-gray-900/30 border border-gray-800">
+                        <div class="text-2xl font-bold text-teal-400 mb-1">REST API</div>
+                        <div class="text-sm text-gray-500">基于 HJS 协议族</div>
+                    </div>
+                    <div class="p-4 rounded-xl bg-gray-900/30 border border-gray-800">
+                        <div class="text-2xl font-bold text-emerald-400 mb-1">OTS 证明</div>
+                        <div class="text-sm text-gray-500">锚定到比特币区块链</div>
+                    </div>
+                    <div class="p-4 rounded-xl bg-gray-900/30 border border-gray-800">
+                        <div class="text-2xl font-bold text-purple-400 mb-1">开源</div>
+                        <div class="text-sm text-gray-500">CC BY-SA 4.0</div>
+                    </div>
+                </div>
+
+                <!-- 底部链接 -->
+                <div class="mt-12 text-center text-sm text-gray-600">
+                    <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 transition-colors mx-3">GitHub</a>
+                    <span class="text-gray-700">|</span>
+                    <a href="https://hjs-api.onrender.com/console.html" class="hover:text-gray-400 transition-colors mx-3">Console</a>
+                    <span class="text-gray-700">|</span>
+                    <a href="https://hjs-api.onrender.com/lookup.html" class="hover:text-gray-400 transition-colors mx-3">Lookup</a>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+  `);
+});
+
 // ==================== 中间件定义 ====================
 
 // 1. 速率限制中间件

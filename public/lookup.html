@@ -235,14 +235,97 @@
                 URL.revokeObjectURL(url);
             };
 
-            const handleDownloadPdf = () => {
-                if (!recordId) return;
-                window.open(`${API_BASE}/judgments/${recordId}?format=pdf`, '_blank');
+            const handleDownloadPdf = async () => {
+                if (!recordId) {
+                    alert('Please enter or select a record ID');
+                    return;
+                }
+                
+                try {
+                    console.log('Downloading PDF...');
+                    
+                    const response = await fetch(`${API_BASE}/judgments/${recordId}?format=pdf`, {
+                        headers: {
+                            'X-API-Key': PUBLIC_API_KEY
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            throw new Error('Invalid or missing API Key');
+                        } else if (response.status === 404) {
+                            throw new Error('Record not found');
+                        } else {
+                            throw new Error(`Download failed (HTTP ${response.status})`);
+                        }
+                    }
+                    
+                    const blob = await response.blob();
+                    
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${recordId}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    
+                    console.log('PDF downloaded successfully');
+                    
+                } catch (err) {
+                    console.error('PDF download error:', err);
+                    alert(`Download failed: ${err.message}`);
+                }
             };
 
-            const handleDownloadOts = () => {
-                if (!recordId) return;
-                window.open(`${API_BASE}/judgments/${recordId}/proof`, '_blank');
+            const handleDownloadOts = async () => {
+                if (!recordId) {
+                    alert('Please enter or select a record ID');
+                    return;
+                }
+                
+                try {
+                    console.log('Downloading OTS proof...');
+                    
+                    const response = await fetch(`${API_BASE}/judgments/${recordId}/immutability-proof`, {
+                        headers: {
+                            'X-API-Key': PUBLIC_API_KEY
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            throw new Error('Invalid or missing API Key');
+                        } else if (response.status === 404) {
+                            throw new Error('No OTS proof available for this record (may be type: none)');
+                        } else {
+                            throw new Error(`Download failed (HTTP ${response.status})`);
+                        }
+                    }
+                    
+                    const blob = await response.blob();
+                    
+                    const contentType = response.headers.get('content-type');
+                    const fileExt = contentType?.includes('opentimestamps') ? '.ots' : '.proof';
+                    
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${recordId}${fileExt}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    
+                    console.log('OTS proof downloaded successfully');
+                    
+                } catch (err) {
+                    console.error('OTS download error:', err);
+                    alert(`Download failed: ${err.message}`);
+                }
             };
 
             return React.createElement('div', { className: 'mx-auto max-w-5xl px-4 py-8' }, [

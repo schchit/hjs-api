@@ -24,7 +24,8 @@ app.use(express.static('public'));
 
 // ==================== 根路径处理 ====================
 app.get('/', (req, res) => {
-  const lang = req.query.lang || 'zh';
+  // 默认英文，可通过 lang 参数切换
+  const lang = req.query.lang || 'en';
   
   if (lang === 'en') {
     res.send(`
@@ -33,7 +34,7 @@ app.get('/', (req, res) => {
       <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>HJS API · Responsibility Tracing Protocol</title>
+          <title>HJS API · Structural Traceability Protocol</title>
           <script src="https://cdn.tailwindcss.com"></script>
           <style>
               @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
@@ -47,10 +48,13 @@ app.get('/', (req, res) => {
       <body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
           <div class="min-h-screen flex items-center justify-center p-4">
               <div class="max-w-4xl w-full">
-                  <!-- Language Switcher -->
-                  <div class="text-right mb-4 space-x-2">
-                      <a href="/?lang=zh" class="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-gray-800 text-sm text-gray-300 hover:bg-gray-700">🇨🇳 中文</a>
-                      <a href="/?lang=en" class="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-teal-600 text-sm text-white hover:bg-teal-700">🇺🇸 English</a>
+                  <!-- Language Switcher - Dropdown -->
+                  <div class="text-right mb-4">
+                      <select onchange="window.location.href='/?lang='+this.value" 
+                              class="bg-gray-800 text-white text-sm rounded-md px-3 py-1 border border-gray-700 focus:outline-none focus:border-teal-500">
+                          <option value="en" selected>English</option>
+                          <option value="zh">中文</option>
+                      </select>
                   </div>
                   
                   <!-- Header -->
@@ -61,7 +65,7 @@ app.get('/', (req, res) => {
                       <h1 class="text-5xl font-bold mb-3 bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
                           HJS API
                       </h1>
-                      <p class="text-xl text-gray-400">Responsibility Tracing Protocol · Implementation Layer</p>
+                      <p class="text-xl text-gray-400">HJS is a protocol for structural traceability</p>
                   </div>
 
                   <!-- Cards -->
@@ -220,14 +224,14 @@ app.get('/', (req, res) => {
       </html>
     `);
   } else {
-    // 中文版（默认）
+    // 中文版
     res.send(`
       <!DOCTYPE html>
       <html lang="zh-CN">
       <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>HJS API · 责任追溯协议</title>
+          <title>HJS API · 结构化追溯协议</title>
           <script src="https://cdn.tailwindcss.com"></script>
           <style>
               @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
@@ -241,10 +245,13 @@ app.get('/', (req, res) => {
       <body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
           <div class="min-h-screen flex items-center justify-center p-4">
               <div class="max-w-4xl w-full">
-                  <!-- 语言切换 -->
-                  <div class="text-right mb-4 space-x-2">
-                      <a href="/?lang=zh" class="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-teal-600 text-sm text-white hover:bg-teal-700">🇨🇳 中文</a>
-                      <a href="/?lang=en" class="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-gray-800 text-sm text-gray-300 hover:bg-gray-700">🇺🇸 English</a>
+                  <!-- 语言切换 - 下拉菜单 -->
+                  <div class="text-right mb-4">
+                      <select onchange="window.location.href='/?lang='+this.value" 
+                              class="bg-gray-800 text-white text-sm rounded-md px-3 py-1 border border-gray-700 focus:outline-none focus:border-teal-500">
+                          <option value="en">English</option>
+                          <option value="zh" selected>中文</option>
+                      </select>
                   </div>
                   
                   <!-- 头部 Logo 区域 -->
@@ -255,7 +262,7 @@ app.get('/', (req, res) => {
                       <h1 class="text-5xl font-bold mb-3 bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
                           HJS API
                       </h1>
-                      <p class="text-xl text-gray-400">责任追溯协议 · 实现层服务</p>
+                      <p class="text-xl text-gray-400">HJS 是一个结构化追溯协议</p>
                   </div>
 
                   <!-- 卡片网格 -->
@@ -861,3 +868,4 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   console.log('⏰ Anchor upgrade task skipped in development mode');
 }
+```

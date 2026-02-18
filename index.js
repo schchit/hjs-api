@@ -23,7 +23,6 @@ const pool = new Pool({
 app.use(express.json());
 app.use(express.static('public'));
 // 在这里添加 CORS 配置
-const cors = require('cors');
 app.use(cors({
   origin: [
     'https://humanjudgment.services',

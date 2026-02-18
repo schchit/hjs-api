@@ -215,6 +215,18 @@
                         throw new Error(err.error || err.message || `Record not found (${res.status})`);
                     }
                     const data = await res.json();
+                    
+                    // === 折叠 anchor_proof 数据 ===
+                    if (data.anchor_proof && data.anchor_proof.data && Array.isArray(data.anchor_proof.data)) {
+                        const dataLength = data.anchor_proof.data.length;
+                        // 替换为折叠版本
+                        data.anchor_proof = {
+                            type: "Buffer",
+                            data: `[Binary data: ${dataLength} bytes - use OTS button to download]`
+                        };
+                    }
+                    // === 折叠结束 ===
+                    
                     setResult(data);
                     setRawJson(JSON.stringify(data, null, 2));
                 } catch (err) {

@@ -43,6 +43,57 @@
                 <p class="text-gray-400 text-sm mt-2" data-i18n="auth.note">在 <a href="/console.html" class="text-teal-400">开发者控制台</a> 可以生成和管理 API Key。</p>
             </div>
 
+            <!-- 新增：不可篡改锚定章节 -->
+            <div class="mb-8 p-6 rounded-lg border border-gray-800 bg-gray-900/50">
+                <h2 class="text-xl font-semibold text-white mb-4" data-i18n="anchor.title">🔏 不可篡改锚定</h2>
+                <p class="text-gray-300 mb-3" data-i18n="anchor.desc">每条记录可**选择性地**附带一个不可篡改锚定，提供密码学证据。您可以在创建记录时指定锚定策略。</p>
+                
+                <h3 class="font-semibold text-white mb-2 mt-4" data-i18n="anchor.strategy">锚定策略</h3>
+                <pre class="bg-gray-800 p-3 rounded text-sm text-gray-300"><code>{
+  "immutability": {
+    "type": "ots",      // 可选值：ots, merkle, trusted_timestamp, none
+    "options": {}       // 类型相关的可选参数
+  }
+}</code></pre>
+                <ul class="list-disc list-inside text-gray-300 text-sm mt-2 space-y-1">
+                    <li><code class="text-teal-400">ots</code> - 使用 OpenTimestamps 锚定到比特币区块链（官方推荐参考实现）</li>
+                    <li><code class="text-teal-400">merkle</code> - 批量锚定到默克尔树（需自行实现）</li>
+                    <li><code class="text-teal-400">trusted_timestamp</code> - 使用可信第三方时间戳服务（需自行实现）</li>
+                    <li><code class="text-teal-400">none</code> - 无锚定（默认值）</li>
+                </ul>
+                <p class="text-gray-400 text-sm mt-2">如果不提供 <code>immutability</code> 字段，默认使用 <code>none</code>。</p>
+
+                <h3 class="font-semibold text-white mb-2 mt-4" data-i18n="anchor.response">响应中的锚定信息</h3>
+                <pre class="bg-gray-800 p-3 rounded text-sm text-gray-300"><code>{
+  "id": "jgd_1742318412345_abc1",
+  "status": "recorded",
+  "protocol": "HJS/1.0",
+  "timestamp": "2026-02-18T09:30:15.123Z",
+  "immutability_anchor": {
+    "type": "ots",              // 实际使用的锚定类型
+    "reference": "https://proof.hjs.sh/records/jgd_xxx.ots", // 可选，类型相关引用
+    "anchored_at": "2026-02-18T10:00:00Z"                    // 可选，锚定时间
+  }
+}</code></pre>
+
+                <h3 class="font-semibold text-white mb-2 mt-4" data-i18n="anchor.download">下载锚定证明</h3>
+                <p class="text-gray-300 text-sm mb-2"><code>GET /judgments/:id/immutability-proof</code></p>
+                <p class="text-gray-400 text-sm">根据记录的锚定类型，返回对应的证明文件：</p>
+                <ul class="list-disc list-inside text-gray-300 text-sm mt-2 space-y-1">
+                    <li><code class="text-teal-400">ots</code> → 返回 <code>.ots</code> 文件（Content-Type: <code>application/vnd.opentimestamps.ots</code>）</li>
+                    <li>其他类型 → 通用二进制或 JSON</li>
+                    <li>如果记录无证明（<code>type: none</code>），返回 404</li>
+                </ul>
+                <p class="text-gray-400 text-sm mt-2">为了向后兼容，旧的 <code>/proof</code> 接口会自动重定向到新接口。</p>
+
+                <h3 class="font-semibold text-white mb-2 mt-4" data-i18n="anchor.lifecycle">证明生命周期</h3>
+                <ul class="list-disc list-inside text-gray-300 text-sm space-y-1">
+                    <li><span class="text-gray-400">刚创建时：</span>证明文件生成，但还未锚定到区块链</li>
+                    <li><span class="text-gray-400">约1小时后：</span>自动升级证明，锚定到比特币区块链</li>
+                    <li><span class="text-gray-400">长期可验证：</span>一旦锚定，证明可被独立验证，不受本服务存续影响</li>
+                </ul>
+            </div>
+
             <!-- POST /judgments -->
             <div class="p-6 rounded-lg border border-gray-800 bg-gray-900/50 endpoint">
                 <div class="flex items-center gap-3 mb-3">
@@ -60,7 +111,10 @@ X-API-Key: your-api-key</code></pre>
   "entity": "alice@bank.com",  // 必填，做出判断的实体
   "action": "loan_approved",   // 必填，被判断的行为
   "scope": {"amount": 100000}, // 可选，判断的作用域
-  "timestamp": "2026-02-17T..." // 可选，判断时间，默认服务器时间
+  "timestamp": "2026-02-17T...", // 可选，判断时间，默认服务器时间
+  "immutability": {            // 可选，锚定策略
+    "type": "ots"
+  }
 }</code></pre>
 
                 <h3 class="font-semibold text-white mb-2" data-i18n="common.response">响应示例</h3>
@@ -68,7 +122,10 @@ X-API-Key: your-api-key</code></pre>
   "id": "jgd_1742318412345_abc1",
   "status": "recorded",
   "protocol": "HJS/1.0",
-  "timestamp": "2026-02-17T09:30:15.123Z"
+  "timestamp": "2026-02-17T09:30:15.123Z",
+  "immutability_anchor": {
+    "type": "ots"
+  }
 }</code></pre>
             </div>
 
@@ -91,8 +148,9 @@ X-API-Key: your-api-key</code></pre>
   "scope": {"amount": 100000},
   "timestamp": "2026-02-17T09:30:15.083Z",
   "recorded_at": "2026-02-17T09:30:15.123Z",
-  "ots_proof": null,
-  "ots_verified": false
+  "immutability_anchor": {
+    "type": "none"
+  }
 }</code></pre>
             </div>
 
@@ -153,16 +211,24 @@ X-API-Key: your-api-key</code></pre>
                 <pre class="bg-gray-800 p-3 rounded text-sm text-gray-300"><code>X-API-Key: your-api-key</code></pre>
             </div>
 
-            <!-- 下载 OTS 证明 -->
+            <!-- 下载锚定证明（新增接口说明） -->
             <div class="p-6 rounded-lg border border-gray-800 bg-gray-900/50 endpoint">
                 <div class="flex items-center gap-3 mb-3">
                     <span class="method-get font-bold">GET</span>
-                    <code class="text-lg">/judgments/{id}/proof</code>
+                    <code class="text-lg">/judgments/{id}/immutability-proof</code>
                 </div>
-                <p class="text-gray-400 mb-4" data-i18n="endpoint.proof.desc">下载 OpenTimestamps 证明文件（.ots），可用于独立验证。</p>
+                <p class="text-gray-400 mb-4" data-i18n="endpoint.immutability_proof.desc">下载记录的锚定证明文件，格式由记录的锚定类型决定。</p>
                 
                 <h3 class="font-semibold text-white mb-2" data-i18n="common.headers">请求头</h3>
-                <pre class="bg-gray-800 p-3 rounded text-sm text-gray-300"><code>X-API-Key: your-api-key</code></pre>
+                <pre class="bg-gray-800 p-3 rounded text-sm text-gray-300 mb-4"><code>X-API-Key: your-api-key</code></pre>
+                
+                <h3 class="font-semibold text-white mb-2">响应格式</h3>
+                <ul class="list-disc list-inside text-gray-300 text-sm">
+                    <li><code class="text-teal-400">ots</code> → 返回 <code>.ots</code> 文件（Content-Type: <code>application/vnd.opentimestamps.ots</code>）</li>
+                    <li>其他类型 → 通用二进制或 JSON</li>
+                    <li>如果记录无证明（<code>type: none</code>），返回 404</li>
+                </ul>
+                <p class="text-gray-400 text-sm mt-2">⚠️ 旧的 <code>/proof</code> 接口已废弃，将自动重定向到此接口。</p>
             </div>
 
             <!-- 开发者密钥管理 -->
@@ -217,10 +283,10 @@ X-API-Key: your-api-key</code></pre>
             <p class="text-gray-300" data-i18n="ratelimit.desc">每个 API Key 每 15 分钟最多 100 次请求。</p>
         </div>
 
-        <!-- 验证 -->
+        <!-- 记录验证（保留但更新） -->
         <div class="mt-8 p-6 rounded-lg border border-gray-800 bg-gray-900/50">
-            <h2 class="text-xl font-semibold text-white mb-4" data-i18n="verify.title">🔐 记录验证</h2>
-            <p class="text-gray-300 mb-3" data-i18n="verify.desc">每条记录的 OTS 证明可用以下方式验证：</p>
+            <h2 class="text-xl font-semibold text-white mb-4" data-i18n="verify.title">🔏 记录验证</h2>
+            <p class="text-gray-300 mb-3" data-i18n="verify.desc">记录的锚定证明（如 OTS）可用以下方式独立验证：</p>
             <pre class="bg-gray-800 p-3 rounded text-sm text-gray-300"><code># 安装 OTS 客户端
 pip3 install opentimestamps-client
 
@@ -229,6 +295,7 @@ ots verify record.json.ots
 
 # 查看证明信息
 ots info record.json.ots</code></pre>
+            <p class="text-gray-400 text-sm mt-2">其他锚定类型的验证方式请参考相应技术文档。</p>
         </div>
 
         <!-- 底部 -->
@@ -246,41 +313,53 @@ ots info record.json.ots</code></pre>
                 'auth.title': '🔑 认证方式',
                 'auth.desc': '所有 API 请求都需要在 Header 中携带 API Key：',
                 'auth.note': '在 开发者控制台 可以生成和管理 API Key。',
+                'anchor.title': '🔏 不可篡改锚定',
+                'anchor.desc': '每条记录可**选择性地**附带一个不可篡改锚定，提供密码学证据。您可以在创建记录时指定锚定策略。',
+                'anchor.strategy': '锚定策略',
+                'anchor.response': '响应中的锚定信息',
+                'anchor.download': '下载锚定证明',
+                'anchor.lifecycle': '证明生命周期',
                 'endpoint.post.desc': '记录一条判断事件，返回唯一的记录 ID。',
                 'endpoint.get.desc': '根据 ID 查询完整的判断记录。',
                 'endpoint.json.desc': '下载 JSON 格式的记录文件。',
                 'endpoint.pdf.desc': '下载带二维码的 PDF 格式记录文件，适合打印和存档。',
                 'endpoint.list.desc': '分页查询记录列表，支持按实体和时间筛选。',
                 'endpoint.export.desc': '下载筛选后的记录列表为 JSON 文件。',
-                'endpoint.proof.desc': '下载 OpenTimestamps 证明文件（.ots），可用于独立验证。',
+                'endpoint.immutability_proof.desc': '下载记录的锚定证明文件，格式由记录的锚定类型决定。',
                 'common.headers': '请求头',
                 'common.body': '请求体',
                 'common.response': '响应示例',
                 'errors.title': '⚠️ 错误码',
                 'ratelimit.title': '⏱️ 速率限制',
                 'ratelimit.desc': '每个 API Key 每 15 分钟最多 100 次请求。',
-                'verify.title': '🔐 记录验证',
-                'verify.desc': '每条记录的 OTS 证明可用以下方式验证：',
+                'verify.title': '🔏 记录验证',
+                'verify.desc': '记录的锚定证明（如 OTS）可用以下方式独立验证：',
             },
             en: {
                 'auth.title': '🔑 Authentication',
                 'auth.desc': 'All API requests require an API key in the header:',
                 'auth.note': 'Generate and manage API keys in the Developer Console.',
+                'anchor.title': '🔏 Immutability Anchor',
+                'anchor.desc': 'Each record **may** include an optional immutability anchor. You can specify the anchoring strategy when creating a record.',
+                'anchor.strategy': 'Anchoring Strategy',
+                'anchor.response': 'Anchor Info in Response',
+                'anchor.download': 'Download Anchor Proof',
+                'anchor.lifecycle': 'Proof Lifecycle',
                 'endpoint.post.desc': 'Record a judgment event, returns a unique record ID.',
                 'endpoint.get.desc': 'Retrieve a complete judgment record by ID.',
                 'endpoint.json.desc': 'Download the record as a JSON file.',
                 'endpoint.pdf.desc': 'Download a formatted PDF with QR code, suitable for printing.',
                 'endpoint.list.desc': 'Paginated list of records with optional filters.',
                 'endpoint.export.desc': 'Download filtered list as JSON.',
-                'endpoint.proof.desc': 'Download OpenTimestamps proof file (.ots) for verification.',
+                'endpoint.immutability_proof.desc': 'Download the anchor proof file. Format depends on the record\'s anchor type.',
                 'common.headers': 'Headers',
                 'common.body': 'Request Body',
                 'common.response': 'Response Example',
                 'errors.title': '⚠️ Error Codes',
                 'ratelimit.title': '⏱️ Rate Limiting',
                 'ratelimit.desc': '100 requests per 15-minute window per API key.',
-                'verify.title': '🔐 Record Verification',
-                'verify.desc': 'Verify OTS proofs using:',
+                'verify.title': '🔏 Record Verification',
+                'verify.desc': 'Anchor proofs (e.g., OTS) can be independently verified using:',
             }
         };
 

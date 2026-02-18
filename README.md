@@ -2,12 +2,12 @@
   <a href="README.zh-CN.md">中文</a> | <strong>English</strong>
 </p>
 
-# HJS: A Protocol for Responsibility Tracing
+# HJS: Structural Traceability Protocol
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Deployed on Render](https://img.shields.io/badge/Deployed%20on-Render-blue)](https://render.com)
 
-**Implementation layer API service.** A reference implementation for recording judgment events, based on the HJS protocol family.
+**Implementation layer API service.** A reference implementation for recording structured events, based on the HJS protocol family.
 
 **Base URL:** `https://api.hjs.sh`
 
@@ -15,7 +15,7 @@
 
 ## 📖 About
 
-This project is the first implementation layer service of the [HJS Protocol Family](https://github.com/hjs-spec/spec). It implements the **Judgment** primitive from the HJS core protocol, providing a REST API for recording and tracing human judgment events in irreversible automated decisions.
+This project is the first implementation layer service of the [HJS Protocol Family](https://github.com/hjs-spec/spec). It implements the **Judgment** primitive from the HJS core protocol, providing a REST API for recording and tracing structured events in automated systems.
 
 HJS protocols are governed by the [Human Judgment Systems Foundation Ltd.](https://humanjudgment.org) (Singapore CLG).
 
@@ -450,6 +450,6 @@ Contributions are welcome! You can:
 
 ---
 
-**HJS: A Protocol for Responsibility Tracing**  
+**HJS: Structural Traceability Protocol**  
 © 2026 Human Judgment Systems Foundation Ltd.
 ```

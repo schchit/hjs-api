@@ -2,12 +2,12 @@
   <strong>中文</strong> | <a href="README.md">English</a>
 </p>
 
-# HJS：责任追溯协议
+# HJS：结构化追溯协议
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Deployed on Render](https://img.shields.io/badge/Deployed%20on-Render-blue)](https://render.com)
 
-**实现层 API 服务**。基于 HJS 协议族的参考实现，用于记录判断事件。
+**实现层 API 服务**。基于 HJS 协议族的参考实现，用于记录结构化事件。
 
 基础地址：`https://api.hjs.sh`
 
@@ -450,6 +450,6 @@ node index.js
 
 ---
 
-**HJS：责任追溯协议**  
+**HJS：结构化追溯协议**  
 © 2026 Human Judgment Systems Foundation Ltd.
 ```

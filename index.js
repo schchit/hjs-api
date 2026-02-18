@@ -10,6 +10,7 @@ const rateLimit = require('express-rate-limit');
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
 const crypto = require('crypto');
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,7 +22,21 @@ const pool = new Pool({
 
 app.use(express.json());
 app.use(express.static('public'));
-
+// 在这里添加 CORS 配置
+const cors = require('cors');
+app.use(cors({
+  origin: [
+    'https://humanjudgment.services',
+    'https://www.humanjudgment.services',
+    'https://hjs.sh',
+    'https://api.hjs.sh',
+    'https://console.hjs.sh',
+    'https://lookup.hjs.sh',
+    'https://hjs-api.onrender.com'
+  ],
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'X-API-Key']
+}));
 // ==================== 根路径处理 ====================
 app.get('/', (req, res) => {
   const lang = req.query.lang || 'zh';

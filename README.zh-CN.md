@@ -9,7 +9,7 @@
 
 **实现层 API 服务**。基于 HJS 协议族的参考实现，用于记录判断事件。
 
-基础地址：`https://hjs-api.onrender.com`
+基础地址：`https://api.hjs.sh`
 
 ---
 
@@ -17,23 +17,52 @@
 
 本项目是 [HJS 协议族](https://github.com/hjs-spec/spec)的第一个实现层服务。它实现了 HJS 核心协议中的 **Judgment（判断）**原语，提供了一个 REST API，用于在不可逆的自动化决策中记录和追溯人类判断事件。
 
-HJS 协议由 [Human Judgment Systems Foundation Ltd.](https://humanjudgment.org)（注册中）管理。本实现采用 CC BY-SA 4.0 许可证开源。
+HJS 协议由 [Human Judgment Systems Foundation Ltd.](https://humanjudgment.org)（新加坡 CLG）管理。
+
+> **协议边界**：HJS 定义的是结构化可追溯原语，不判定法律或道德责任。所有责任判定必须由外部系统或法律程序完成。
+
+---
+
+## 📄 许可证
+
+本项目采用**多重许可证**策略：
+
+### 核心代码
+`index.js`、`lib/`、`cron/` 等核心源代码采用 **AGPL-3.0** 许可证。
+
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+
+**这意味着：**
+- ✅ 你可以自由使用、修改、分发代码
+- ✅ 可以用于商业项目
+- ✅ 如果你基于本代码提供网络服务，必须开源你的修改
+- ❌ 不能将代码闭源后重新分发
+
+完整许可证文本：[LICENSE](LICENSE)
+
+### 文档与前端
+文档（`README.md`）和前端页面（`public/`）采用 **CC BY-SA 4.0** 许可证。
+
+[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 
 ---
 
 ## 🚀 快速开始
 
-### 1. 记录一条判断
+### 1. 获取 API 密钥
+
+访问[开发者控制台](https://console.hjs.sh)，用你的邮箱生成 API Key。
+
+### 2. 记录一条判断
 
 ```bash
-curl -X POST https://hjs-api.onrender.com/judgments \
+curl -X POST https://api.hjs.sh/judgments \
   -H "Content-Type: application/json" \
   -H "X-API-Key: 你的密钥" \
   -d '{"entity": "alice@bank.com", "action": "loan_approved", "scope": {"amount": 100000}}'
 ```
 
 **返回示例**：
-
 ```json
 {
   "id": "jgd_1742318412345_abc1",
@@ -43,15 +72,14 @@ curl -X POST https://hjs-api.onrender.com/judgments \
 }
 ```
 
-### 2. 查询一条判断
+### 3. 查询一条判断
 
 ```bash
-curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1 \
+curl https://api.hjs.sh/judgments/jgd_1742318412345_abc1 \
   -H "X-API-Key: 你的密钥"
 ```
 
 **返回示例**：
-
 ```json
 {
   "id": "jgd_1742318412345_abc1",
@@ -60,10 +88,15 @@ curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1 \
   "scope": {"amount": 100000},
   "timestamp": "2026-02-16T09:30:15.083Z",
   "recorded_at": "2026-02-16T09:30:15.123Z",
-  "ots_proof": null,
-  "ots_verified": false
+  "immutability_anchor": {
+    "type": "none"
+  }
 }
 ```
+
+### 4. 在线体验
+
+访问[公开查询页](https://lookup.hjs.sh)，无需任何设置即可查询记录。
 
 ---
 
@@ -71,13 +104,13 @@ curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1 \
 
 ### 认证方式
 
-所有 API 端点（除了根路径）都需要 API 密钥。请在请求头中携带：
+所有 API 端点都需要 API 密钥。请在请求头中携带：
 
 ```
 X-API-Key: 你的密钥
 ```
 
-如需获取 API 密钥，请联系项目维护者。
+如需获取 API 密钥，请访问[开发者控制台](https://console.hjs.sh)。
 
 ---
 
@@ -94,9 +127,38 @@ X-API-Key: 你的密钥
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | `entity` | string | 是 | 做出判断的实体标识 |
-| `action` | string | 是 | 被判断的行为（例如 `loan_approved`） |
-| `scope` | object | 否 | 判断的作用域（例如金额、权限等） |
-| `timestamp` | string | 否 | 判断时间（ISO 8601格式）。如不提供则使用服务器时间 |
+| `action` | string | 是 | 被判断的行为 |
+| `scope` | object | 否 | 判断的作用域 |
+| `timestamp` | string | 否 | 判断时间（ISO 8601），不填则使用服务器时间 |
+| `immutability` | object | 否 | 可选锚定策略（见下文） |
+
+### 不可篡改锚定
+
+每条记录可**选择性地**附带一个不可篡改锚定。通过 `immutability` 字段指定：
+
+```json
+"immutability": {
+  "type": "ots",      // 可选值：ots, merkle, trusted_timestamp, none
+  "options": {}       // 类型相关的可选参数
+}
+```
+
+- **`ots`**：使用 OpenTimestamps 锚定到比特币区块链（官方推荐参考实现）
+- **`merkle`**：批量锚定到默克尔树（需自行实现）
+- **`trusted_timestamp`**：使用可信第三方时间戳服务（需自行实现）
+- **`none`**：无锚定（默认值）
+
+如果不提供 `immutability` 字段，默认使用 `none`。
+
+**响应中包含锚定信息**：
+
+```json
+"immutability_anchor": {
+  "type": "ots",              // 实际使用的锚定类型
+  "reference": "...",         // 可选，类型相关引用
+  "anchored_at": "..."        // 可选，锚定时间（仅当已锚定时返回）
+}
+```
 
 **返回**：
 
@@ -119,7 +181,7 @@ X-API-Key: 你的密钥
 **路径参数**：
 - `id`: 创建记录时返回的唯一凭证 ID
 
-**返回**：完整的判断记录对象
+**返回**：完整的判断记录对象，包含锚定信息。
 
 ---
 
@@ -130,18 +192,18 @@ X-API-Key: 你的密钥
 **请求头**：
 - `X-API-Key`: 你的密钥
 
-下载 JSON 格式的记录文件，便于程序处理或集成到其他系统。
+下载 JSON 格式的记录文件。
 
 **示例**：
 ```bash
-curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc?format=json" \
+curl -X GET "https://api.hjs.sh/judgments/jgd_1234567890abc?format=json" \
   -H "X-API-Key: 你的密钥" \
   --output record.json
 ```
 
 ---
 
-### 导出为 PDF（含二维码）
+### 导出为 PDF
 
 `GET /judgments/{id}?format=pdf`
 
@@ -152,17 +214,38 @@ curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc?format=jso
 - 完整的记录详情
 - 二维码（扫码直达验证页面）
 - 记录哈希值（SHA-256）
-- OpenTimestamps 证明状态
-- 生成时间戳和验证说明
-
-适合打印、存档、提交给审计或监管。
+- 锚定状态
+- 验证说明
 
 **示例**：
 ```bash
-curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc?format=pdf" \
+curl -X GET "https://api.hjs.sh/judgments/jgd_1234567890abc?format=pdf" \
   -H "X-API-Key: 你的密钥" \
   --output record.pdf
 ```
+
+---
+
+### 下载锚定证明
+
+`GET /judgments/:id/immutability-proof`
+
+**请求头**：
+- `X-API-Key`: 你的密钥
+
+根据记录的锚定类型，返回对应的证明文件：
+- `ots` → 返回 `.ots` 文件（Content-Type: `application/vnd.opentimestamps.ots`）
+- 其他类型返回通用二进制或 JSON
+- 如果记录无证明（`type: none`），返回 404
+
+**示例**：
+```bash
+curl -X GET "https://api.hjs.sh/judgments/jgd_1234567890abc/immutability-proof" \
+  -H "X-API-Key: 你的密钥" \
+  --output record.proof
+```
+
+为了向后兼容，旧的 `/proof` 接口会自动重定向到新接口。
 
 ---
 
@@ -178,15 +261,15 @@ curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc?format=pdf
 | 参数 | 类型 | 说明 |
 |------|------|------|
 | `entity` | string | 按实体精确筛选 |
-| `from` | string | 开始时间（ISO 8601格式，例如 `2026-02-01T00:00:00Z`） |
-| `to` | string | 结束时间（ISO 8601格式） |
+| `from` | string | 开始时间（ISO 8601） |
+| `to` | string | 结束时间（ISO 8601） |
 | `page` | integer | 页码（默认：1） |
 | `limit` | integer | 每页条数（默认：20，最大：100） |
 
 **请求示例**：
 
 ```bash
-curl "https://hjs-api.onrender.com/judgments?entity=alice@bank.com&limit=5&page=1" \
+curl "https://api.hjs.sh/judgments?entity=alice@bank.com&limit=5&page=1" \
   -H "X-API-Key: 你的密钥"
 ```
 
@@ -205,8 +288,9 @@ curl "https://hjs-api.onrender.com/judgments?entity=alice@bank.com&limit=5&page=
       "scope": {"amount": 100000},
       "timestamp": "2026-02-16T09:30:15.083Z",
       "recorded_at": "2026-02-16T09:30:15.123Z",
-      "ots_proof": null,
-      "ots_verified": false
+      "immutability_anchor": {
+        "type": "none"
+      }
     }
   ]
 }
@@ -221,31 +305,13 @@ curl "https://hjs-api.onrender.com/judgments?entity=alice@bank.com&limit=5&page=
 **请求头**：
 - `X-API-Key`: 你的密钥
 
-下载筛选后的列表结果，包含分页信息，保存为 JSON 文件。
+下载筛选后的列表结果，包含分页信息。
 
 **示例**：
 ```bash
-curl -X GET "https://hjs-api.onrender.com/judgments?entity=test&limit=5&format=json" \
+curl -X GET "https://api.hjs.sh/judgments?entity=test&limit=5&format=json" \
   -H "X-API-Key: 你的密钥" \
   --output judgments.json
-```
-
----
-
-### 下载 OTS 证明文件
-
-`GET /judgments/:id/proof`
-
-**请求头**：
-- `X-API-Key`: 你的密钥
-
-返回一个 `.ots` 文件，包含该记录的 OpenTimestamps 时间戳证明。此文件可用于任何兼容 OpenTimestamps 的工具进行独立验证。
-
-**示例**：
-```bash
-curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc/proof" \
-  -H "X-API-Key: 你的密钥" \
-  --output record.ots
 ```
 
 ---
@@ -254,35 +320,28 @@ curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc/proof" \
 
 | 状态码 | 说明 |
 |--------|------|
-| `400 Bad Request` | 缺少必填字段 |
-| `401 Unauthorized` | 缺少或无效的 API 密钥 |
-| `404 Not Found` | 判断 ID 不存在 |
-| `429 Too Many Requests` | 请求过于频繁，超出限制 |
-| `500 Internal Server Error` | 服务器错误 |
+| `400` | 缺少必填字段 |
+| `401` | 缺少或无效的 API 密钥 |
+| `404` | 判断 ID 不存在 |
+| `429` | 请求过于频繁，超出限制 |
+| `500` | 服务器错误 |
 
 ---
 
 ## 🔐 速率限制
 
-为保证服务稳定性，API 请求受速率限制：
-
 - **限制**：每个 API 密钥每 15 分钟最多 100 次请求
 - **响应头**：返回中包含 `RateLimit-*` 头，显示当前状态
-- **超出限制**：返回 `429 Too Many Requests` 及错误信息
 
 ---
 
 ## 🔏 记录验证
 
-每条记录都附带一个 OpenTimestamps 证明，提供密码学证据，证明该记录在某个时间点之前已存在，且内容未被篡改。
+每条记录可附带一个不可篡改锚定，提供密码学证据。您可以在创建记录时指定锚定策略。
 
-### 验证记录
+### 验证 OTS 证明
 
-#### 方法一：使用在线验证页面
-
-访问 `/verify.html` 上传记录文件和证明文件，一键验证。
-
-#### 方法二：使用 OTS 命令行工具
+#### 方法一：使用 OTS 命令行工具
 
 ```bash
 # 安装 OTS 客户端
@@ -295,7 +354,7 @@ ots verify record.json.ots
 ots info record.json.ots
 ```
 
-#### 方法三：编程验证
+#### 方法二：编程验证
 
 ```javascript
 const ots = require('opentimestamps');
@@ -310,7 +369,7 @@ const isValid = detached.verifyHash(hashBuffer);
 
 1. **刚创建时**：证明文件生成，但还未锚定到区块链
 2. **约1小时后**：定时任务自动升级证明，锚定到比特币区块链
-3. **永久有效**：一旦锚定，证明永久有效，可独立验证
+3. **长期可验证**：一旦锚定，证明可被独立验证，不受本服务存续影响
 
 ---
 
@@ -319,6 +378,7 @@ const isValid = detached.verifyHash(hashBuffer);
 ### 环境要求
 - Node.js 18+
 - npm 9+
+- PostgreSQL 14+
 
 ### 安装
 
@@ -326,11 +386,15 @@ const isValid = detached.verifyHash(hashBuffer);
 git clone https://github.com/schchit/hjs-api.git
 cd hjs-api
 npm install
-```
 
-### 本地运行
+# 复制环境变量示例
+cp .env.example .env
+# 编辑 .env 文件，填入你的数据库连接串
 
-```bash
+# 执行数据库迁移
+psql 你的数据库连接串 < migrations/init.sql
+
+# 启动服务
 node index.js
 ```
 
@@ -341,13 +405,13 @@ node index.js
 | 变量 | 说明 | 默认值 |
 |------|------|--------|
 | `PORT` | 服务端口 | `3000` |
-| `DATABASE_URL` | PostgreSQL 连接串 |（生产环境必需）|
+| `DATABASE_URL` | PostgreSQL 连接串 |（必需）|
 
 ---
 
 ## ☁️ 部署
 
-本项目已配置为可在 Render 上一键部署：
+### 一键部署到 Render
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
@@ -356,26 +420,10 @@ node index.js
 2. 在 Render 上创建新的 **Web Service**
 3. 连接你的 GitHub 仓库
 4. 使用以下设置：
-   - **构建命令**：`npm install`
+   - **构建命令**：`npm install && pip3 install opentimestamps-client`
    - **启动命令**：`node index.js`
-5. 添加环境变量 `DATABASE_URL`（生产环境必需）
+5. 添加环境变量 `DATABASE_URL`
 6. 点击 **Create Web Service**
-
----
-
-## 📄 许可证
-
-本项目采用 **CC BY-SA 4.0** 许可证。
-
-### 你可以自由地：
-- ✅ **共享** – 在任何媒介或格式中复制、分发本材料
-- ✅ **演绎** – 修改、转换、基于本材料创作，甚至用于商业目的
-
-### 但必须遵守以下条款：
-- ⚠️ **署名** – 你必须给出适当的署名，提供许可证链接，并注明是否进行了修改
-- ⚠️ **相同方式共享** – 如果你对材料进行再混合、转换或基于它进行创作，你必须以相同的许可证分发你的贡献
-
-完整许可证文本：https://creativecommons.org/licenses/by-sa/4.0/legalcode.zh-hans
 
 ---
 
@@ -384,13 +432,13 @@ node index.js
 欢迎贡献！你可以：
 - 通过 [Issues](https://github.com/schchit/hjs-api/issues) 提交 bug 或建议
 - 提交 Pull Request 改进代码或文档
+- 阅读[贡献指南](CONTRIBUTING.md)
 
 ---
 
 ## 📬 联系方式
 
-- 协议相关：`signal@humanjudgment.org`
-- 实现问题：通过 [GitHub Issues](https://github.com/schchit/hjs-api/issues)
+- **实现问题**：通过 [GitHub Issues](https://github.com/schchit/hjs-api/issues)
 
 ---
 
@@ -402,5 +450,6 @@ node index.js
 
 ---
 
-**HJS：责任追溯协议**
+**HJS：责任追溯协议**  
+© 2026 Human Judgment Systems Foundation Ltd.
 ```

@@ -1,4 +1,4 @@
-<<p align="center">
+<p align="center">
   <a href="README.zh-CN.md">中文</a> | <strong>English</strong>
 </p>
 
@@ -9,7 +9,7 @@
 
 **Implementation layer API service.** A reference implementation for recording judgment events, based on the HJS protocol family.
 
-Base URL: `https://hjs-api.onrender.com`
+**Base URL:** `https://api.hjs.sh`
 
 ---
 
@@ -17,23 +17,52 @@ Base URL: `https://hjs-api.onrender.com`
 
 This project is the first implementation layer service of the [HJS Protocol Family](https://github.com/hjs-spec/spec). It implements the **Judgment** primitive from the HJS core protocol, providing a REST API for recording and tracing human judgment events in irreversible automated decisions.
 
-HJS protocols are governed by the [Human Judgment Systems Foundation Ltd.](https://humanjudgment.org) (registration in progress). This implementation is open source under the CC BY-SA 4.0 license.
+HJS protocols are governed by the [Human Judgment Systems Foundation Ltd.](https://humanjudgment.org) (Singapore CLG).
+
+> **Protocol Boundary**: HJS defines structural traceability primitives. It does not determine legal or ethical responsibility. All responsibility determinations must be made by external systems or legal procedures.
+
+---
+
+## 📄 License
+
+This project uses a **multi-license strategy**:
+
+### Core Code
+The core source code (`index.js`, `lib/`, `cron/`) is licensed under **AGPL-3.0**.
+
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+
+**What this means:**
+- ✅ You can freely use, modify, and distribute the code
+- ✅ You can use it in commercial projects
+- ✅ If you provide a network service based on this code, you must make your modifications open source
+- ❌ You cannot redistribute the code under a closed-source license
+
+Full license text: [LICENSE](LICENSE)
+
+### Documentation & Frontend
+Documentation (`README.md`) and frontend pages (`public/`) are licensed under **CC BY-SA 4.0**.
+
+[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 
 ---
 
 ## 🚀 Quick Start
 
-### 1. Record a judgment
+### 1. Get an API Key
+
+Visit the [Developer Console](https://console.hjs.sh) to generate an API key with your email.
+
+### 2. Record a judgment
 
 ```bash
-curl -X POST https://hjs-api.onrender.com/judgments \
+curl -X POST https://api.hjs.sh/judgments \
   -H "Content-Type: application/json" \
   -H "X-API-Key: your-api-key" \
   -d '{"entity": "alice@bank.com", "action": "loan_approved", "scope": {"amount": 100000}}'
 ```
 
 **Example response**:
-
 ```json
 {
   "id": "jgd_1742318412345_abc1",
@@ -43,15 +72,14 @@ curl -X POST https://hjs-api.onrender.com/judgments \
 }
 ```
 
-### 2. Retrieve a judgment
+### 3. Retrieve a judgment
 
 ```bash
-curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1 \
+curl https://api.hjs.sh/judgments/jgd_1742318412345_abc1 \
   -H "X-API-Key: your-api-key"
 ```
 
 **Example response**:
-
 ```json
 {
   "id": "jgd_1742318412345_abc1",
@@ -60,10 +88,15 @@ curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1 \
   "scope": {"amount": 100000},
   "timestamp": "2026-02-16T09:30:15.083Z",
   "recorded_at": "2026-02-16T09:30:15.123Z",
-  "ots_proof": null,
-  "ots_verified": false
+  "immutability_anchor": {
+    "type": "none"
+  }
 }
 ```
+
+### 4. Try it online
+
+Visit the [Public Lookup](https://lookup.hjs.sh) page to query records without any setup.
 
 ---
 
@@ -71,13 +104,13 @@ curl https://hjs-api.onrender.com/judgments/jgd_1742318412345_abc1 \
 
 ### Authentication
 
-All API endpoints (except the root path) require an API key. Include it in the request header:
+All API endpoints require an API key. Include it in the request header:
 
 ```
 X-API-Key: your-api-key-here
 ```
 
-To obtain an API key, please contact the project maintainers.
+To get an API key, visit the [Developer Console](https://console.hjs.sh).
 
 ---
 
@@ -94,9 +127,38 @@ To obtain an API key, please contact the project maintainers.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `entity` | string | Yes | Identifier of the entity making the judgment |
-| `action` | string | Yes | The action being judged (e.g., `loan_approved`) |
-| `scope` | object | No | Scope of the judgment (e.g., amount, permissions) |
-| `timestamp` | string | No | Judgment time (ISO 8601). Server time used if omitted. |
+| `action` | string | Yes | The action being judged |
+| `scope` | object | No | Scope of the judgment |
+| `timestamp` | string | No | Judgment time (ISO 8601). Server time used if omitted |
+| `immutability` | object | No | Optional anchoring strategy (see below) |
+
+### Immutability Anchoring
+
+Each record **may** include an optional immutability anchor. Specify via the `immutability` field:
+
+```json
+"immutability": {
+  "type": "ots",      // options: ots, merkle, trusted_timestamp, none
+  "options": {}       // type-specific optional parameters
+}
+```
+
+- **`ots`**: Anchor to Bitcoin blockchain via OpenTimestamps (official reference implementation)
+- **`merkle`**: Batch anchoring via Merkle tree (requires custom implementation)
+- **`trusted_timestamp`**: Use a trusted third-party timestamp service (requires custom implementation)
+- **`none`**: No anchoring (default)
+
+If the `immutability` field is omitted, the default is `none`.
+
+**Response includes anchoring information**:
+
+```json
+"immutability_anchor": {
+  "type": "ots",              // actual anchor type used
+  "reference": "...",         // optional type-specific reference
+  "anchored_at": "..."        // optional anchoring time (only when available)
+}
+```
 
 **Response**:
 
@@ -117,52 +179,73 @@ To obtain an API key, please contact the project maintainers.
 - `X-API-Key`: Your API key
 
 **Path parameters**:
-- `id`: The unique credential ID returned from a POST request.
+- `id`: The unique credential ID returned from a POST request
 
-**Response**: The complete judgment record object.
+**Response**: The complete judgment record object, including anchoring information.
 
 ---
 
-### Export a judgment as JSON
+### Export as JSON
 
 `GET /judgments/{id}?format=json`
 
 **Headers**:
 - `X-API-Key`: Your API key
 
-Downloads the judgment record as a JSON file for easy integration with other systems.
+Download the judgment record as a JSON file.
 
 **Example**:
 ```bash
-curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc?format=json" \
+curl -X GET "https://api.hjs.sh/judgments/jgd_1234567890abc?format=json" \
   -H "X-API-Key: your-api-key" \
   --output record.json
 ```
 
 ---
 
-### Export a judgment as PDF (with QR code)
+### Export as PDF
 
 `GET /judgments/{id}?format=pdf`
 
 **Headers**:
 - `X-API-Key`: Your API key
 
-Downloads a beautifully formatted PDF containing:
+Download a formatted PDF containing:
 - Complete judgment details
 - QR code linking to the online verification page
 - Record hash (SHA-256)
-- OpenTimestamps proof status
-- Timestamp and verification instructions
-
-Perfect for printing, archiving, or submitting to auditors/regulators.
+- Anchoring status
+- Verification instructions
 
 **Example**:
 ```bash
-curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc?format=pdf" \
+curl -X GET "https://api.hjs.sh/judgments/jgd_1234567890abc?format=pdf" \
   -H "X-API-Key: your-api-key" \
   --output record.pdf
 ```
+
+---
+
+### Download Anchor Proof
+
+`GET /judgments/:id/immutability-proof`
+
+**Headers**:
+- `X-API-Key`: Your API key
+
+Returns the proof file corresponding to the record's anchor type:
+- `ots` → `.ots` file (Content-Type: `application/vnd.opentimestamps.ots`)
+- Other types → generic binary or JSON
+- If the record has no proof (`type: none`), returns 404
+
+**Example**:
+```bash
+curl -X GET "https://api.hjs.sh/judgments/jgd_1234567890abc/immutability-proof" \
+  -H "X-API-Key: your-api-key" \
+  --output record.proof
+```
+
+For backward compatibility, the old `/proof` endpoint automatically redirects to the new one.
 
 ---
 
@@ -178,7 +261,7 @@ curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc?format=pdf
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `entity` | string | Filter by entity (exact match) |
-| `from` | string | Start time (ISO 8601, e.g., `2026-02-01T00:00:00Z`) |
+| `from` | string | Start time (ISO 8601) |
 | `to` | string | End time (ISO 8601) |
 | `page` | integer | Page number (default: 1) |
 | `limit` | integer | Items per page (default: 20, max: 100) |
@@ -186,7 +269,7 @@ curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc?format=pdf
 **Example Request**:
 
 ```bash
-curl "https://hjs-api.onrender.com/judgments?entity=alice@bank.com&limit=5&page=1" \
+curl "https://api.hjs.sh/judgments?entity=alice@bank.com&limit=5&page=1" \
   -H "X-API-Key: your-api-key"
 ```
 
@@ -205,8 +288,9 @@ curl "https://hjs-api.onrender.com/judgments?entity=alice@bank.com&limit=5&page=
       "scope": {"amount": 100000},
       "timestamp": "2026-02-16T09:30:15.083Z",
       "recorded_at": "2026-02-16T09:30:15.123Z",
-      "ots_proof": null,
-      "ots_verified": false
+      "immutability_anchor": {
+        "type": "none"
+      }
     }
   ]
 }
@@ -214,75 +298,50 @@ curl "https://hjs-api.onrender.com/judgments?entity=alice@bank.com&limit=5&page=
 
 ---
 
-### Export list results as JSON
+### Export list as JSON
 
 `GET /judgments?format=json` (plus any filters)
 
 **Headers**:
 - `X-API-Key`: Your API key
 
-Downloads the filtered judgment list as a JSON file, including pagination metadata.
+Download the filtered judgment list as a JSON file, including pagination metadata.
 
 **Example**:
 ```bash
-curl -X GET "https://hjs-api.onrender.com/judgments?entity=test&limit=5&format=json" \
+curl -X GET "https://api.hjs.sh/judgments?entity=test&limit=5&format=json" \
   -H "X-API-Key: your-api-key" \
   --output judgments.json
 ```
 
 ---
 
-### Download OpenTimestamps proof
-
-`GET /judgments/:id/proof`
-
-**Headers**:
-- `X-API-Key`: Your API key
-
-Returns a `.ots` file containing the OpenTimestamps proof for the record. This file can be used with any OpenTimestamps-compatible tool for independent verification.
-
-**Example**:
-```bash
-curl -X GET "https://hjs-api.onrender.com/judgments/jgd_1234567890abc/proof" \
-  -H "X-API-Key: your-api-key" \
-  --output record.ots
-```
-
----
-
-### Error responses
+### Error Responses
 
 | Status Code | Description |
 |-------------|-------------|
-| `400 Bad Request` | Missing required fields |
-| `401 Unauthorized` | Missing or invalid API key |
-| `404 Not Found` | Judgment ID not found |
-| `429 Too Many Requests` | Rate limit exceeded |
-| `500 Internal Server Error` | Server error |
+| `400` | Missing required fields |
+| `401` | Missing or invalid API key |
+| `404` | Judgment ID not found |
+| `429` | Rate limit exceeded |
+| `500` | Server error |
 
 ---
 
 ## 🔐 Rate Limiting
 
-To ensure service stability, API requests are rate-limited:
-
 - **Limit**: 100 requests per 15-minute window per API key
 - **Headers**: Response includes `RateLimit-*` headers with current status
-- **Exceeded**: Returns `429 Too Many Requests` with error message
 
 ---
 
 ## 🔏 Record Verification
 
-Each record includes an OpenTimestamps proof, providing cryptographic evidence that the record existed at a specific point in time and hasn't been tampered with.
+Each record may include an optional immutability anchor, providing cryptographic evidence. You can specify the anchoring strategy when creating a record.
 
-### Verify a record
+### Verify an OTS Proof
 
-#### Method 1: Online verifier
-
-Visit `/verify.html` and upload your record JSON and proof file.
-
-#### Method 2: OTS command line
+#### Method 1: OTS command line
 
 ```bash
 # Install OTS client
@@ -295,7 +354,7 @@ ots verify record.json.ots
 ots info record.json.ots
 ```
 
-#### Method 3: Programmatic verification
+#### Method 2: Programmatic verification
 
 ```javascript
 const ots = require('opentimestamps');
@@ -306,11 +365,11 @@ const detached = ots.DetachedTimestampProof.deserialize(proof);
 const isValid = detached.verifyHash(hashBuffer);
 ```
 
-### Proof lifecycle
+### Proof Lifecycle
 
 1. **Freshly created**: Proof generated, not yet anchored to blockchain
 2. **~1 hour later**: Automatic upgrade anchors proof to Bitcoin blockchain
-3. **Permanent**: Once anchored, proof remains valid forever
+3. **Long-term verifiable**: Once anchored, proof can be independently verified regardless of service status
 
 ---
 
@@ -319,6 +378,7 @@ const isValid = detached.verifyHash(hashBuffer);
 ### Requirements
 - Node.js 18+
 - npm 9+
+- PostgreSQL 14+
 
 ### Setup
 
@@ -326,71 +386,59 @@ const isValid = detached.verifyHash(hashBuffer);
 git clone https://github.com/schchit/hjs-api.git
 cd hjs-api
 npm install
-```
 
-### Run locally
+# Copy environment variables
+cp .env.example .env
+# Edit .env with your database URL
 
-```bash
+# Run database migrations
+psql your_database_url < migrations/init.sql
+
+# Start server
 node index.js
 ```
 
-Server runs at `http://localhost:3000`.
+Server runs at `http://localhost:3000`
 
-### Environment variables
+### Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `PORT` | Server port | `3000` |
-| `DATABASE_URL` | PostgreSQL connection string | (required in production) |
+| `DATABASE_URL` | PostgreSQL connection string | (required) |
 
 ---
 
 ## ☁️ Deployment
 
-This project is configured for one‑click deployment on Render:
+### One-click Deploy to Render
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
-### Manual deployment steps
-1. Fork this repository.
-2. Create a new **Web Service** on Render.
-3. Connect your GitHub repository.
+### Manual Deployment Steps
+1. Fork this repository
+2. Create a new **Web Service** on Render
+3. Connect your GitHub repository
 4. Use these settings:
-   - **Build Command**: `npm install`
+   - **Build Command**: `npm install && pip3 install opentimestamps-client`
    - **Start Command**: `node index.js`
-5. Add environment variable `DATABASE_URL` (for production).
-6. Click **Create Web Service**.
-
----
-
-## 📄 License
-
-This project is licensed under **CC BY-SA 4.0**.
-
-### You are free to:
-- ✅ **Share** – copy and redistribute the material in any medium or format
-- ✅ **Adapt** – remix, transform, and build upon the material for any purpose, even commercially
-
-### Under the following terms:
-- ⚠️ **Attribution** – You must give appropriate credit, provide a link to the license, and indicate if changes were made
-- ⚠️ **ShareAlike** – If you remix, transform, or build upon the material, you must distribute your contributions under the same license
-
-Full license text: [https://creativecommons.org/licenses/by-sa/4.0/legalcode](https://creativecommons.org/licenses/by-sa/4.0/legalcode)
+5. Add the `DATABASE_URL` environment variable
+6. Click **Create Web Service**
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please:
+Contributions are welcome! You can:
 - Open an [Issue](https://github.com/schchit/hjs-api/issues) for bugs or suggestions
 - Submit Pull Requests for code or documentation improvements
+- Read the [Contributing Guide](CONTRIBUTING.md)
 
 ---
 
 ## 📬 Contact
 
-- Protocol questions: `signal@humanjudgment.org`
-- Implementation issues: via [GitHub Issues](https://github.com/schchit/hjs-api/issues)
+- **Implementation Issues**: via [GitHub Issues](https://github.com/schchit/hjs-api/issues)
 
 ---
 
@@ -402,5 +450,6 @@ Contributions are welcome! Please:
 
 ---
 
-**HJS: A Protocol for Responsibility Tracing**
+**HJS: A Protocol for Responsibility Tracing**  
+© 2026 Human Judgment Systems Foundation Ltd.
 ```

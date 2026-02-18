@@ -868,4 +868,3 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   console.log('⏰ Anchor upgrade task skipped in development mode');
 }
-```

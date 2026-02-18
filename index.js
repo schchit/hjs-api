@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (c) 2026 Human Judgment Systems Foundation Ltd.
+
 const { Pool } = require('pg');
 const express = require('express');
 const { generateRecordHash } = require('./lib/canonical');

@@ -1,10 +1,8 @@
-// SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 Human Judgment Systems Foundation Ltd.
-
 const { Pool } = require('pg');
 const express = require('express');
 const { generateRecordHash } = require('./lib/canonical');
 const { submitToOTS } = require('./lib/ots-utils');
+const { anchorRecord, upgradeAnchor } = require('./lib/anchor');
 const rateLimit = require('express-rate-limit');
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
@@ -19,17 +17,13 @@ const pool = new Pool({
 });
 
 app.use(express.json());
-
-// ==================== 静态文件服务 ====================
 app.use(express.static('public'));
 
-// ==================== 根路径处理（中英文双语，可切换，带快速测试） ====================
+// ==================== 根路径处理 ====================
 app.get('/', (req, res) => {
-  // 默认中文，如果用户选了英文就显示英文
   const lang = req.query.lang || 'zh';
   
   if (lang === 'en') {
-    // 英文版（带快速测试）
     res.send(`
       <!DOCTYPE html>
       <html lang="en">
@@ -223,7 +217,7 @@ app.get('/', (req, res) => {
       </html>
     `);
   } else {
-    // 中文版（带快速测试）
+    // 中文版（默认）
     res.send(`
       <!DOCTYPE html>
       <html lang="zh-CN">
@@ -421,10 +415,9 @@ app.get('/', (req, res) => {
 
 // ==================== 中间件定义 ====================
 
-// 1. 速率限制中间件
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15分钟
-  max: 100, // 每个 IP 最多 100 次请求
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   keyGenerator: (req) => req.headers['x-api-key'] || req.ip,
   handler: (req, res) => {
     res.status(429).json({ error: 'Too many requests, please slow down' });
@@ -433,7 +426,6 @@ const limiter = rateLimit({
   legacyHeaders: false
 });
 
-// 2. API Key 认证中间件
 const authenticateApiKey = async (req, res, next) => {
   const apiKey = req.headers['x-api-key'];
   if (!apiKey) {
@@ -461,7 +453,6 @@ const authenticateApiKey = async (req, res, next) => {
   }
 };
 
-// 3. 审计日志中间件
 const auditLog = async (req, res, next) => {
   const originalJson = res.json;
   res.json = function(data) {
@@ -488,24 +479,21 @@ const auditLog = async (req, res, next) => {
   next();
 };
 
-// ==================== 工具函数：生成 PDF ====================
-
+// ==================== PDF 生成函数（已更新） ====================
 async function generateJudgmentPDF(record, res) {
-  const verifyUrl = `https://hjs-api.onrender.com/verify.html?id=${record.id}`;
-  const qrBuffer = await QRCode.toBuffer(verifyUrl, {
-    width: 150,
-    margin: 1,
-    color: { dark: '#000000', light: '#ffffff' }
-  });
+  const verifyUrl = record.anchor_type === 'ots' && record.anchor_proof
+    ? `https://api.hjs.sh/verify.html?id=${record.id}` 
+    : null;
+  
+  const qrBuffer = verifyUrl ? await QRCode.toBuffer(verifyUrl, { width: 150, margin: 1 }) : null;
   
   const doc = new PDFDocument({ 
     margin: 50,
     size: 'A4',
     info: {
-      Title: `HJS Judgment Record - ${record.id}`,
+      Title: `HJS Event Record - ${record.id}`,
       Author: 'HJS API',
-      Subject: 'Responsibility Tracing Record',
-      Keywords: 'HJS, blockchain, timestamp, OpenTimestamps'
+      Subject: 'Structural Traceability Record'
     }
   });
   
@@ -514,20 +502,22 @@ async function generateJudgmentPDF(record, res) {
   doc.pipe(res);
   
   doc.fontSize(24).font('Helvetica-Bold')
-     .text('HJS Judgment Record', { align: 'center' })
+     .text('HJS Event Record', { align: 'center' })
      .moveDown(1.5);
   
-  const qrY = doc.y;
-  doc.image(qrBuffer, 50, qrY, { width: 100 });
+  if (qrBuffer) {
+    const qrY = doc.y;
+    doc.image(qrBuffer, 50, qrY, { width: 100 });
+    doc.fontSize(10).font('Helvetica')
+       .text('Scan to verify online', 160, qrY + 10)
+       .text('or visit:', 160, qrY + 25)
+       .text(verifyUrl, 160, qrY + 40, { color: 'blue', underline: true, width: 300 });
+    doc.moveDown(6);
+  } else {
+    doc.moveDown(2);
+  }
   
-  doc.fontSize(10).font('Helvetica')
-     .text('Scan to verify online', 160, qrY + 10)
-     .text('or visit:', 160, qrY + 25)
-     .text(verifyUrl, 160, qrY + 40, { color: 'blue', underline: true, width: 300 });
-  
-  doc.moveDown(6);
-  
-  doc.fontSize(14).font('Helvetica-Bold').text('Record Details', { underline: true });
+  doc.fontSize(14).font('Helvetica-Bold').text('Event Details', { underline: true });
   doc.moveDown(0.5);
   
   const formatField = (label, value) => {
@@ -544,28 +534,25 @@ async function generateJudgmentPDF(record, res) {
     formatField('Scope', JSON.stringify(record.scope, null, 2));
   }
   
-  formatField('Judgment Time', new Date(record.timestamp).toLocaleString());
+  formatField('Event Time', new Date(record.timestamp).toLocaleString());
   formatField('Recorded At', new Date(record.recorded_at).toLocaleString());
-  
   doc.moveDown(0.5);
   
-  doc.fontSize(14).font('Helvetica-Bold').text('OpenTimestamps Proof', { underline: true });
+  doc.fontSize(14).font('Helvetica-Bold').text('Immutability Anchor', { underline: true });
   doc.moveDown(0.5);
   
-  if (record.ots_proof) {
-    doc.fontSize(12).font('Helvetica')
-       .fillColor('green')
-       .text('✅ Proof available and anchored to Bitcoin blockchain')
-       .fillColor('black');
-    
-    if (record.ots_verified) {
-      doc.text('Status: Verified and anchored');
+  doc.fontSize(12).font('Helvetica')
+     .text(`Type: ${record.anchor_type || 'none'}`);
+  
+  if (record.anchor_type === 'ots' && record.anchor_proof) {
+    doc.fillColor('green').text('✓ Proof available').fillColor('black');
+    if (record.anchor_processed_at) {
+      doc.text(`Processed at: ${new Date(record.anchor_processed_at).toLocaleString()}`);
     }
+  } else if (record.anchor_type === 'none') {
+    doc.fillColor('gray').text('No immutability anchor').fillColor('black');
   } else {
-    doc.fontSize(12).font('Helvetica')
-       .fillColor('orange')
-       .text('⏳ Proof pending - will be anchored within 1 hour')
-       .fillColor('black');
+    doc.text('Anchor pending...');
   }
   
   doc.moveDown(1.5);
@@ -578,8 +565,8 @@ async function generateJudgmentPDF(record, res) {
   
   doc.fontSize(9).font('Helvetica')
      .fillColor('gray')
-     .text('This document is a representation of a record stored in the HJS system.', { align: 'center' })
-     .text('The cryptographic proof can be independently verified using any OpenTimestamps-compatible tool.', { align: 'center' })
+     .text('This document represents a record stored in the HJS system.', { align: 'center' })
+     .text('Immutability proofs can be independently verified.', { align: 'center' })
      .text(`Generated: ${new Date().toISOString()}`, { align: 'center' });
   
   doc.end();
@@ -664,50 +651,61 @@ app.delete('/developer/keys/:key', async (req, res) => {
 
 // ==================== 核心 API 路由 ====================
 
-// POST /judgments - 记录判断
+// POST /judgments - 记录事件
 app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) => {
-  const { entity, action, scope, timestamp } = req.body;
+  const { entity, action, scope, timestamp, immutability } = req.body;
 
   if (!entity || !action) {
     return res.status(400).json({ error: 'entity and action are required' });
   }
 
   const id = 'jgd_' + Date.now() + Math.random().toString(36).substring(2, 6);
-  const judgmentTime = timestamp || new Date().toISOString();
+  const eventTime = timestamp || new Date().toISOString();
   const recordedAt = new Date().toISOString();
 
+  const anchorType = immutability?.type || 'none';
+  const anchorOptions = immutability?.options || {};
+
+  const record = {
+    id,
+    entity,
+    action,
+    scope: scope || {},
+    timestamp: eventTime,
+    recorded_at: recordedAt
+  };
+
+  const hash = generateRecordHash(record);
+
   try {
+    const anchorResult = await anchorRecord(anchorType, hash, anchorOptions);
+
     const query = `
-      INSERT INTO judgments (id, entity, action, scope, timestamp, recorded_at)
-      VALUES ($1, $2, $3, $4, $5, $6)
+      INSERT INTO judgments (
+        id, entity, action, scope, timestamp, recorded_at,
+        anchor_type, anchor_reference, anchor_proof, anchor_processed_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     `;
-    await pool.query(query, [id, entity, action, scope || {}, judgmentTime, recordedAt]);
+    await pool.query(query, [
+      id, entity, action, scope || {}, eventTime, recordedAt,
+      anchorResult._error ? 'none' : anchorType,
+      anchorResult.reference,
+      anchorResult.proof,
+      anchorResult.anchoredAt
+    ]);
 
-    const record = {
-      id,
-      entity,
-      action,
-      scope: scope || {},
-      timestamp: judgmentTime,
-      recorded_at: recordedAt
+    const responseAnchor = {
+      type: anchorResult._error ? 'none' : anchorType
     };
-
-    const hash = generateRecordHash(record);
-    
-    (async () => {
-      try {
-        const proof = await submitToOTS(hash);
-        await pool.query('UPDATE judgments SET ots_proof = $1 WHERE id = $2', [proof, id]);
-      } catch (err) {
-        console.error(`OTS submission failed for record ${id}:`, err);
-      }
-    })();
+    if (anchorResult.reference) responseAnchor.reference = anchorResult.reference;
+    if (anchorResult.anchoredAt) responseAnchor.anchored_at = anchorResult.anchoredAt;
 
     res.json({
       id,
       status: 'recorded',
       protocol: 'HJS/1.0',
-      timestamp: recordedAt
+      timestamp: recordedAt,
+      immutability_anchor: responseAnchor
     });
 
   } catch (err) {
@@ -716,7 +714,7 @@ app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =
   }
 });
 
-// GET /judgments/:id - 查询单条记录（支持 JSON/PDF 导出）
+// GET /judgments/:id - 查询单条记录
 app.get('/judgments/:id', limiter, authenticateApiKey, auditLog, async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM judgments WHERE id = $1', [req.params.id]);
@@ -726,24 +724,67 @@ app.get('/judgments/:id', limiter, authenticateApiKey, auditLog, async (req, res
     
     const record = rows[0];
     
+    const anchorInfo = {
+      type: record.anchor_type || 'none'
+    };
+    if (record.anchor_reference) anchorInfo.reference = record.anchor_reference;
+    if (record.anchor_processed_at) anchorInfo.anchored_at = record.anchor_processed_at;
+    
     if (req.query.format === 'json') {
+      const { anchor_proof, ...rest } = record;
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Content-Disposition', `attachment; filename="${req.params.id}.json"`);
-      return res.json(record);
+      return res.json({
+        ...rest,
+        immutability_anchor: anchorInfo
+      });
     }
     
     if (req.query.format === 'pdf') {
-      return await generateJudgmentPDF(record, res);
+      return await generateJudgmentPDF({ ...record, ...anchorInfo }, res);
     }
     
-    res.json(record);
+    res.json({
+      ...record,
+      immutability_anchor: anchorInfo
+    });
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// GET /judgments - 列表查询（支持 JSON 导出）
+// GET /judgments/:id/immutability-proof - 通用锚定证明下载
+app.get('/judgments/:id/immutability-proof', limiter, authenticateApiKey, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT anchor_type, anchor_proof FROM judgments WHERE id = $1',
+      [req.params.id]
+    );
+    if (!rows[0]?.anchor_proof) {
+      return res.status(404).json({ error: 'Proof not available for this record' });
+    }
+    const { anchor_type, anchor_proof } = rows[0];
+    
+    let contentType = 'application/octet-stream';
+    if (anchor_type === 'ots') {
+      contentType = 'application/vnd.opentimestamps.ots';
+    }
+    res.set('Content-Type', contentType);
+    res.set('Content-Disposition', `attachment; filename="${req.params.id}.proof"`);
+    res.send(anchor_proof);
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 为了向后兼容，保留旧的 /proof 接口
+app.get('/judgments/:id/proof', limiter, authenticateApiKey, async (req, res) => {
+  res.redirect(301, `/judgments/${req.params.id}/immutability-proof`);
+});
+
+// GET /judgments - 列表查询
 app.get('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) => {
   const { entity, from, to, page = 1, limit = 20, format } = req.query;
   const offset = (page - 1) * limit;
@@ -773,11 +814,29 @@ app.get('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =>
   params.push(limit, offset);
   const { rows } = await pool.query(query, params);
   
+  const data = rows.map(record => {
+    const anchorInfo = {
+      type: record.anchor_type || 'none'
+    };
+    if (record.anchor_reference) anchorInfo.reference = record.anchor_reference;
+    if (record.anchor_processed_at) anchorInfo.anchored_at = record.anchor_processed_at;
+    
+    return {
+      id: record.id,
+      entity: record.entity,
+      action: record.action,
+      scope: record.scope,
+      timestamp: record.timestamp,
+      recorded_at: record.recorded_at,
+      immutability_anchor: anchorInfo
+    };
+  });
+  
   const result = {
     page: Number(page),
     limit: Number(limit),
     total,
-    data: rows
+    data
   };
   
   if (format === 'json') {
@@ -789,24 +848,7 @@ app.get('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =>
   res.json(result);
 });
 
-// GET /judgments/:id/proof - 下载 OTS 证明文件
-app.get('/judgments/:id/proof', limiter, authenticateApiKey, async (req, res) => {
-  try {
-    const { rows } = await pool.query('SELECT ots_proof FROM judgments WHERE id = $1', [req.params.id]);
-    if (!rows[0]?.ots_proof) {
-      return res.status(404).json({ error: 'Proof not found or not ready yet' });
-    }
-    res.set('Content-Type', 'application/octet-stream');
-    res.set('Content-Disposition', `attachment; filename="${req.params.id}.ots"`);
-    res.send(rows[0].ots_proof);
-  } catch (err) {
-    console.error('Error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
 // ==================== 启动服务 ====================
-
 app.listen(port, () => {
   console.log(`🚀 HJS API running at http://localhost:${port}`);
 });
@@ -814,5 +856,5 @@ app.listen(port, () => {
 if (process.env.NODE_ENV === 'production') {
   require('./cron/upgrade-proofs');
 } else {
-  console.log('⏰ OTS upgrade task skipped in development mode');
+  console.log('⏰ Anchor upgrade task skipped in development mode');
 }

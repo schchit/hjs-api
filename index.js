@@ -79,7 +79,7 @@ app.get('/', (req, res) => {
                       <h1 class="text-5xl font-bold mb-3 bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
                           HJS API
                       </h1>
-                      <p class="text-xl text-gray-400">An open protocol for recording structured events <a href="/spec" class="text-xs text-teal-400 ml-2">[spec]</a></p>
+                      <p class="text-xl text-gray-400">An open protocol for recording structured events <a href="/spec/README.md" class="text-xs text-teal-400 ml-2">[spec]</a></p>
                   </div>
 
                   <!-- Cards -->
@@ -310,7 +310,7 @@ app.get('/', (req, res) => {
                       <h1 class="text-5xl font-bold mb-3 bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
                           HJS API
                       </h1>
-                      <p class="text-xl text-gray-400">一种用于记录结构化事件的开源协议 <a href="/spec" class="text-xs text-teal-400 ml-2">[规范]</a></p>
+                      <p class="text-xl text-gray-400">一种用于记录结构化事件的开源协议 <a href="/spec/README.md" class="text-xs text-teal-400 ml-2">[规范]</a></p>
                   </div>
 
                   <!-- 卡片网格 -->

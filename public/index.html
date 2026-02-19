@@ -22,10 +22,9 @@
     </style>
 </head>
 <body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
-    <!-- 整体下移：增加顶部内边距，但保持导航在顶部 -->
     <div class="max-w-5xl mx-auto px-4 pt-20 pb-12">
-        <!-- 导航 - 保持在最上方 -->
-        <div class="flex justify-between items-center mb-16 text-sm">
+        <!-- 导航 - 与标题间距增大一倍 (mb-16 → mb-32) -->
+        <div class="flex justify-between items-center mb-32 text-sm">
             <div class="text-white font-semibold text-lg">HJS</div>
             <div class="flex gap-8 md:gap-10 text-gray-400">
                 <a href="/" class="text-white hover:text-teal-400 transition" data-i18n="nav_home">首页</a>
@@ -40,27 +39,24 @@
             </select>
         </div>
 
-        <!-- 核心标题区域 - 左对齐，自然换行，间距提高一倍 -->
-        <div class="mb-32">  <!-- ← 这里从 mb-16 改为 mb-32 -->
+        <!-- 核心标题区域 - 标题与下方内容间距保持原样 (mb-16) -->
+        <div class="mb-16">
             <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight max-w-4xl" data-i18n="headline">
                 AI正在重塑社会<br>但责任链条还没跟上
             </h1>
             
-            <!-- 副标题 -->
             <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mt-6 leading-relaxed" data-i18n="subhead">
                 医疗AI普及、自动驾驶上路、AI智能体走入职场、教育AI应用——<br>
                 每一次进步，都在拷问同一个问题：出事了，谁负责？
             </p>
             
-            <!-- 强调句 -->
             <p class="text-base md:text-lg text-gray-500 mt-4" data-i18n="subfoot">
                 这不是假设，而是正在发生的现实。
             </p>
         </div>
 
-        <!-- 行业痛点卡片 - 左对齐内容 -->
+        <!-- 行业痛点卡片 -->
         <div class="mb-20">
-            <!-- 区域小标题 -->
             <p class="text-xs text-teal-500/60 uppercase tracking-wider mb-4">THE ACCOUNTABILITY GAP</p>
             
             <div class="grid md:grid-cols-2 gap-5">

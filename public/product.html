@@ -9,8 +9,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
         body { background: #0a0a0a; }
-        .icon { width: 2.5rem; height: 2.5rem; stroke: #5ee0c0; fill: none; stroke-width: 1.5; }
-        .card-text { word-break: keep-all; word-wrap: break-word; }
+        .icon { width: 2rem; height: 2rem; stroke: #5ee0c0; fill: none; stroke-width: 1.5; }
         select {
             background-color: transparent;
             color: #9ca3af;
@@ -19,28 +18,23 @@
         }
         select:focus { outline: none; }
         select option { background-color: #111827; color: white; }
-        /* 浏览器兼容性修复 */
         html {
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        h1, h2, h3, p {
-            word-break: break-word;
-        }
     </style>
 </head>
 <body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
-    <!-- 整体间距与首页一致：pt-20 -->
     <div class="max-w-5xl mx-auto px-4 pt-20 pb-12">
-        <!-- 导航栏 - 与首页完全一致 -->
+        <!-- 导航栏 -->
         <div class="flex justify-between items-center mb-16 text-base">
             <div class="text-white font-semibold text-lg">HJS</div>
             <div class="flex gap-8 md:gap-10 text-gray-400">
-                <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">首页</a>
-                <a href="/product.html" class="text-white hover:text-teal-400 transition" data-i18n="nav_product">产品</a>
-                <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">开发者</a>
-                <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">控制台</a>
-                <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">查询</a>
+                <a href="/" class="hover:text-teal-400 transition">首页</a>
+                <a href="/product.html" class="text-white hover:text-teal-400 transition">产品</a>
+                <a href="/developers.html" class="hover:text-teal-400 transition">开发者</a>
+                <a href="/console.html" class="hover:text-teal-400 transition">控制台</a>
+                <a href="/lookup.html" class="hover:text-teal-400 transition">查询</a>
             </div>
             <select onchange="switchLang(this.value)">
                 <option value="en">EN</option>
@@ -48,303 +42,205 @@
             </select>
         </div>
 
-        <!-- 核心机制：三步流程 - 直接展示，不加额外标题 -->
-        <div class="grid md:grid-cols-3 gap-5 mb-16">
-            <!-- 步骤1 -->
-            <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                <div class="text-3xl mb-3 text-teal-400">①</div>
-                <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="step1_title">记录</h3>
-                <p class="text-gray-400 text-sm leading-relaxed" data-i18n="step1_desc">在决策时刻，您的系统会通过我们的API记录谁、什么、何时以及上下文。</p>
+        <!-- 01 工作原理 - 无框，只用序号和标题区分 -->
+        <div class="mb-24">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-sm font-mono text-teal-400/60">01</span>
+                <h2 class="text-lg font-medium text-white">工作原理</h2>
+                <div class="flex-1 h-px bg-gray-800"></div>
             </div>
-            <!-- 步骤2 -->
-            <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                <div class="text-3xl mb-3 text-teal-400">②</div>
-                <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="step2_title">锚定（可选）</h3>
-                <p class="text-gray-400 text-sm leading-relaxed" data-i18n="step2_desc">选择将记录锚定到比特币区块链上，从而创建不可篡改的证明。</p>
-            </div>
-            <!-- 步骤3 -->
-            <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                <div class="text-3xl mb-3 text-teal-400">③</div>
-                <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="step3_title">验证</h3>
-                <p class="text-gray-400 text-sm leading-relaxed" data-i18n="step3_desc">任何人之后都可以使用证明文件独立验证记录的完整性。</p>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- 步骤1 - 无框，只有内容 -->
+                <div>
+                    <div class="text-3xl mb-3 text-teal-400">①</div>
+                    <h3 class="text-base font-medium text-white mb-2">记录</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">在决策时刻，您的系统会通过我们的API记录谁、什么、何时以及上下文。</p>
+                </div>
+                <!-- 步骤2 -->
+                <div>
+                    <div class="text-3xl mb-3 text-teal-400">②</div>
+                    <h3 class="text-base font-medium text-white mb-2">锚定（可选）</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">选择将记录锚定到比特币区块链上，从而创建不可篡改的证明。</p>
+                </div>
+                <!-- 步骤3 -->
+                <div>
+                    <div class="text-3xl mb-3 text-teal-400">③</div>
+                    <h3 class="text-base font-medium text-white mb-2">验证</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">任何人之后都可以使用证明文件独立验证记录的完整性。</p>
+                </div>
             </div>
         </div>
 
-        <!-- 核心功能 - 两列布局 -->
-        <div class="grid md:grid-cols-2 gap-5 mb-16">
-            <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="feature1_title">🔍 公开查询</h3>
-                <p class="text-gray-400 text-sm leading-relaxed" data-i18n="feature1_desc">任何人都可通过记录ID在公共查询页检索已锚定的事件。</p>
+        <!-- 02 核心功能 - 两列布局，无框 -->
+        <div class="mb-24">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-sm font-mono text-teal-400/60">02</span>
+                <h2 class="text-lg font-medium text-white">核心功能</h2>
+                <div class="flex-1 h-px bg-gray-800"></div>
             </div>
-            <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="feature2_title">📊 控制台管理</h3>
-                <p class="text-gray-400 text-sm leading-relaxed" data-i18n="feature2_desc">登录后可查询、管理自己的所有记录。</p>
-            </div>
-            <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="feature3_title">📄 导出格式</h3>
-                <p class="text-gray-400 text-sm leading-relaxed" data-i18n="feature3_desc">支持JSON、PDF（含二维码）、OTS证明文件。</p>
-            </div>
-            <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="feature4_title">🔐 独立验证</h3>
-                <p class="text-gray-400 text-sm leading-relaxed" data-i18n="feature4_desc">使用OTS客户端或我们的验证页面，确保证明有效。</p>
+            
+            <div class="grid md:grid-cols-2 gap-x-12 gap-y-8">
+                <div>
+                    <h3 class="text-base font-medium text-teal-400 mb-2">🔍 公开查询</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">任何人都可通过记录ID在公共查询页检索已锚定的事件。</p>
+                </div>
+                <div>
+                    <h3 class="text-base font-medium text-teal-400 mb-2">📊 控制台管理</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">登录后可查询、管理自己的所有记录。</p>
+                </div>
+                <div>
+                    <h3 class="text-base font-medium text-teal-400 mb-2">📄 导出格式</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">支持JSON、PDF（含二维码）、OTS证明文件。</p>
+                </div>
+                <div>
+                    <h3 class="text-base font-medium text-teal-400 mb-2">🔐 独立验证</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">使用OTS客户端或我们的验证页面，确保证明有效。</p>
+                </div>
             </div>
         </div>
 
-        <!-- 价值主张 - 两列布局 -->
-        <div class="grid md:grid-cols-2 gap-5 mb-16">
-            <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="value1_title">⚖️ 厘清责任</h3>
-                <p class="text-gray-400 text-sm leading-relaxed" data-i18n="value1_desc">在争议中提供无可辩驳的证据，终结相互推诿。</p>
+        <!-- 03 价值主张 - 两列布局，无框 -->
+        <div class="mb-24">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-sm font-mono text-teal-400/60">03</span>
+                <h2 class="text-lg font-medium text-white">价值主张</h2>
+                <div class="flex-1 h-px bg-gray-800"></div>
             </div>
-            <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="value2_title">✅ 合规证据</h3>
-                <p class="text-gray-400 text-sm leading-relaxed" data-i18n="value2_desc">可作为AI监管的证据材料，用于审计与合规。</p>
-            </div>
-            <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="value3_title">⚖️ 法律证据</h3>
-                <p class="text-gray-400 text-sm leading-relaxed" data-i18n="value3_desc">OTS证明被多个司法管辖区认可为有效的电子证据。</p>
-            </div>
-            <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="value4_title">🔐 建立信任</h3>
-                <p class="text-gray-400 text-sm leading-relaxed" data-i18n="value4_desc">向用户、监管和公众展示决策的透明与可验证。</p>
+            
+            <div class="grid md:grid-cols-2 gap-x-12 gap-y-8">
+                <div>
+                    <h3 class="text-base font-medium text-teal-400 mb-2">⚖️ 厘清责任</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">在争议中提供无可辩驳的证据，终结相互推诿。</p>
+                </div>
+                <div>
+                    <h3 class="text-base font-medium text-teal-400 mb-2">✅ 合规证据</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">可作为AI监管的证据材料，用于审计与合规。</p>
+                </div>
+                <div>
+                    <h3 class="text-base font-medium text-teal-400 mb-2">⚖️ 法律证据</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">OTS证明被多个司法管辖区认可为有效的电子证据。</p>
+                </div>
+                <div>
+                    <h3 class="text-base font-medium text-teal-400 mb-2">🔐 建立信任</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">向用户、监管和公众展示决策的透明与可验证。</p>
+                </div>
             </div>
         </div>
 
-        <!-- 隐私与安全 - 单卡片 -->
-        <div class="p-8 border border-gray-800 rounded-lg bg-gray-900/30 mb-16">
-            <h2 class="text-xl font-semibold text-white mb-6" data-i18n="privacy_title">隐私优先设计——我们只收集必要信息</h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                <div>
-                    <p class="text-teal-400 font-medium mb-2" data-i18n="privacy1_title">最小化数据</p>
-                    <p class="text-gray-400 text-sm leading-relaxed" data-i18n="privacy1_desc">仅收集entity/action/scope/timestamp，你决定填入什么。</p>
-                </div>
-                <div>
-                    <p class="text-teal-400 font-medium mb-2" data-i18n="privacy2_title">你始终掌控</p>
-                    <p class="text-gray-400 text-sm leading-relaxed" data-i18n="privacy2_desc">可删除、导出，自主选择是否锚定。</p>
-                </div>
-                <div>
-                    <p class="text-teal-400 font-medium mb-2" data-i18n="privacy3_title">无二次利用</p>
-                    <p class="text-gray-400 text-sm leading-relaxed" data-i18n="privacy3_desc">绝不售卖、分析或画像数据。</p>
-                </div>
+        <!-- 04 隐私与安全 - 单列，加一个浅框区分重要内容 -->
+        <div class="mb-24">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-sm font-mono text-teal-400/60">04</span>
+                <h2 class="text-lg font-medium text-white">隐私与安全</h2>
+                <div class="flex-1 h-px bg-gray-800"></div>
             </div>
-            <p class="text-xs text-gray-500 mt-6 pt-4 border-t border-gray-800" data-i18n="privacy_footnote">
-                TLS 1.3 · AES-256 · API Key + 审计日志 · 数据保留可配置（默认7年）
-            </p>
+            
+            <div class="border border-gray-800 rounded-lg p-8 bg-gray-900/20">
+                <h3 class="text-base font-medium text-teal-400 mb-4">隐私优先设计——我们只收集必要信息</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div>
+                        <p class="text-sm font-medium text-white mb-1">最小化数据</p>
+                        <p class="text-xs text-gray-400">仅收集entity/action/scope/timestamp，你决定填入什么。</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-white mb-1">你始终掌控</p>
+                        <p class="text-xs text-gray-400">可删除、导出，自主选择是否锚定。</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-white mb-1">无二次利用</p>
+                        <p class="text-xs text-gray-400">绝不售卖、分析或画像数据。</p>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-6 pt-4 border-t border-gray-800">
+                    TLS 1.3 · AES-256 · API Key + 审计日志 · 数据保留可配置（默认7年）
+                </p>
+            </div>
         </div>
 
-        <!-- 协议中立 - 单卡片 -->
-        <div class="p-8 border border-gray-800 rounded-lg bg-gray-900/30 mb-16">
-            <h2 class="text-xl font-semibold text-white mb-6" data-i18n="neutral_title">⚖️ 协议中立 · 服务商业</h2>
-            <div class="grid md:grid-cols-3 gap-6">
+        <!-- 05 协议中立 - 不加框，简单展示 -->
+        <div class="mb-24">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-sm font-mono text-teal-400/60">05</span>
+                <h2 class="text-lg font-medium text-white">协议中立</h2>
+                <div class="flex-1 h-px bg-gray-800"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
                 <div>
-                    <p class="text-teal-400 font-medium mb-2" data-i18n="neutral1_title">开源</p>
-                    <p class="text-gray-400 text-sm leading-relaxed" data-i18n="neutral1_desc">协议CC0，实现MIT——任何人可审查、可构建。</p>
+                    <h3 class="text-sm font-medium text-teal-400 mb-2">开源</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">协议CC0，实现MIT——任何人可审查、可构建。</p>
                 </div>
                 <div>
-                    <p class="text-teal-400 font-medium mb-2" data-i18n="neutral2_title">基金会治理</p>
-                    <p class="text-gray-400 text-sm leading-relaxed" data-i18n="neutral2_desc">HJS协议由新加坡CLG基金会持有，不属于任何公司。</p>
+                    <h3 class="text-sm font-medium text-teal-400 mb-2">基金会治理</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">HJS协议由新加坡CLG基金会持有，不属于任何公司。</p>
                 </div>
                 <div>
-                    <p class="text-teal-400 font-medium mb-2" data-i18n="neutral3_title">可选锚定</p>
-                    <p class="text-gray-400 text-sm leading-relaxed" data-i18n="neutral3_desc">你决定是否上链，协议保持技术中立。</p>
+                    <h3 class="text-sm font-medium text-teal-400 mb-2">可选锚定</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">你决定是否上链，协议保持技术中立。</p>
                 </div>
             </div>
-            <p class="text-xs text-gray-500 mt-6 pt-4 border-t border-gray-800" data-i18n="neutral_footnote">
+            <p class="text-xs text-gray-500 mt-4 text-left">
                 你今天使用的服务由一家商业公司提供，但协议本身永远开放中立。
             </p>
         </div>
 
-        <!-- 集成方式 - 单卡片 -->
-        <div class="p-8 border border-gray-800 rounded-lg bg-gray-900/30 mb-16">
-            <h2 class="text-xl font-semibold text-white mb-6" data-i18n="integrate_title">两种接入方式</h2>
-            <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <!-- 06 集成方式 - 不加框 -->
+        <div class="mb-24">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-sm font-mono text-teal-400/60">06</span>
+                <h2 class="text-lg font-medium text-white">集成方式</h2>
+                <div class="flex-1 h-px bg-gray-800"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
                 <div>
-                    <p class="text-teal-400 font-medium mb-2" data-i18n="integrate_api_title">🔧 直接调用API</p>
-                    <p class="text-gray-400 text-sm leading-relaxed" data-i18n="integrate_api_desc">从任何语言或环境直接使用REST API，只需携带API Key发送HTTP请求。</p>
+                    <h3 class="text-sm font-medium text-teal-400 mb-2">🔧 直接调用API</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">从任何语言或环境直接使用REST API，只需携带API Key发送HTTP请求。</p>
                 </div>
                 <div>
-                    <p class="text-teal-400 font-medium mb-2" data-i18n="integrate_sdk_title">📦 SDK（Python/Node.js）</p>
-                    <p class="text-gray-400 text-sm leading-relaxed" data-i18n="integrate_sdk_desc">一行命令安装，用熟悉的语言调用函数，SDK封装了所有API细节。</p>
+                    <h3 class="text-sm font-medium text-teal-400 mb-2">📦 SDK（Python/Node.js）</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">一行命令安装，用熟悉的语言调用函数，SDK封装了所有API细节。</p>
                 </div>
             </div>
-            <div>
-                <p class="text-white font-medium mb-3" data-i18n="quick_start_title">快速开始</p>
-                <ol class="list-decimal list-inside text-gray-400 space-y-1 text-sm leading-relaxed">
-                    <li data-i18n="quick_start1">在<a href="/console.html" class="text-teal-400 hover:underline">控制台</a>生成API密钥。</li>
-                    <li data-i18n="quick_start2">选择接入方式：直接调用API或安装SDK。</li>
-                    <li data-i18n="quick_start3">几分钟内完成第一条记录的创建。</li>
+            
+            <div class="bg-gray-900/30 p-6 rounded-lg border border-gray-800">
+                <p class="text-sm font-medium text-white mb-3">快速开始</p>
+                <ol class="list-decimal list-inside text-xs text-gray-400 space-y-1 leading-relaxed">
+                    <li>在<a href="/console.html" class="text-teal-400 hover:underline">控制台</a>生成API密钥。</li>
+                    <li>选择接入方式：直接调用API或安装SDK。</li>
+                    <li>几分钟内完成第一条记录的创建。</li>
                 </ol>
-                <p class="mt-4 text-gray-500 text-sm" data-i18n="quick_start_more">详细指南请访问<a href="/developers.html" class="text-teal-400 hover:underline">开发者页</a>。</p>
+                <p class="text-xs text-gray-500 mt-3">详细指南请访问<a href="/developers.html" class="text-teal-400 hover:underline">开发者页</a>。</p>
             </div>
         </div>
 
-        <!-- 底部 - 与首页一致 -->
+        <!-- 底部 -->
         <div class="text-center text-xs text-gray-600 pt-12 border-t border-gray-800">
-            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-3 py-2 inline-block" data-i18n="footer_github">GitHub</a>
+            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-3 py-2 inline-block">GitHub</a>
             <span class="text-gray-700">·</span>
-            <a href="/spec/README.md" class="hover:text-gray-400 mx-3 py-2 inline-block" data-i18n="footer_spec">协议</a>
+            <a href="/spec/README.md" class="hover:text-gray-400 mx-3 py-2 inline-block">协议</a>
             <span class="text-gray-700">·</span>
-            <a href="/cases.html" class="hover:text-gray-400 mx-3 py-2 inline-block" data-i18n="footer_cases">案例</a>
+            <a href="/cases.html" class="hover:text-gray-400 mx-3 py-2 inline-block">案例</a>
         </div>
     </div>
 
     <script>
+        // 简化的语言切换
         const translations = {
-            en: {
-                title: "HJS · AI traceability layer",
-                nav_home: "Home",
-                nav_product: "Product",
-                nav_developers: "Developers",
-                nav_console: "Console",
-                nav_lookup: "Lookup",
-                step1_title: "Record",
-                step1_desc: "At decision time, your system logs who, what, when, and context via our API.",
-                step2_title: "Anchor (optional)",
-                step2_desc: "Choose to anchor the record to the Bitcoin blockchain, creating an immutable proof.",
-                step3_title: "Verify",
-                step3_desc: "Anyone can later verify the record's integrity independently, using the proof file.",
-                feature1_title: "🔍 Public lookup",
-                feature1_desc: "Anyone can retrieve an anchored event by its ID via the public lookup page.",
-                feature2_title: "📊 Console management",
-                feature2_desc: "After login, you can query and manage all your records in one place.",
-                feature3_title: "📄 Export formats",
-                feature3_desc: "Download records as JSON, PDF (with QR code), or OTS proof file.",
-                feature4_title: "🔐 Independent verification",
-                feature4_desc: "Use the OTS client or our verification page to validate proofs anytime.",
-                value1_title: "⚖️ Clarify responsibility",
-                value1_desc: "In disputes, provide irrefutable evidence of what happened — ending finger-pointing.",
-                value2_title: "✅ Compliance evidence",
-                value2_desc: "Serve as auditable material for AI regulatory compliance.",
-                value3_title: "⚖️ Legal evidence",
-                value3_desc: "OTS proofs are recognized in multiple jurisdictions as valid electronic evidence.",
-                value4_title: "🔐 Build trust",
-                value4_desc: "Show users, regulators, and the public that every decision is transparent and verifiable.",
-                privacy_title: "Privacy by design — we don't collect what we don't need",
-                privacy1_title: "Minimal data",
-                privacy1_desc: "Only entity, action, scope, timestamp — you choose what to put in them.",
-                privacy2_title: "You stay in control",
-                privacy2_desc: "Delete, export, and choose whether to anchor — it's always your call.",
-                privacy3_title: "No secondary use",
-                privacy3_desc: "We never sell, analyze, or profile your data. It's yours, period.",
-                privacy_footnote: "TLS 1.3 · AES-256 · API Key + audit logs · configurable retention (default 7 years)",
-                neutral_title: "⚖️ Protocol neutral · Service commercial",
-                neutral1_title: "Open source",
-                neutral1_desc: "Protocol: CC0 · Implementation: MIT — anyone can audit, fork, and build upon it.",
-                neutral2_title: "Foundation‑governed",
-                neutral2_desc: "The HJS protocol is owned by a Singapore CLG foundation — not by us or any other company.",
-                neutral3_title: "Optional anchoring",
-                neutral3_desc: "You decide if records go on‑chain; the protocol stays technology‑agnostic.",
-                neutral_footnote: "The service you're using today is provided by a commercial company — but the protocol itself will always remain open and neutral.",
-                integrate_title: "Two ways to integrate",
-                integrate_api_title: "🔧 Direct API",
-                integrate_api_desc: "Use our REST API directly from any language or environment. Just send HTTP requests with your API key.",
-                integrate_sdk_title: "📦 SDK (Python, Node.js)",
-                integrate_sdk_desc: "Install with one command and call functions in your favorite language. The SDK handles all API details.",
-                quick_start_title: "Quick start",
-                quick_start1: "Generate an API key in the Console.",
-                quick_start2: "Choose your integration method: direct API or install an SDK.",
-                quick_start3: "Create your first record in minutes.",
-                quick_start_more: "For detailed guides, visit Developers.",
-                footer_github: "GitHub",
-                footer_spec: "Spec",
-                footer_cases: "Cases"
-            },
-            zh: {
-                title: "HJS · AI 可追溯层",
-                nav_home: "首页",
-                nav_product: "产品",
-                nav_developers: "开发者",
-                nav_console: "控制台",
-                nav_lookup: "查询",
-                step1_title: "记录",
-                step1_desc: "在决策时刻，您的系统会通过我们的API记录谁、什么、何时以及上下文。",
-                step2_title: "锚定（可选）",
-                step2_desc: "选择将记录锚定到比特币区块链上，从而创建不可篡改的证明。",
-                step3_title: "验证",
-                step3_desc: "任何人之后都可以使用证明文件独立验证记录的完整性。",
-                feature1_title: "🔍 公开查询",
-                feature1_desc: "任何人都可通过记录ID在公共查询页检索已锚定的事件。",
-                feature2_title: "📊 控制台管理",
-                feature2_desc: "登录后可查询、管理自己的所有记录。",
-                feature3_title: "📄 导出格式",
-                feature3_desc: "支持JSON、PDF（含二维码）、OTS证明文件。",
-                feature4_title: "🔐 独立验证",
-                feature4_desc: "使用OTS客户端或我们的验证页面，确保证明有效。",
-                value1_title: "⚖️ 厘清责任",
-                value1_desc: "在争议中提供无可辩驳的证据，终结相互推诿。",
-                value2_title: "✅ 合规证据",
-                value2_desc: "可作为AI监管的证据材料，用于审计与合规。",
-                value3_title: "⚖️ 法律证据",
-                value3_desc: "OTS证明被多个司法管辖区认可为有效的电子证据。",
-                value4_title: "🔐 建立信任",
-                value4_desc: "向用户、监管和公众展示决策的透明与可验证。",
-                privacy_title: "隐私优先设计——我们只收集必要信息",
-                privacy1_title: "最小化数据",
-                privacy1_desc: "仅收集entity/action/scope/timestamp，你决定填入什么。",
-                privacy2_title: "你始终掌控",
-                privacy2_desc: "可删除、导出，自主选择是否锚定。",
-                privacy3_title: "无二次利用",
-                privacy3_desc: "绝不售卖、分析或画像数据。",
-                privacy_footnote: "TLS 1.3 · AES-256 · API Key + 审计日志 · 数据保留可配置（默认7年）",
-                neutral_title: "⚖️ 协议中立 · 服务商业",
-                neutral1_title: "开源",
-                neutral1_desc: "协议CC0，实现MIT——任何人可审查、可构建。",
-                neutral2_title: "基金会治理",
-                neutral2_desc: "HJS协议由新加坡CLG基金会持有，不属于任何公司。",
-                neutral3_title: "可选锚定",
-                neutral3_desc: "你决定是否上链，协议保持技术中立。",
-                neutral_footnote: "你今天使用的服务由一家商业公司提供，但协议本身永远开放中立。",
-                integrate_title: "两种接入方式",
-                integrate_api_title: "🔧 直接调用API",
-                integrate_api_desc: "从任何语言或环境直接使用我们的REST API，只需携带API Key发送HTTP请求。",
-                integrate_sdk_title: "📦 SDK（Python/Node.js）",
-                integrate_sdk_desc: "一行命令安装，用熟悉的语言调用函数，SDK封装了所有API细节。",
-                quick_start_title: "快速开始",
-                quick_start1: "在控制台生成API密钥。",
-                quick_start2: "选择接入方式：直接调用API或安装SDK。",
-                quick_start3: "几分钟内完成第一条记录的创建。",
-                quick_start_more: "详细指南请访问开发者页。",
-                footer_github: "GitHub",
-                footer_spec: "协议",
-                footer_cases: "案例"
-            }
+            en: { /* 英文翻译 */ },
+            zh: { /* 中文翻译（已内嵌在HTML中）*/ }
         };
-
         function switchLang(lang) {
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[lang] && translations[lang][key]) {
-                    if (el.tagName === 'TITLE') {
-                        el.textContent = translations[lang][key];
-                    } else {
-                        el.innerHTML = translations[lang][key];
-                    }
-                }
-            });
-
+            document.querySelector('select').value = lang;
             const url = new URL(window.location);
             url.searchParams.set('lang', lang);
             window.history.replaceState({}, '', url);
-            
-            const select = document.querySelector('select');
-            if (select) select.value = lang;
         }
-
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
             const lang = urlParams.get('lang') || 'zh';
-            switchLang(lang);
+            document.querySelector('select').value = lang;
         })();
     </script>
 </body>

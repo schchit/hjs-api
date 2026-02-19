@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HJS · 开发者</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        body { background: #0a0a0a; }
+        code { font-family: 'JetBrains Mono', monospace !important; }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
+    <div class="max-w-5xl mx-auto px-4 py-12">
+        <!-- 导航 -->
+        <div class="flex justify-between items-center mb-12 text-sm">
+            <div class="text-white font-semibold">HJS</div>
+            <div class="flex gap-6 text-gray-400">
+                <a href="/" class="hover:text-white">首页</a>
+                <a href="/product.html" class="hover:text-white">产品</a>
+                <a href="/developers.html" class="text-white">开发者</a>
+                <a href="/console.html" class="hover:text-white">控制台</a>
+            </div>
+            <select onchange="window.location.href='/?lang='+this.value" 
+                    class="bg-gray-800 text-white text-xs rounded-md px-2 py-1 border border-gray-700">
+                <option value="en" selected>EN</option>
+                <option value="zh">中文</option>
+            </select>
+        </div>
+
+        <!-- 标题 -->
+        <div class="mb-12">
+            <h1 class="text-4xl font-bold mb-3">开发者中心</h1>
+            <p class="text-gray-400">5分钟快速开始，让 AI 决策可追溯</p>
+        </div>
+
+        <!-- 快速开始步骤 -->
+        <div class="space-y-8 mb-16">
+            <!-- 步骤 1 -->
+            <div class="flex gap-6">
+                <div class="w-8 h-8 rounded-full bg-teal-600/20 border border-teal-600 flex items-center justify-center text-teal-400 font-bold">1</div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-semibold text-white mb-2">获取 API Key</h2>
+                    <p class="text-gray-400 mb-3">访问控制台，用邮箱验证码登录，即可生成你的第一个 API Key。</p>
+                    <a href="/console.html" class="text-sm text-teal-400 hover:underline">进入控制台 →</a>
+                </div>
+            </div>
+
+            <!-- 步骤 2 -->
+            <div class="flex gap-6">
+                <div class="w-8 h-8 rounded-full bg-teal-600/20 border border-teal-600 flex items-center justify-center text-teal-400 font-bold">2</div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-semibold text-white mb-2">安装 SDK</h2>
+                    <div class="grid md:grid-cols-2 gap-4 mt-2">
+                        <div>
+                            <p class="text-sm text-gray-400 mb-1">Python</p>
+                            <code class="block bg-gray-800 p-2 rounded text-sm text-gray-300">pip install hjs-client</code>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-400 mb-1">Node.js</p>
+                            <code class="block bg-gray-800 p-2 rounded text-sm text-gray-300">npm install hjs-client</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤 3 -->
+            <div class="flex gap-6">
+                <div class="w-8 h-8 rounded-full bg-teal-600/20 border border-teal-600 flex items-center justify-center text-teal-400 font-bold">3</div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-semibold text-white mb-2">记录第一条事件</h2>
+                    <p class="text-gray-400 mb-3">Python 示例：</p>
+                    <pre class="bg-gray-800 p-3 rounded text-sm text-gray-300 overflow-x-auto">
+from hjs_client import HJSClient
+
+client = HJSClient(api_key="your-key")
+result = client.record_judgment(
+    entity="user@example.com",
+    action="test"
+)
+print(result.id)</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- 文档入口 -->
+        <div class="grid md:grid-cols-3 gap-4 mb-16">
+            <a href="/docs.html" class="block p-4 bg-gray-900/30 rounded-lg border border-gray-800 hover:bg-gray-900 transition">
+                <h3 class="text-white font-medium mb-1">完整文档</h3>
+                <p class="text-xs text-gray-400">API 参考、错误码、示例</p>
+            </a>
+            <a href="/docs.html#api" class="block p-4 bg-gray-900/30 rounded-lg border border-gray-800 hover:bg-gray-900 transition">
+                <h3 class="text-white font-medium mb-1">API 参考</h3>
+                <p class="text-xs text-gray-400">所有端点、参数、响应</p>
+            </a>
+            <a href="/spec/README.md" class="block p-4 bg-gray-900/30 rounded-lg border border-gray-800 hover:bg-gray-900 transition">
+                <h3 class="text-white font-medium mb-1">协议规范</h3>
+                <p class="text-xs text-gray-400">开源 · CC0 · MIT · 新加坡CLG</p>
+            </a>
+        </div>
+
+        <!-- 底部 -->
+        <div class="text-center text-xs text-gray-600 pt-8 border-t border-gray-800">
+            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
+            <span class="text-gray-700">·</span>
+            <a href="/spec/README.md" class="hover:text-gray-400 mx-2">协议</a>
+            <span class="text-gray-700">·</span>
+            <a href="/cases.html" class="hover:text-gray-400 mx-2">案例</a>
+        </div>
+    </div>
+</body>
+</html>

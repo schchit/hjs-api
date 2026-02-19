@@ -25,6 +25,24 @@ HJS 协议由 [Human Judgment Systems Foundation Ltd.](https://humanjudgment.org
 
 ---
 
+## 📦 SDK 安装
+
+### Python
+```bash
+pip install hjs-client
+```
+
+### Node.js
+```bash
+npm install hjs-client
+```
+
+使用示例详见各 SDK 目录：
+- [Python SDK](client-py/README.md)
+- [Node.js SDK](client-js/README.md)
+
+---
+
 ## 📄 许可证
 
 本项目采用**双重许可证策略**，以最大化协议采用率，同时保持协议的开放性。
@@ -95,6 +113,12 @@ curl https://api.hjs.sh/judgments/jgd_1742318412345_abc1 \
 ### 4. 在线体验
 
 访问[公开查询页](https://lookup.hjs.sh)，无需任何设置即可查询记录。
+
+---
+
+## ⚠️ 如果没有可追溯的记录
+
+看看当决策没有被记录时会发生什么——[真实案例](https://humanjudgment.services/cases.html)。
 
 ---
 
@@ -449,5 +473,7 @@ node index.js
 ---
 
 **HJS：结构化追溯协议**  
+© 2026 Human Judgment Systems Foundation Ltd.
+```
 © 2026 Human Judgment Systems Foundation Ltd.
 ```

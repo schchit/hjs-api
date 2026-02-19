@@ -25,6 +25,24 @@ HJS protocols are governed by the [Human Judgment Systems Foundation Ltd.](https
 
 ---
 
+## 📦 SDKs
+
+### Python
+```bash
+pip install hjs-client
+```
+
+### Node.js
+```bash
+npm install hjs-client
+```
+
+For usage examples, see the respective SDK directories:
+- [Python SDK](client-py/README.md)
+- [Node.js SDK](client-js/README.md)
+
+---
+
 ## 📄 License
 
 This project uses a **dual-license strategy** to maximize adoption while keeping the protocol open.
@@ -95,6 +113,12 @@ curl https://api.hjs.sh/judgments/jgd_1742318412345_abc1 \
 ### 4. Try it online
 
 Visit the [Public Lookup](https://lookup.hjs.sh) page to query records without any setup.
+
+---
+
+## ⚠️ Without Traceable Records
+
+See what happens when decisions aren't recorded — [real-world cases](https://humanjudgment.services/cases.html).
 
 ---
 

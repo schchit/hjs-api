@@ -1,0 +1,152 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Human Judgment Systems Foundation Ltd.
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HJS · 让AI决策可追溯</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        body { background: #0a0a0a; }
+        .glow { text-shadow: 0 0 20px rgba(94, 224, 192, 0.5); }
+        .test-input { background: #1a1a1a; border: 1px solid #333; color: white; }
+        .test-input:focus { border-color: #5ee0c0; outline: none; }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-4xl w-full">
+            <!-- 导航 -->
+            <div class="flex justify-between items-center mb-8 text-sm">
+                <div class="text-white font-semibold">HJS</div>
+                <div class="flex gap-6 text-gray-400">
+                    <a href="/" class="text-white">首页</a>
+                    <a href="/product.html" class="hover:text-white">产品</a>
+                    <a href="/developers.html" class="hover:text-white">开发者</a>
+                    <a href="/console.html" class="hover:text-white">控制台</a>
+                </div>
+                <select onchange="window.location.href='/?lang='+this.value" 
+                        class="bg-gray-800 text-white text-xs rounded-md px-2 py-1 border border-gray-700">
+                    <option value="en" selected>EN</option>
+                    <option value="zh">中文</option>
+                </select>
+            </div>
+
+            <!-- 核心问题 -->
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-500/20 to-emerald-500/20 mb-6">
+                    <span class="text-4xl font-bold text-teal-400 glow">H</span>
+                </div>
+                <h1 class="text-5xl font-bold mb-4 leading-tight">
+                    AI 正在替人做决定<br>出事了谁负责？
+                </h1>
+                <p class="text-gray-400 max-w-xl mx-auto">
+                    贷款被拒无处申诉 · AI误诊无法追责<br>L3驾驶责任转移 · AI智能体权限失控
+                </p>
+            </div>
+
+            <!-- 入口卡片 -->
+            <div class="grid md:grid-cols-2 gap-6 mb-12">
+                <a href="/console.html" class="group block p-8 rounded-2xl border border-gray-800 bg-gray-900/50 hover:bg-gray-900 hover:border-teal-500/50 transition-all">
+                    <h2 class="text-2xl font-semibold text-white mb-2">开发者控制台</h2>
+                    <p class="text-gray-400 mb-4">管理 API 密钥 · 生成、查看、吊销</p>
+                    <span class="text-teal-400 text-sm group-hover:translate-x-2 transition-transform inline-block">进入控制台 →</span>
+                </a>
+                <a href="/lookup.html" class="group block p-8 rounded-2xl border border-gray-800 bg-gray-900/50 hover:bg-gray-900 hover:border-emerald-500/50 transition-all">
+                    <h2 class="text-2xl font-semibold text-white mb-2">公开查询页</h2>
+                    <p class="text-gray-400 mb-4">按 ID 查询记录 · 下载 JSON/PDF/OTS</p>
+                    <span class="text-emerald-400 text-sm group-hover:translate-x-2 transition-transform inline-block">开始查询 →</span>
+                </a>
+            </div>
+
+            <!-- 快速测试 -->
+            <div class="mb-8 p-6 rounded-xl border border-gray-800 bg-gray-900/30">
+                <h3 class="text-lg font-semibold text-white mb-4">快速体验</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="p-4 rounded-lg bg-gray-800/50">
+                        <h4 class="text-sm font-medium text-gray-300 mb-3">生成测试密钥</h4>
+                        <div class="flex gap-2">
+                            <input type="email" id="test-email" placeholder="your@email.com" 
+                                   class="flex-1 test-input rounded px-3 py-2 text-sm">
+                            <button onclick="generateTestKey()" 
+                                    class="px-4 py-2 bg-teal-600 text-white text-sm rounded hover:bg-teal-700">
+                                生成
+                            </button>
+                        </div>
+                        <div id="test-key-result" class="mt-2 text-xs text-gray-400"></div>
+                    </div>
+                    <div class="p-4 rounded-lg bg-gray-800/50">
+                        <h4 class="text-sm font-medium text-gray-300 mb-3">查询示例记录</h4>
+                        <div class="flex gap-2">
+                            <input type="text" id="test-id" value="jgd_1771313790343osf2" 
+                                   class="flex-1 test-input rounded px-3 py-2 text-sm font-mono">
+                            <button onclick="quickLookup()" 
+                                    class="px-4 py-2 bg-emerald-600 text-white text-sm rounded hover:bg-emerald-700">
+                                查询
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 证据包 -->
+                <div class="mt-4 p-3 rounded-lg border border-gray-800 bg-gray-900/30">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-400">📦 证据包</span>
+                        <a href="/docs.html#evidence-package" class="text-xs text-teal-400">详情 →</a>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">记录文件(.json) + 时间戳证明(.ots)</p>
+                </div>
+
+                <!-- 记录边界 -->
+                <div class="mt-4 p-4 rounded-lg border border-gray-800 bg-gray-900/30">
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="text-gray-400">✅ 谁、时间、行为、上下文</div>
+                        <div class="text-gray-500">❌ 决策对错、责任归属、个人身份</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部 -->
+            <div class="text-center text-xs text-gray-600 pt-4 border-t border-gray-800">
+                <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
+                <span class="text-gray-700">·</span>
+                <a href="/spec/README.md" class="hover:text-gray-400 mx-2">协议</a>
+                <span class="text-gray-700">·</span>
+                <a href="/cases.html" class="hover:text-gray-400 mx-2">案例</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function generateTestKey() {
+            const email = document.getElementById('test-email').value;
+            if (!email) return alert('请输入邮箱');
+            const resultDiv = document.getElementById('test-key-result');
+            resultDiv.textContent = '生成中...';
+            try {
+                const res = await fetch('/developer/keys', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, name: 'quick-test' })
+                });
+                const data = await res.json();
+                if (data.key) {
+                    resultDiv.innerHTML = `✅ 密钥生成: <code class="bg-gray-900 px-1 py-0.5 rounded">${data.key.substring(0, 8)}...${data.key.substring(56)}</code>`;
+                } else {
+                    resultDiv.textContent = '❌ 生成失败';
+                }
+            } catch (err) {
+                resultDiv.textContent = '❌ 错误: ' + err.message;
+            }
+        }
+        function quickLookup() {
+            const id = document.getElementById('test-id').value;
+            if (id) window.location.href = '/lookup.html?id=' + id;
+        }
+    </script>
+</body>
+</html>

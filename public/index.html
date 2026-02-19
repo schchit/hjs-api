@@ -3,100 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HJS · AI责任追溯</title>
+    <title data-i18n="title">HJS · AI Accountability</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
         body { background: #0a0a0a; }
-        .glow { text-shadow: 0 0 20px rgba(94, 224, 192, 0.5); }
+        .lang-btn.active { background: #5ee0c0; color: #0a0a0a; }
+        .icon { width: 2.5rem; height: 2.5rem; stroke: #5ee0c0; fill: none; stroke-width: 1.5; }
     </style>
 </head>
 <body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
     <div class="max-w-5xl mx-auto px-4 py-12">
-        <!-- 导航（只留入口，不参与内容） -->
+        <!-- 导航栏 + 语言切换按钮 -->
         <div class="flex justify-between items-center mb-16 text-sm">
             <div class="text-white font-semibold">HJS</div>
             <div class="flex gap-6 text-gray-400">
-                <a href="/" class="text-white">首页</a>
-                <a href="/product.html" class="hover:text-white">产品</a>
-                <a href="/developers.html" class="hover:text-white">开发者</a>
-                <a href="/console.html" class="hover:text-white">控制台</a>
-                <a href="/lookup.html" class="hover:text-white">查询</a>
+                <a href="/" class="text-white" data-i18n="nav_home">Home</a>
+                <a href="/product.html" class="hover:text-white" data-i18n="nav_product">Product</a>
+                <a href="/developers.html" class="hover:text-white" data-i18n="nav_developers">Developers</a>
+                <a href="/console.html" class="hover:text-white" data-i18n="nav_console">Console</a>
+                <a href="/lookup.html" class="hover:text-white" data-i18n="nav_lookup">Lookup</a>
             </div>
-            <select onchange="window.location.href='/?lang='+this.value" 
-                    class="bg-gray-800 text-white text-xs rounded-md px-2 py-1 border border-gray-700">
-                <option value="en" selected>EN</option>
-                <option value="zh">中文</option>
-            </select>
+            <div class="flex gap-2">
+                <button onclick="switchLang('en')" id="lang-en" class="lang-btn px-2 py-1 rounded bg-teal-600 text-white text-xs">EN</button>
+                <button onclick="switchLang('zh')" id="lang-zh" class="lang-btn px-2 py-1 rounded bg-gray-700 text-gray-300 text-xs">中文</button>
+            </div>
         </div>
 
         <!-- 核心社会问题 -->
         <div class="text-center mb-20">
-            <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-500/20 to-emerald-500/20 mb-8">
-                <span class="text-4xl font-bold text-teal-400 glow">H</span>
-            </div>
-            <h1 class="text-5xl font-bold mb-6 leading-tight max-w-3xl mx-auto">
-                AI 正在重塑社会<br>但责任链条还没跟上
+            <h1 class="text-5xl font-bold mb-6 leading-tight max-w-3xl mx-auto" data-i18n="headline">
+                AI is reshaping society<br>but accountability hasn't caught up
             </h1>
-            <p class="text-xl text-gray-400 max-w-2xl mx-auto">
-                医疗AI普及、自动驾驶上路、AI智能体走入职场——<br>
-                每一次进步，都在拷问同一个问题：出事了，谁负责？
+            <p class="text-xl text-gray-400 max-w-2xl mx-auto" data-i18n="subhead">
+                Medical AI, autonomous driving, AI agents in the workplace, AI in education —<br>
+                every advance asks the same question: who's responsible when things go wrong?
+            </p>
+            <p class="text-sm text-gray-500 mt-4" data-i18n="subfoot">
+                These are not hypotheticals — they are happening now.
             </p>
         </div>
 
-        <!-- 行业痛点（正面发展带来的问题） -->
+        <!-- 行业痛点（四个卡片，使用SVG图标） -->
         <div class="grid md:grid-cols-2 gap-8 mb-20">
+            <!-- 医疗AI -->
             <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30">
-                <div class="text-3xl mb-3">🏥</div>
-                <h3 class="text-xl font-semibold text-white mb-2">医疗AI普及</h3>
-                <p class="text-gray-400">辅助诊断已覆盖数千家医院，但误诊发生时，责任在医生、AI厂商、还是数据提供方？</p>
+                <div class="mb-3">
+                    <svg class="icon" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M4 14h16M4 18h16M4 6h16M4 10h16" />
+                        <circle cx="12" cy="12" r="8" stroke="currentColor" fill="none"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-2" data-i18n="pain1_title">Medical AI Adoption</h3>
+                <p class="text-gray-400" data-i18n="pain1_desc">Diagnostic AI is used in thousands of hospitals. When errors occur, is it the doctor, the AI vendor, or the data provider?</p>
             </div>
+            <!-- 自动驾驶 -->
             <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30">
-                <div class="text-3xl mb-3">🚗</div>
-                <h3 class="text-xl font-semibold text-white mb-2">自动驾驶上路</h3>
-                <p class="text-gray-400">L3级车辆已获准在公共道路行驶，一旦发生事故，是车主、车企、还是算法负责？</p>
+                <div class="mb-3">
+                    <svg class="icon" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M5 12l2-2 3 3 5-5 2 2" />
+                        <circle cx="12" cy="12" r="8" stroke="currentColor" fill="none"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-2" data-i18n="pain2_title">Autonomous Driving</h3>
+                <p class="text-gray-400" data-i18n="pain2_desc">L3 vehicles are now on public roads. In an accident, is it the driver, the automaker, or the algorithm?</p>
             </div>
+            <!-- AI智能体 -->
             <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30">
-                <div class="text-3xl mb-3">🤖</div>
-                <h3 class="text-xl font-semibold text-white mb-2">AI智能体渗透</h3>
-                <p class="text-gray-400">从客服到财务，AI自主执行任务时出现越权或错误，谁能回答“谁给了它权限”？</p>
+                <div class="mb-3">
+                    <svg class="icon" viewBox="0 0 24 24" stroke="currentColor">
+                        <circle cx="12" cy="8" r="3" stroke="currentColor" fill="none"/>
+                        <path d="M6 16v2a4 4 0 0 0 8 0v-2" />
+                        <path d="M3 12h18" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-2" data-i18n="pain3_title">AI Agents</h3>
+                <p class="text-gray-400" data-i18n="pain3_desc">From customer service to finance, when an AI exceeds its authority, who can answer 'who authorized it'?</p>
             </div>
+            <!-- 教育AI -->
             <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30">
-                <div class="text-3xl mb-3">⚖️</div>
-                <h3 class="text-xl font-semibold text-white mb-2">司法辅助决策</h3>
-                <p class="text-gray-400">AI参与量刑建议、证据分析，一旦出错，责任无法回溯，动摇司法公信力。</p>
+                <div class="mb-3">
+                    <svg class="icon" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3z" />
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v10a2 2 0 0 0 2 2h8" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-2" data-i18n="pain4_title">AI in Education</h3>
+                <p class="text-gray-400" data-i18n="pain4_desc">AI tutoring and content generation are now in classrooms. When biased or incorrect material is taught, who is accountable—the teacher, the developer, or the school?</p>
             </div>
         </div>
 
-        <!-- 核心痛点：责任真空 -->
+        <!-- 核心痛点：责任真空 + 数据支持 -->
         <div class="max-w-3xl mx-auto text-center mb-20">
-            <h2 class="text-3xl font-bold mb-4">技术走在了制度前面</h2>
-            <p class="text-gray-400 text-lg mb-6">
-                社会正加速采纳AI，但责任链条的设计仍停留在工业时代。<br>
-                每一次无法追溯的决策，都在透支社会对AI的信任。
+            <h2 class="text-3xl font-bold mb-4" data-i18n="core_title">Technology outpaces governance</h2>
+            <p class="text-gray-400 text-lg mb-6" data-i18n="core_desc">
+                Society is adopting AI rapidly, but accountability frameworks are stuck in the industrial era.<br>
+                Every untraceable decision erodes trust in AI.
             </p>
-            <p class="text-gray-500 text-sm">
-                这不是某个行业的问题，是整个AI时代的共同挑战。
+            <p class="text-gray-500 text-sm mb-4" data-i18n="core_footer">
+                This isn't one industry's problem — it's the defining challenge of the AI age.
+            </p>
+            <p class="text-sm text-teal-400" data-i18n="core_stat">
+                71% of CIOs say traceability is required for AI projects.
             </p>
         </div>
 
-        <!-- 唯一入口（不带开发者属性） -->
+        <!-- 唯一入口 -->
         <div class="text-center">
-            <a href="/product.html" class="inline-block px-8 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition">
-                了解我们的解决方案
+            <a href="/product.html" class="inline-block px-8 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition" data-i18n="cta">
+                See how we fix the chain
             </a>
-            <p class="text-xs text-gray-600 mt-3">只讲问题，不讲工具</p>
+            <p class="text-xs text-gray-600 mt-3" data-i18n="cta_note">Problem-focused, not tool-focused</p>
         </div>
 
         <!-- 底部 -->
         <div class="text-center text-xs text-gray-600 pt-16 border-t border-gray-800 mt-16">
-            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
+            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2" data-i18n="footer_github">GitHub</a>
             <span class="text-gray-700">·</span>
-            <a href="/spec/README.md" class="hover:text-gray-400 mx-2">协议</a>
+            <a href="/spec/README.md" class="hover:text-gray-400 mx-2" data-i18n="footer_spec">Spec</a>
             <span class="text-gray-700">·</span>
-            <a href="/cases.html" class="hover:text-gray-400 mx-2">案例</a>
+            <a href="/cases.html" class="hover:text-gray-400 mx-2" data-i18n="footer_cases">Cases</a>
         </div>
     </div>
+
+    <script>
+        // 翻译字典
+        const translations = {
+            en: {
+                title: "HJS · AI Accountability",
+                nav_home: "Home",
+                nav_product: "Product",
+                nav_developers: "Developers",
+                nav_console: "Console",
+                nav_lookup: "Lookup",
+                headline: "AI is reshaping society<br>but accountability hasn't caught up",
+                subhead: "Medical AI, autonomous driving, AI agents in the workplace, AI in education —<br>every advance asks the same question: who's responsible when things go wrong?",
+                subfoot: "These are not hypotheticals — they are happening now.",
+                pain1_title: "Medical AI Adoption",
+                pain1_desc: "Diagnostic AI is used in thousands of hospitals. When errors occur, is it the doctor, the AI vendor, or the data provider?",
+                pain2_title: "Autonomous Driving",
+                pain2_desc: "L3 vehicles are now on public roads. In an accident, is it the driver, the automaker, or the algorithm?",
+                pain3_title: "AI Agents",
+                pain3_desc: "From customer service to finance, when an AI exceeds its authority, who can answer 'who authorized it'?",
+                pain4_title: "AI in Education",
+                pain4_desc: "AI tutoring and content generation are now in classrooms. When biased or incorrect material is taught, who is accountable—the teacher, the developer, or the school?",
+                core_title: "Technology outpaces governance",
+                core_desc: "Society is adopting AI rapidly, but accountability frameworks are stuck in the industrial era.<br>Every untraceable decision erodes trust in AI.",
+                core_footer: "This isn't one industry's problem — it's the defining challenge of the AI age.",
+                core_stat: "71% of CIOs say traceability is required for AI projects.",
+                cta: "See how we fix the chain",
+                cta_note: "Problem-focused, not tool-focused",
+                footer_github: "GitHub",
+                footer_spec: "Spec",
+                footer_cases: "Cases"
+            },
+            zh: {
+                title: "HJS · AI责任追溯",
+                nav_home: "首页",
+                nav_product: "产品",
+                nav_developers: "开发者",
+                nav_console: "控制台",
+                nav_lookup: "查询",
+                headline: "AI 正在重塑社会<br>但责任链条还没跟上",
+                subhead: "医疗AI普及、自动驾驶上路、AI智能体走入职场、教育AI应用——<br>每一次进步，都在拷问同一个问题：出事了，谁负责？",
+                subfoot: "这不是假设，而是正在发生的现实。",
+                pain1_title: "医疗AI普及",
+                pain1_desc: "辅助诊断已覆盖数千家医院，但误诊发生时，责任在医生、AI厂商、还是数据提供方？",
+                pain2_title: "自动驾驶上路",
+                pain2_desc: "L3级车辆已获准在公共道路行驶，一旦发生事故，是车主、车企、还是算法负责？",
+                pain3_title: "AI智能体渗透",
+                pain3_desc: "从客服到财务，AI自主执行任务时出现越权或错误，谁能回答“谁给了它权限”？",
+                pain4_title: "教育AI应用",
+                pain4_desc: "AI辅助教学、生成内容已进入课堂，当算法推荐偏差或错误内容时，教师、开发者还是学校该负责？",
+                core_title: "技术走在了制度前面",
+                core_desc: "社会正加速采纳AI，但责任链条的设计仍停留在工业时代。<br>每一次无法追溯的决策，都在透支社会对AI的信任。",
+                core_footer: "这不是某个行业的问题，是整个AI时代的共同挑战。",
+                core_stat: "71%的CIO表示，可追溯性是AI项目的必要条件。",
+                cta: "了解我们如何修复责任链条",
+                cta_note: "只讲问题，不讲工具",
+                footer_github: "GitHub",
+                footer_spec: "协议",
+                footer_cases: "案例"
+            }
+        };
+
+        // 语言切换函数
+        function switchLang(lang) {
+            document.getElementById('lang-en').className = lang === 'en' 
+                ? 'lang-btn px-2 py-1 rounded bg-teal-600 text-white text-xs' 
+                : 'lang-btn px-2 py-1 rounded bg-gray-700 text-gray-300 text-xs';
+            document.getElementById('lang-zh').className = lang === 'zh' 
+                ? 'lang-btn px-2 py-1 rounded bg-teal-600 text-white text-xs' 
+                : 'lang-btn px-2 py-1 rounded bg-gray-700 text-gray-300 text-xs';
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    if (el.tagName === 'TITLE') {
+                        el.textContent = translations[lang][key];
+                    } else {
+                        el.innerHTML = translations[lang][key];
+                    }
+                }
+            });
+
+            const url = new URL(window.location);
+            url.searchParams.set('lang', lang);
+            window.history.replaceState({}, '', url);
+        }
+
+        // 初始化语言：默认英文
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const lang = urlParams.get('lang') || 'en';
+            switchLang(lang);
+        })();
+    </script>
 </body>
 </html>

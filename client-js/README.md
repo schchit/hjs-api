@@ -6,7 +6,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-JavaScript client for [HJS API](https://hjs-api.onrender.com) — a responsibility tracing service.
+JavaScript client for [HJS API](https://hjs-api.onrender.com) — A Protocol for Structural Traceability.
 
 ## 📦 Installation
 

@@ -43,7 +43,7 @@
                 <p class="text-gray-400 text-sm mt-2" data-i18n="auth.note">在 <a href="/console.html" class="text-teal-400">开发者控制台</a> 可以生成和管理 API Key。</p>
             </div>
 
-            <!-- 新增：不可篡改锚定章节 -->
+            <!-- 不可篡改锚定章节 -->
             <div class="mb-8 p-6 rounded-lg border border-gray-800 bg-gray-900/50">
                 <h2 class="text-xl font-semibold text-white mb-4" data-i18n="anchor.title">🔏 不可篡改锚定</h2>
                 <p class="text-gray-300 mb-3" data-i18n="anchor.desc">每条记录可**选择性地**附带一个不可篡改锚定，提供密码学证据。您可以在创建记录时指定锚定策略。</p>
@@ -92,6 +92,17 @@
                     <li><span class="text-gray-400">约1小时后：</span>自动升级证明，锚定到比特币区块链</li>
                     <li><span class="text-gray-400">长期可验证：</span>一旦锚定，证明可被独立验证，不受本服务存续影响</li>
                 </ul>
+            </div>
+
+            <!-- 新增：证据包章节（带锚点） -->
+            <div id="evidence-package" class="mb-8 p-6 rounded-lg border border-gray-800 bg-gray-900/50">
+                <h2 class="text-xl font-semibold text-white mb-4" data-i18n="evidence.title">📦 证据包</h2>
+                <p class="text-gray-300 mb-3" data-i18n="evidence.desc">一条完整的 HJS 证据由两部分组成：</p>
+                <ul class="list-disc list-inside text-gray-300 text-sm space-y-1">
+                    <li><code class="text-teal-400">.json</code> 文件：事件的结构化数据</li>
+                    <li><code class="text-teal-400">.ots</code> 文件：锚定到比特币区块链的时间戳证明</li>
+                </ul>
+                <p class="text-gray-400 text-sm mt-2" data-i18n="evidence.note">两者缺一不可。下载时请一并保存。</p>
             </div>
 
             <!-- POST /judgments -->
@@ -319,6 +330,9 @@ ots info record.json.ots</code></pre>
                 'anchor.response': '响应中的锚定信息',
                 'anchor.download': '下载锚定证明',
                 'anchor.lifecycle': '证明生命周期',
+                'evidence.title': '📦 证据包',
+                'evidence.desc': '一条完整的 HJS 证据由两部分组成：',
+                'evidence.note': '两者缺一不可。下载时请一并保存。',
                 'endpoint.post.desc': '记录一条判断事件，返回唯一的记录 ID。',
                 'endpoint.get.desc': '根据 ID 查询完整的判断记录。',
                 'endpoint.json.desc': '下载 JSON 格式的记录文件。',
@@ -345,6 +359,9 @@ ots info record.json.ots</code></pre>
                 'anchor.response': 'Anchor Info in Response',
                 'anchor.download': 'Download Anchor Proof',
                 'anchor.lifecycle': 'Proof Lifecycle',
+                'evidence.title': '📦 Evidence Package',
+                'evidence.desc': 'A complete HJS evidence consists of two parts:',
+                'evidence.note': 'Both are required. Save them together when downloading.',
                 'endpoint.post.desc': 'Record a judgment event, returns a unique record ID.',
                 'endpoint.get.desc': 'Retrieve a complete judgment record by ID.',
                 'endpoint.json.desc': 'Download the record as a JSON file.',
@@ -380,7 +397,7 @@ ots info record.json.ots</code></pre>
             });
 
             document.getElementById('page-title').textContent = lang === 'zh' ? 'HJS API 文档' : 'HJS API Documentation';
-            document.getElementById('page-subtitle').textContent = lang === 'zh' ? '责任追溯协议 · 实现层服务' : 'Responsibility Tracing Protocol · Implementation Layer';
+            document.getElementById('page-subtitle').textContent = lang === 'zh' ? '结构化追溯协议 · 实现层服务' : 'Structural Traceability Protocol · Implementation Layer';
         }
     </script>
 </body>

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Human Judgment Systems Foundation Ltd.
 
 const { Pool } = require('pg');
@@ -79,7 +79,7 @@ app.get('/', (req, res) => {
                       <h1 class="text-5xl font-bold mb-3 bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
                           HJS API
                       </h1>
-                      <p class="text-xl text-gray-400">HJS is a protocol for structural traceability</p>
+                      <p class="text-xl text-gray-400">An open protocol for recording structured events <a href="/spec" class="text-xs text-teal-400 ml-2">[spec]</a></p>
                   </div>
 
                   <!-- Cards -->
@@ -161,6 +161,33 @@ app.get('/', (req, res) => {
                           </div>
                       </div>
                       
+                      <!-- Evidence Package Entry -->
+                      <div class="mt-4 p-3 rounded-lg border border-gray-800 bg-gray-900/30">
+                          <div class="flex items-center gap-2">
+                              <span class="text-xs text-gray-400">📦 Evidence Package</span>
+                              <a href="/docs.html#evidence-package" class="text-xs text-teal-400">Learn more →</a>
+                          </div>
+                          <p class="text-xs text-gray-500 mt-1">Each evidence = record file (.json) + timestamp proof (.ots)</p>
+                      </div>
+
+                      <!-- Recording Boundary -->
+                      <div class="mt-4 p-4 rounded-lg border border-gray-800 bg-gray-900/30">
+                          <h4 class="text-sm font-semibold text-gray-300 mb-2">📌 What We Record</h4>
+                          <div class="grid grid-cols-2 gap-2 text-xs text-gray-400">
+                              <div>✅ Who (entity)</div>
+                              <div>✅ When (timestamp)</div>
+                              <div>✅ What action (action)</div>
+                              <div>✅ In what context (scope)</div>
+                          </div>
+                          <h4 class="text-sm font-semibold text-gray-300 mt-3 mb-2">🚫 What We Don't Record</h4>
+                          <div class="grid grid-cols-2 gap-2 text-xs text-gray-400">
+                              <div>❌ Decision correctness</div>
+                              <div>❌ Responsibility assignment</div>
+                              <div>❌ Personal identifiable info</div>
+                              <div>❌ Business data details</div>
+                          </div>
+                      </div>
+                      
                       <div class="mt-4 text-center">
                           <a href="/docs.html" class="inline-flex items-center gap-1 text-sm text-teal-400 hover:text-teal-300">
                               <span>View full API documentation</span>
@@ -196,6 +223,13 @@ app.get('/', (req, res) => {
                       <a href="/lookup.html" class="hover:text-gray-400 transition-colors mx-3">Lookup</a>
                       <span class="text-gray-700">|</span>
                       <a href="/docs.html" class="hover:text-gray-400 transition-colors mx-3">API Docs</a>
+                  </div>
+                  
+                  <!-- Without Traceability Warning -->
+                  <div class="mt-8 text-center">
+                      <a href="/cases.html" class="text-xs text-gray-500 hover:text-gray-400">
+                          ⚠️ Without traceable records → see what happens
+                      </a>
                   </div>
               </div>
           </div>
@@ -276,7 +310,7 @@ app.get('/', (req, res) => {
                       <h1 class="text-5xl font-bold mb-3 bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
                           HJS API
                       </h1>
-                      <p class="text-xl text-gray-400">HJS 是一个结构化追溯协议</p>
+                      <p class="text-xl text-gray-400">一种用于记录结构化事件的开源协议 <a href="/spec" class="text-xs text-teal-400 ml-2">[规范]</a></p>
                   </div>
 
                   <!-- 卡片网格 -->
@@ -343,7 +377,7 @@ app.get('/', (req, res) => {
                               </div>
                               <div id="test-key-result" class="mt-2 text-xs text-gray-400"></div>
                           </div>
-                          
+                        
                           <!-- 快速查询 -->
                           <div class="p-4 rounded-lg bg-gray-800/50">
                               <h4 class="text-sm font-medium text-gray-300 mb-3">试试示例记录</h4>
@@ -358,6 +392,33 @@ app.get('/', (req, res) => {
                           </div>
                       </div>
                       
+                      <!-- 证据包入口 -->
+                      <div class="mt-4 p-3 rounded-lg border border-gray-800 bg-gray-900/30">
+                          <div class="flex items-center gap-2">
+                              <span class="text-xs text-gray-400">📦 证据包格式</span>
+                              <a href="/docs.html#evidence-package" class="text-xs text-teal-400">查看详情 →</a>
+                          </div>
+                          <p class="text-xs text-gray-500 mt-1">每条证据 = 记录文件(.json) + 时间戳证明(.ots)</p>
+                      </div>
+
+                      <!-- 记录边界 -->
+                      <div class="mt-4 p-4 rounded-lg border border-gray-800 bg-gray-900/30">
+                          <h4 class="text-sm font-semibold text-gray-300 mb-2">📌 我们记录什么</h4>
+                          <div class="grid grid-cols-2 gap-2 text-xs text-gray-400">
+                              <div>✅ 谁 (entity)</div>
+                              <div>✅ 什么时候 (timestamp)</div>
+                              <div>✅ 做了什么 (action)</div>
+                              <div>✅ 在什么上下文中 (scope)</div>
+                          </div>
+                          <h4 class="text-sm font-semibold text-gray-300 mt-3 mb-2">🚫 我们不记录什么</h4>
+                          <div class="grid grid-cols-2 gap-2 text-xs text-gray-400">
+                              <div>❌ 决策对错</div>
+                              <div>❌ 责任归属</div>
+                              <div>❌ 个人身份信息</div>
+                              <div>❌ 业务数据细节</div>
+                          </div>
+                      </div>
+                      
                       <div class="mt-4 text-center">
                           <a href="/docs.html" class="inline-flex items-center gap-1 text-sm text-teal-400 hover:text-teal-300">
                               <span>查看完整 API 文档</span>
@@ -367,7 +428,7 @@ app.get('/', (req, res) => {
                           </a>
                       </div>
                   </div>
-
+                  
                   <!-- 快速链接和状态 -->
                   <div class="grid md:grid-cols-3 gap-4 text-center mb-8">
                       <div class="p-4 rounded-xl bg-gray-900/30 border border-gray-800">
@@ -393,6 +454,13 @@ app.get('/', (req, res) => {
                       <a href="/lookup.html" class="hover:text-gray-400 transition-colors mx-3">查询</a>
                       <span class="text-gray-700">|</span>
                       <a href="/docs.html" class="hover:text-gray-400 transition-colors mx-3">API文档</a>
+                  </div>
+                  
+                  <!-- 警示入口 -->
+                  <div class="mt-8 text-center">
+                      <a href="/cases.html" class="text-xs text-gray-500 hover:text-gray-400">
+                          ⚠️ 如果没有可追溯的记录 → 看看会发生什么
+                      </a>
                   </div>
               </div>
           </div>

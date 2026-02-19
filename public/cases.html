@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HJS · 如果没有追溯</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        body { background: #0a0a0a; }
+        .glow { text-shadow: 0 0 20px rgba(94, 224, 192, 0.5); }
+        .case-card { transition: all 0.2s; }
+        .case-card:hover { border-color: #5ee0c0; }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- 语言切换和返回链接 -->
+        <div class="flex justify-between items-center mb-8">
+            <a href="/" class="text-sm text-teal-400 hover:text-teal-300">← 返回首页</a>
+            <div class="flex gap-2">
+                <a href="?lang=zh" class="text-sm px-2 py-1 rounded bg-teal-600 text-white">中文</a>
+                <a href="?lang=en" class="text-sm px-2 py-1 rounded bg-gray-800 text-gray-300">English</a>
+            </div>
+        </div>
+
+        <!-- 标题 -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-white mb-3">如果没有可追溯的记录</h1>
+            <p class="text-gray-400 max-w-2xl mx-auto">
+                下面这些场景里，如果决策过程没有被记录，就会发生这些事。<br>
+                不是假设，是每天都在发生的现实。
+            </p>
+        </div>
+
+        <!-- 案例网格 -->
+        <div class="grid md:grid-cols-2 gap-6 mb-12">
+            
+            <!-- 案例 1：贷款审批 -->
+            <div class="case-card p-6 rounded-xl border border-gray-800 bg-gray-900/50">
+                <div class="flex items-start gap-3 mb-4">
+                    <span class="text-2xl">🏦</span>
+                    <h2 class="text-xl font-semibold text-white">贷款被拒</h2>
+                </div>
+                <p class="text-gray-300 text-sm mb-3 leading-relaxed">
+                    张先生申请贷款被拒，想知道是谁做的决定、依据是什么。
+                </p>
+                <div class="bg-gray-800/50 p-3 rounded-lg mb-3">
+                    <p class="text-xs text-gray-400 mb-1">❌ 如果没有记录</p>
+                    <p class="text-sm text-gray-300">银行查不到具体审批人，只说是“系统自动拒的”。张先生无处申诉。</p>
+                </div>
+                <div class="bg-gray-800/50 p-3 rounded-lg">
+                    <p class="text-xs text-teal-400 mb-1">✅ 如果有 HJS</p>
+                    <p class="text-sm text-gray-300">查到审批人 ID、审批时间、当时看到的信用报告版本。张先生可以据此申诉或更正。</p>
+                </div>
+            </div>
+
+            <!-- 案例 2：AI 误诊 -->
+            <div class="case-card p-6 rounded-xl border border-gray-800 bg-gray-900/50">
+                <div class="flex items-start gap-3 mb-4">
+                    <span class="text-2xl">🏥</span>
+                    <h2 class="text-xl font-semibold text-white">AI 误诊</h2>
+                </div>
+                <p class="text-gray-300 text-sm mb-3 leading-relaxed">
+                    李女士的 AI 诊断建议被医生采纳，后来发现是误诊。
+                </p>
+                <div class="bg-gray-800/50 p-3 rounded-lg mb-3">
+                    <p class="text-xs text-gray-400 mb-1">❌ 如果没有记录</p>
+                    <p class="text-sm text-gray-300">医生说是“AI 说的”，AI 厂商说是“医生采纳的”。责任无法追溯。</p>
+                </div>
+                <div class="bg-gray-800/50 p-3 rounded-lg">
+                    <p class="text-xs text-teal-400 mb-1">✅ 如果有 HJS</p>
+                    <p class="text-sm text-gray-300">记录显示：AI 生成建议 → 医生确认 → 确认时 AI 的置信度。责任链清晰。</p>
+                </div>
+            </div>
+
+            <!-- 案例 3：权限滥用 -->
+            <div class="case-card p-6 rounded-xl border border-gray-800 bg-gray-900/50">
+                <div class="flex items-start gap-3 mb-4">
+                    <span class="text-2xl">🔑</span>
+                    <h2 class="text-xl font-semibold text-white">离职员工权限</h2>
+                </div>
+                <p class="text-gray-300 text-sm mb-3 leading-relaxed">
+                    某员工离职半年后，有人用他的旧权限登录系统删了数据。
+                </p>
+                <div class="bg-gray-800/50 p-3 rounded-lg mb-3">
+                    <p class="text-xs text-gray-400 mb-1">❌ 如果没有记录</p>
+                    <p class="text-sm text-gray-300">查不到权限是谁给的、为什么没收回。最后 HR 和 IT 互相推诿。</p>
+                </div>
+                <div class="bg-gray-800/50 p-3 rounded-lg">
+                    <p class="text-xs text-teal-400 mb-1">✅ 如果有 HJS</p>
+                    <p class="text-sm text-gray-300">记录显示：权限是谁授予的、有效期到哪天、离职时是否被收回。</p>
+                </div>
+            </div>
+
+            <!-- 案例 4：算法黑箱 -->
+            <div class="case-card p-6 rounded-xl border border-gray-800 bg-gray-900/50">
+                <div class="flex items-start gap-3 mb-4">
+                    <span class="text-2xl">⚖️</span>
+                    <h2 class="text-xl font-semibold text-white">司法辅助</h2>
+                </div>
+                <p class="text-gray-300 text-sm mb-3 leading-relaxed">
+                    法院用 AI 辅助量刑，被告质疑“算法不公”。
+                </p>
+                <div class="bg-gray-800/50 p-3 rounded-lg mb-3">
+                    <p class="text-xs text-gray-400 mb-1">❌ 如果没有记录</p>
+                    <p class="text-sm text-gray-300">法官只能口头解释“AI 只是参考”。被告不服，但无法验证。</p>
+                </div>
+                <div class="bg-gray-800/50 p-3 rounded-lg">
+                    <p class="text-xs text-teal-400 mb-1">✅ 如果有 HJS</p>
+                    <p class="text-sm text-gray-300">可以查到：AI 的哪次推荐被采纳、采纳时法官的确认记录、算法版本。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 一句话总结（不煽情，只点出事实） -->
+        <div class="text-center border-t border-gray-800 pt-8 mt-8">
+            <p class="text-gray-500 text-sm">
+                这些不是假设。如果你在做类似的事，你需要 HJS。
+            </p>
+            <div class="flex justify-center gap-4 mt-4">
+                <a href="/console.html" class="px-4 py-2 bg-teal-600 text-white text-sm rounded hover:bg-teal-700">开始使用</a>
+                <a href="/docs.html" class="px-4 py-2 bg-gray-800 text-gray-300 text-sm rounded hover:bg-gray-700">查看文档</a>
+            </div>
+        </div>
+
+        <!-- 底部链接 -->
+        <div class="mt-12 text-center text-xs text-gray-600">
+            <a href="/" class="hover:text-gray-400 mx-2">首页</a>
+            <span class="text-gray-700">|</span>
+            <a href="/console.html" class="hover:text-gray-400 mx-2">控制台</a>
+            <span class="text-gray-700">|</span>
+            <a href="/lookup.html" class="hover:text-gray-400 mx-2">查询</a>
+            <span class="text-gray-700">|</span>
+            <a href="/docs.html" class="hover:text-gray-400 mx-2">文档</a>
+        </div>
+    </div>
+</body>
+</html>

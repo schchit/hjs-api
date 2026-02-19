@@ -1,0 +1,182 @@
+Metadata-Version: 2.4
+Name: hjs-client
+Version: 0.1.0
+Summary: Python client for HJS API - A Protocol for Structural Traceability
+Home-page: https://github.com/schchit/hjs-api
+Author: HJS Contributors
+Author-email: signal@humanjudgment.org
+Keywords: hjs,traceability,structural,judgment,api
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Requires-Dist: requests>=2.25.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+<p align="center">
+  <a href="README.zh-CN.md">中文</a> | <strong>English</strong>
+</p>
+
+# HJS Python Client
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python Version](https://img.shields.io/badge/python-3.7%2B-blue)](https://www.python.org/)
+
+Python client for [HJS API](https://hjs-api.onrender.com) — a responsibility tracing service.
+
+## 📦 Installation
+
+### From PyPI (when published)
+```bash
+pip install hjs-client
+```
+
+### From GitHub (current)
+```bash
+pip install git+https://github.com/schchit/hjs-api.git#subdirectory=client-py
+```
+
+### From local source
+```bash
+cd /workspaces/hjs-api/client-py
+pip install -e .
+```
+
+## 🚀 Quick Start
+
+### Basic Example
+
+```python
+from hjs_client import HJSClient
+
+# Create client
+client = HJSClient()
+
+# Record a judgment
+result = client.record_judgment(
+    entity="alice@bank.com",
+    action="loan_approved",
+    scope={"amount": 100000}
+)
+print("✅ Recorded:", result)
+
+# Retrieve it
+judgment = client.get_judgment(result['id'])
+print("✅ Retrieved:", judgment)
+```
+
+### Using Context Manager
+
+```python
+from hjs_client import HJSClient
+
+with HJSClient() as client:
+    result = client.record_judgment("alice@bank.com", "test_action")
+    print("✅ Recorded:", result)
+```
+
+### Error Handling
+
+```python
+from hjs_client import HJSClient
+import requests
+
+client = HJSClient()
+
+try:
+    result = client.record_judgment("alice@bank.com", "test_action")
+    print("✅ Success:", result)
+except ValueError as e:
+    print("❌ Validation error:", e)
+except requests.RequestException as e:
+    print("❌ API error:", e)
+```
+
+## 📚 API Reference
+
+### `HJSClient(base_url, timeout)`
+
+Create a new client instance.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `base_url` | str | `"https://hjs-api.onrender.com"` | API base URL |
+| `timeout` | int | `30` | Request timeout in seconds |
+
+### `record_judgment(entity, action, scope)`
+
+Record a judgment.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `entity` | str | ✅ | Who made the judgment |
+| `action` | str | ✅ | What action was judged |
+| `scope` | dict | ❌ | Optional additional context |
+
+**Returns**: `{ id, status, timestamp }`
+
+**Raises**:
+- `ValueError`: If required parameters are missing
+- `requests.RequestException`: If API request fails
+
+### `get_judgment(id)`
+
+Retrieve a judgment by ID.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | str | ✅ | Judgment ID from `record_judgment` |
+
+**Returns**: Complete judgment record
+
+**Raises**:
+- `ValueError`: If ID is missing or not found
+- `requests.RequestException`: If API request fails
+
+## 🧪 Testing
+
+```bash
+cd /workspaces/hjs-api/client-py
+python -c "
+from hjs_client import HJSClient
+client = HJSClient()
+result = client.record_judgment('test@example.com', 'test_action')
+print('✅ Recorded:', result)
+judgment = client.get_judgment(result['id'])
+print('✅ Retrieved:', judgment)
+"
+```
+
+Expected output:
+```
+✅ Recorded: {'id': 'jgd_...', 'status': 'recorded', 'timestamp': '...'}
+✅ Retrieved: {'id': 'jgd_...', 'entity': 'test@example.com', 'action': 'test_action', ...}
+```
+
+## 📄 License
+
+MIT © HJS Contributors
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+- Open an [Issue](https://github.com/schchit/hjs-api/issues) for bugs or suggestions
+- Submit Pull Requests for improvements
+
+---

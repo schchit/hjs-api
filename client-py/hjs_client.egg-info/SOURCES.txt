@@ -1,0 +1,7 @@
+README.md
+setup.py
+hjs_client.egg-info/PKG-INFO
+hjs_client.egg-info/SOURCES.txt
+hjs_client.egg-info/dependency_links.txt
+hjs_client.egg-info/requires.txt
+hjs_client.egg-info/top_level.txt

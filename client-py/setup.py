@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name="hjs-client",
     version="0.1.0",
-    description="Python client for HJS API - a responsibility tracing service",
+    description="Python client for HJS API - A Protocol for Structural Traceability,
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="HJS Contributors",
@@ -25,5 +25,5 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
     ],
-    keywords="hjs, judgment, responsibility, tracing, api",
+    keywords="hjs, traceability, structural, judgment, api",
 )

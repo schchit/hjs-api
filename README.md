@@ -4,10 +4,12 @@
 
 # HJS: Structural Traceability Protocol
 
-[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Spec: CC0 1.0](https://img.shields.io/badge/Spec-CC0_1.0-lightgrey.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![Deployed on Render](https://img.shields.io/badge/Deployed%20on-Render-blue)](https://render.com)
 
-**Implementation layer API service.** A reference implementation for recording structured events, based on the HJS protocol family.
+**Implementation layer API service.** A reference implementation for recording structured events, based on the HJS protocol family.  
+**Protocol specification** is available in the [`/spec`](spec/) directory, licensed under CC0 1.0.
 
 **Base URL:** `https://api.hjs.sh`
 
@@ -25,25 +27,21 @@ HJS protocols are governed by the [Human Judgment Systems Foundation Ltd.](https
 
 ## 📄 License
 
-This project uses a **multi-license strategy**:
+This project uses a **dual-license strategy** to maximize adoption while keeping the protocol open.
 
-### Core Code
-The core source code (`index.js`, `lib/`, `cron/`) is licensed under **AGPL-3.0**.
+### Protocol Specification
+The protocol definition in the [`/spec`](spec/) directory is released under the **CC0 1.0 Universal** license, placing it in the public domain. This ensures anyone can implement the protocol without restrictions.
 
-[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![License: CC0 1.0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
 
-**What this means:**
-- ✅ You can freely use, modify, and distribute the code
-- ✅ You can use it in commercial projects
-- ✅ If you provide a network service based on this code, you must make your modifications open source
-- ❌ You cannot redistribute the code under a closed-source license
+### Reference Implementation
+The reference implementation (this codebase) is licensed under the **MIT License**, allowing maximum adoption and integration into any project, including commercial applications.
 
-Full license text: [LICENSE](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### Documentation & Frontend
-Documentation (`README.md`) and frontend pages (`public/`) are licensed under **CC BY-SA 4.0**.
-
-[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+Full license texts:
+- [MIT License](LICENSE)
+- [CC0 1.0 Universal](spec/LICENSE)
 
 ---
 

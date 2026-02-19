@@ -2,48 +2,46 @@
   <strong>中文</strong> | <a href="README.md">English</a>
 </p>
 
-# HJS：结构化追溯协议
+# HJS：结构化可追溯协议
 
-[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Spec: CC0 1.0](https://img.shields.io/badge/Spec-CC0_1.0-lightgrey.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![Deployed on Render](https://img.shields.io/badge/Deployed%20on-Render-blue)](https://render.com)
 
-**实现层 API 服务**。基于 HJS 协议族的参考实现，用于记录结构化事件。
+**实现层 API 服务**。基于 HJS 协议族的结构化事件记录参考实现。  
+**协议规范**位于 [`/spec`](spec/) 目录，采用 CC0 1.0 许可证。
 
-基础地址：`https://api.hjs.sh`
+**基础地址**：`https://api.hjs.sh`
 
 ---
 
 ## 📖 关于本项目
 
-本项目是 [HJS 协议族](https://github.com/hjs-spec/spec)的第一个实现层服务。它实现了 HJS 核心协议中的 **Judgment（判断）**原语，提供了一个 REST API，用于在不可逆的自动化决策中记录和追溯人类判断事件。
+本项目是 [HJS 协议族](https://github.com/hjs-spec/spec)的第一个实现层服务。它实现了 HJS 核心协议中的 **判断（Judgment）**原语，提供了一个 REST API，用于在自动化系统中记录和追溯结构化事件。
 
 HJS 协议由 [Human Judgment Systems Foundation Ltd.](https://humanjudgment.org)（新加坡 CLG）管理。
 
-> **协议边界**：HJS 定义的是结构化可追溯原语，不判定法律或道德责任。所有责任判定必须由外部系统或法律程序完成。
+**协议边界**：HJS 定义的是结构化可追溯原语，**不界定法律或道德责任，也不判定决策的正确性**。所有责任认定必须由外部系统或法律程序完成。
 
 ---
 
 ## 📄 许可证
 
-本项目采用**多重许可证**策略：
+本项目采用**双重许可证策略**，以最大化协议采用率，同时保持协议的开放性。
 
-### 核心代码
-`index.js`、`lib/`、`cron/` 等核心源代码采用 **AGPL-3.0** 许可证。
+### 协议规范
+[`/spec`](spec/) 目录下的协议定义采用 **CC0 1.0 公共领域贡献**许可证，完全开放，任何人都可以无限制地实现该协议。
 
-[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![License: CC0 1.0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
 
-**这意味着：**
-- ✅ 你可以自由使用、修改、分发代码
-- ✅ 可以用于商业项目
-- ✅ 如果你基于本代码提供网络服务，必须开源你的修改
-- ❌ 不能将代码闭源后重新分发
+### 参考实现
+本仓库的参考实现代码采用 **MIT 许可证**，允许最大程度的采用和集成，包括商业应用。
 
-完整许可证文本：[LICENSE](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### 文档与前端
-文档（`README.md`）和前端页面（`public/`）采用 **CC BY-SA 4.0** 许可证。
-
-[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+完整许可证文本：
+- [MIT 许可证](LICENSE)
+- [CC0 1.0 公共领域贡献](spec/LICENSE)
 
 ---
 

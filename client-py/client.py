@@ -1,7 +1,7 @@
 """
 HJS Python Client
 
-A Python client for the HJS API - a responsibility tracing service.
+A Python client for the HJS API is a protocol for structural traceability.
 """
 
 import requests

@@ -485,39 +485,6 @@
                 setTimeout(checkReact, 100);
             }
         })();
-
-        // ===== 添加全局语言切换 =====
-        // 从 localStorage 读取语言偏好
-        const savedLang = localStorage.getItem('hjs_lang');
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlLang = urlParams.get('lang');
-        const currentLang = savedLang || urlLang || 'en';
-
-        // 保存到 localStorage
-        if (savedLang !== currentLang) {
-            localStorage.setItem('hjs_lang', currentLang);
-        }
-
-        // 更新 URL
-        if (savedLang && !urlLang) {
-            const url = new URL(window.location);
-            url.searchParams.set('lang', savedLang);
-            window.history.replaceState({}, '', url);
-        }
-
-        // 语言翻译
-        const translations = {
-            en: {
-                // 如果需要英文翻译，可以在这里添加
-            },
-            zh: {
-                // 如果需要中文翻译，可以在这里添加
-            }
-        };
-
-        // 应用语言（这里只是记录，实际翻译需要修改组件）
-        console.log('Current language:', currentLang);
-        // ===== 全局语言切换结束 =====
     </script>
 </body>
 </html>

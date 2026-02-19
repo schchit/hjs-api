@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HJS · 如果没有追溯</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        body { background: #0a0a0a; }
+        .glow { text-shadow: 0 0 20px rgba(94, 224, 192, 0.5); }
+        .case-card { transition: all 0.2s; }
+        .case-card:hover { border-color: #5ee0c0; }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- 语言切换和返回链接 -->
+        <div class="flex justify-between items-center mb-8">
+            <a href="/" class="text-sm text-teal-400 hover:text-teal-300" data-i18n="back">← 返回首页</a>
+            <div class="flex gap-2">
+                <a href="?lang=zh" class="lang-btn text-sm px-2 py-1 rounded bg-teal-600 text-white">中文</a>
+                <a href="?lang=en" class="lang-btn text-sm px-2 py-1 rounded bg-gray-800 text-gray-300">English</a>
+            </div>
+        </div>
+
+        <!-- 标题 -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-white mb-3" data-i18n="title">如果没有可追溯的记录</h1>
+            <p class="text-gray-400 max-w-2xl mx-auto" data-i18n="subtitle">
+                下面这些场景里，如果决策过程没有被记录，就会发生这些事。<br>
+                不是假设，是每天都在发生的现实。
+            </p>
+        </div>
+
+        <!-- 案例网格 -->
+        <div class="grid md:grid-cols-2 gap-6 mb-12">
+            
+            <!-- 案例 1：贷款审批 -->
+            <div class="case-card p-6 rounded-xl border border-gray-800 bg-gray-900/50">
+                <div class="flex items-start gap-3 mb-4">
+                    <span class="text-2xl">🏦</span>
+                    <h2 class="text-xl font-semibold text-white" data-i18n="case1_title">贷款被拒</h2>
+                </div>
+                <p class="text-gray-300 text-sm mb-3 leading-relaxed" data-i18n="case1_desc">
+                    张先生申请贷款被拒，想知道是谁做的决定、依据是什么。
+                </p>
+                <div class="bg-gray-800/50 p-3 rounded-lg mb-3">
+                    <p class="text-xs text-gray-400 mb-1" data-i18n="without_label">❌ 如果没有记录</p>
+                    <p class="text-sm text-gray-300" data-i18n="case1_without">银行查不到具体审批人，只说是“系统自动拒的”。张先生无处申诉。</p>
+                </div>
+                <div class="bg-gray-800/50 p-3 rounded-lg">
+                    <p class="text-xs text-teal-400 mb-1" data-i18n="with_label">✅ 如果有 HJS</p>
+                    <p class="text-sm text-gray-300" data-i18n="case1_with">查到审批人ID、审批时间、当时看到的信用报告版本。张先生可以据此申诉或更正。</p>
+                </div>
+            </div>
+
+            <!-- 案例 2：AI 误诊（真实事件） -->
+            <div class="case-card p-6 rounded-xl border border-gray-800 bg-gray-900/50">
+                <div class="flex items-start gap-3 mb-4">
+                    <span class="text-2xl">🏥</span>
+                    <h2 class="text-xl font-semibold text-white" data-i18n="case2_title">AI医疗误诊</h2>
+                </div>
+                <p class="text-gray-300 text-sm mb-3 leading-relaxed" data-i18n="case2_desc">
+                    程先生用AI问诊皮肤问题，AI仅凭照片诊断为“梅毒”。他陷入焦虑，反复就医，即使医生证明只是普通皮炎也不信。
+                </p>
+                <div class="bg-gray-800/50 p-3 rounded-lg mb-3">
+                    <p class="text-xs text-gray-400 mb-1" data-i18n="without_label">❌ 如果没有记录</p>
+                    <p class="text-sm text-gray-300" data-i18n="case2_without">无法追溯AI当时给出的完整诊断依据、置信度、使用的模型版本。用户陷入“AI说我有病，医生说我没事”的信任危机。</p>
+                </div>
+                <div class="bg-gray-800/50 p-3 rounded-lg">
+                    <p class="text-xs text-teal-400 mb-1" data-i18n="with_label">✅ 如果有 HJS</p>
+                    <p class="text-sm text-gray-300" data-i18n="case2_with">记录 AI 诊断的全过程：用户上传的照片、AI 输出的完整报告、模型版本。医生可以据此判断AI的可靠性。</p>
+                </div>
+                <p class="text-xs text-gray-500 mt-2" data-i18n="case2_source">—— 真实事件，2026年1月</p>
+            </div>
+
+            <!-- 案例 3：权限滥用 -->
+            <div class="case-card p-6 rounded-xl border border-gray-800 bg-gray-900/50">
+                <div class="flex items-start gap-3 mb-4">
+                    <span class="text-2xl">🔑</span>
+                    <h2 class="text-xl font-semibold text-white" data-i18n="case3_title">离职员工权限</h2>
+                </div>
+                <p class="text-gray-300 text-sm mb-3 leading-relaxed" data-i18n="case3_desc">
+                    某员工离职半年后，有人用他的旧权限登录系统删了数据。
+                </p>
+                <div class="bg-gray-800/50 p-3 rounded-lg mb-3">
+                    <p class="text-xs text-gray-400 mb-1" data-i18n="without_label">❌ 如果没有记录</p>
+                    <p class="text-sm text-gray-300" data-i18n="case3_without">查不到权限是谁给的、为什么没收回。最后 HR 和 IT 互相推诿。</p>
+                </div>
+                <div class="bg-gray-800/50 p-3 rounded-lg">
+                    <p class="text-xs text-teal-400 mb-1" data-i18n="with_label">✅ 如果有 HJS</p>
+                    <p class="text-sm text-gray-300" data-i18n="case3_with">记录显示：权限是谁授予的、有效期到哪天、离职时是否被收回。</p>
+                </div>
+            </div>
+
+            <!-- 案例 4：自动驾驶（最新司法判例） -->
+            <div class="case-card p-6 rounded-xl border border-gray-800 bg-gray-900/50">
+                <div class="flex items-start gap-3 mb-4">
+                    <span class="text-2xl">🚗</span>
+                    <h2 class="text-xl font-semibold text-white" data-i18n="case4_title">辅助驾驶肇事</h2>
+                </div>
+                <p class="text-gray-300 text-sm mb-3 leading-relaxed" data-i18n="case4_desc">
+                    王某群酒后开启辅助驾驶，用“智驾神器”逃避方向盘监测，在副驾驶睡觉。车辆失控撞人。
+                </p>
+                <div class="bg-gray-800/50 p-3 rounded-lg mb-3">
+                    <p class="text-xs text-gray-400 mb-1" data-i18n="without_label">❌ 如果没有记录</p>
+                    <p class="text-sm text-gray-300" data-i18n="case4_without">责任推诿：司机说“是AI开的”，车厂说“系统只是辅助”。法院只能靠事后证据艰难还原。</p>
+                </div>
+                <div class="bg-gray-800/50 p-3 rounded-lg">
+                    <p class="text-xs text-teal-400 mb-1" data-i18n="with_label">✅ 如果有 HJS</p>
+                    <p class="text-sm text-gray-300" data-i18n="case4_with">记录显示：谁授权使用车辆、谁开启辅助驾驶、何时脱离监管、系统当时的状态。责任链清晰。</p>
+                </div>
+                <p class="text-xs text-gray-500 mt-2" data-i18n="case4_source">—— 最高人民法院指导性案例271号（2026）</p>
+            </div>
+        </div>
+
+        <!-- 一句话总结 -->
+        <div class="text-center border-t border-gray-800 pt-8 mt-8">
+            <p class="text-gray-500 text-sm" data-i18n="footer">这些不是假设。如果你在做类似的事，你需要 HJS。</p>
+            <div class="flex justify-center gap-4 mt-4">
+                <a href="/console.html" class="px-4 py-2 bg-teal-600 text-white text-sm rounded hover:bg-teal-700" data-i18n="cta">开始使用</a>
+                <a href="/docs.html" class="px-4 py-2 bg-gray-800 text-gray-300 text-sm rounded hover:bg-gray-700" data-i18n="docs">查看文档</a>
+            </div>
+        </div>
+
+        <!-- 底部链接 -->
+        <div class="mt-12 text-center text-xs text-gray-600">
+            <a href="/" class="hover:text-gray-400 mx-2">首页</a>
+            <span class="text-gray-700">|</span>
+            <a href="/console.html" class="hover:text-gray-400 mx-2">控制台</a>
+            <span class="text-gray-700">|</span>
+            <a href="/lookup.html" class="hover:text-gray-400 mx-2">查询</a>
+            <span class="text-gray-700">|</span>
+            <a href="/docs.html" class="hover:text-gray-400 mx-2">文档</a>
+        </div>
+    </div>
+
+    <script>
+        // 翻译字典
+        const translations = {
+            zh: {
+                back: "← 返回首页",
+                title: "如果没有可追溯的记录",
+                subtitle: "下面这些场景里，如果决策过程没有被记录，就会发生这些事。<br>不是假设，是每天都在发生的现实。",
+                case1_title: "贷款被拒",
+                case1_desc: "张先生申请贷款被拒，想知道是谁做的决定、依据是什么。",
+                case1_without: "银行查不到具体审批人，只说是“系统自动拒的”。张先生无处申诉。",
+                case1_with: "查到审批人ID、审批时间、当时看到的信用报告版本。张先生可以据此申诉或更正。",
+                case2_title: "AI医疗误诊",
+                case2_desc: "程先生用AI问诊皮肤问题，AI仅凭照片诊断为“梅毒”。他陷入焦虑，反复就医，即使医生证明只是普通皮炎也不信。",
+                case2_without: "无法追溯AI当时给出的完整诊断依据、置信度、使用的模型版本。用户陷入“AI说我有病，医生说我没事”的信任危机。",
+                case2_with: "记录 AI 诊断的全过程：用户上传的照片、AI 输出的完整报告、模型版本。医生可以据此判断AI的可靠性。",
+                case2_source: "—— 真实事件，2026年1月",
+                case3_title: "离职员工权限",
+                case3_desc: "某员工离职半年后，有人用他的旧权限登录系统删了数据。",
+                case3_without: "查不到权限是谁给的、为什么没收回。最后 HR 和 IT 互相推诿。",
+                case3_with: "记录显示：权限是谁授予的、有效期到哪天、离职时是否被收回。",
+                case4_title: "辅助驾驶肇事",
+                case4_desc: "王某群酒后开启辅助驾驶，用“智驾神器”逃避方向盘监测，在副驾驶睡觉。车辆失控撞人。",
+                case4_without: "责任推诿：司机说“是AI开的”，车厂说“系统只是辅助”。法院只能靠事后证据艰难还原。",
+                case4_with: "记录显示：谁授权使用车辆、谁开启辅助驾驶、何时脱离监管、系统当时的状态。责任链清晰。",
+                case4_source: "—— 最高人民法院指导性案例271号（2026）",
+                without_label: "❌ 如果没有记录",
+                with_label: "✅ 如果有 HJS",
+                footer: "这些不是假设。如果你在做类似的事，你需要 HJS。",
+                cta: "开始使用",
+                docs: "查看文档"
+            },
+            en: {
+                back: "← Back to Home",
+                title: "Without Traceable Records",
+                subtitle: "What happens when decisions aren't recorded. These aren't hypotheticals — they happen every day.",
+                case1_title: "Loan Denial",
+                case1_desc: "Mr. Zhang's loan was denied. He wants to know who made the decision and why.",
+                case1_without: "The bank can't find the approver. They just say 'the system denied it.' Mr. Zhang has no recourse.",
+                case1_with: "With HJS, he can see the approver ID, timestamp, and the credit report version used. He can appeal with evidence.",
+                case2_title: "AI Misdiagnosis",
+                case2_desc: "Mr. Cheng used an AI app for a skin issue. The AI diagnosed 'syphilis' based on photos, causing severe anxiety.",
+                case2_without: "No record of what the AI actually saw or why it made that diagnosis. Patient loses trust in both AI and doctors.",
+                case2_with: "HJS records the full context: photos uploaded, AI's complete output, model version. Doctors can verify AI's reasoning.",
+                case2_source: "— Real event, January 2026",
+                case3_title: "Departing Employee Access",
+                case3_desc: "Six months after an employee left, someone used his old credentials to delete data.",
+                case3_without: "No record of who granted the access, why it wasn't revoked. HR and IT blame each other.",
+                case3_with: "HJS shows who granted the access, its expiration, and whether it was revoked upon departure.",
+                case4_title: "Autonomous Driving",
+                case4_desc: "A drunk driver activated autopilot, used a 'cheat device' to bypass monitoring, and slept in the passenger seat. The car crashed.",
+                case4_without: "Blame game: 'The AI was driving' vs 'The system is only assistive.' Courts struggle to reconstruct responsibility.",
+                case4_with: "HJS records show who authorized vehicle use, when autopilot was engaged, and when the driver left the seat. Clear liability chain.",
+                case4_source: "— Supreme Court Guiding Case No.271 (2026)",
+                without_label: "❌ Without records",
+                with_label: "✅ With HJS",
+                footer: "These aren't hypotheticals. If you're building something similar, you need HJS.",
+                cta: "Start Building",
+                docs: "View Docs"
+            }
+        };
+
+        // 获取当前语言
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentLang = urlParams.get('lang') || 'zh';
+
+        // 更新页面文本
+        function updateLanguage(lang) {
+            const t = translations[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) {
+                    el.innerHTML = t[key];
+                }
+            });
+            
+            // 更新按钮样式
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.href.includes(lang)) {
+                    btn.className = 'lang-btn text-sm px-2 py-1 rounded bg-teal-600 text-white';
+                } else {
+                    btn.className = 'lang-btn text-sm px-2 py-1 rounded bg-gray-800 text-gray-300';
+                }
+            });
+        }
+
+        // 语言切换
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const newLang = btn.href.includes('zh') ? 'zh' : 'en';
+                window.location.search = `?lang=${newLang}`;
+            });
+        });
+
+        // 初始化
+        updateLanguage(currentLang);
+    </script>
+</body>
+</html>

@@ -381,7 +381,6 @@ ots info record.json.ots</code></pre>
         };
 
         function switchLang(lang) {
-    localStorage.setItem('hjs_lang', lang);
             document.getElementById('lang-zh').className = lang === 'zh' 
                 ? 'lang-btn px-3 py-1 rounded-md bg-teal-600 text-white text-sm hover:bg-teal-700'
                 : 'lang-btn px-3 py-1 rounded-md bg-gray-800 text-gray-300 text-sm hover:bg-gray-700';

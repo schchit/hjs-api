@@ -426,7 +426,6 @@ client.recordJudgment('user@example.com', 'test')
         };
 
         function switchLang(lang) {
-    localStorage.setItem('hjs_lang', lang);
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[lang] && translations[lang][key]) {

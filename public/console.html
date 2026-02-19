@@ -144,13 +144,21 @@
 
             const [activeTab, setActiveTab] = React.useState('generate');
 
-            // 语言相关
-            const [lang, setLang] = React.useState('en');
+            // 语言相关 - 从 localStorage 读取
+            const [lang, setLang] = React.useState(() => {
+                const savedLang = localStorage.getItem('hjs_lang');
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlLang = urlParams.get('lang');
+                return savedLang || urlLang || 'en';
+            });
+
+            // 同步语言到 localStorage 和 URL
             React.useEffect(() => {
-                const params = new URLSearchParams(window.location.search);
-                const l = params.get('lang') || 'en';
-                setLang(l);
-            }, []);
+                localStorage.setItem('hjs_lang', lang);
+                const url = new URL(window.location);
+                url.searchParams.set('lang', lang);
+                window.history.replaceState({}, '', url);
+            }, [lang]);
 
             // ---------- Handlers ----------
             const handleGenerate = async () => {
@@ -233,9 +241,6 @@
 
             const switchLang = (l) => {
                 setLang(l);
-                const url = new URL(window.location);
-                url.searchParams.set('lang', l);
-                window.history.replaceState({}, '', url);
             };
 
             // ---------- Translations ----------
@@ -474,7 +479,7 @@
                     ])
                 ])),
 
-                // 底部（保留，但可以简化）
+                // 底部
                 React.createElement('div', { key: 'footer', className: 'text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-12' }, [
                     React.createElement('a', { href: 'https://github.com/schchit/hjs-api', className: 'hover:text-gray-400 mx-2' }, 'GitHub'),
                     React.createElement('span', { className: 'text-gray-700' }, '·'),

@@ -9,7 +9,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
         body { background: #0a0a0a; }
-        /* 极简下拉菜单样式 - 与首页/产品页一致 */
         select {
             background-color: transparent;
             color: #9ca3af;
@@ -18,7 +17,6 @@
         }
         select:focus { outline: none; }
         select option { background-color: #111827; color: white; }
-        /* 代码块样式优化 */
         code, pre {
             font-family: 'JetBrains Mono', monospace !important;
             background: #111;
@@ -32,7 +30,6 @@
             overflow-x: auto;
             border: 1px solid #1f1f1f;
         }
-        /* 模块分隔线 */
         .section-divider {
             width: 100%;
             height: 1px;
@@ -46,10 +43,8 @@
     </style>
 </head>
 <body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
-    <!-- 整体内边距与首页/产品页保持一致：pt-20 -->
     <div class="max-w-4xl mx-auto px-4 pt-20 pb-12">
-        <!-- ========== 导航栏 ========== -->
-        <!-- 完全采用首页样式：字号text-base，间距mb-16，语言下拉透明 -->
+        <!-- 导航栏 -->
         <div class="flex justify-between items-center mb-16 text-base">
             <div class="text-white font-semibold text-lg">HJS</div>
             <div class="flex gap-8 md:gap-10 text-gray-400">
@@ -59,19 +54,18 @@
                 <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">控制台</a>
                 <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">查询</a>
             </div>
-            <!-- 极简语言下拉 -->
             <select onchange="switchLang(this.value)">
                 <option value="en">EN</option>
                 <option value="zh" selected>中文</option>
             </select>
         </div>
 
-        <!-- ========== 页面简短描述（参照产品页的定位语风格） ========== -->
+        <!-- 页面描述 -->
         <div class="mb-12">
-            <p class="text-base text-gray-300 max-w-2xl leading-relaxed" data-i18n="subhead">Everything you need to integrate HJS into your systems.</p>
+            <p class="text-base text-gray-300 max-w-2xl leading-relaxed" data-i18n="subhead">集成 HJS 所需的一切。</p>
         </div>
 
-        <!-- ========== 01 快速开始 ========== -->
+        <!-- 01 快速开始 -->
         <div class="mb-16">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="quickstart_prefix">01</span>
@@ -95,7 +89,7 @@
         <!-- 视觉分隔线 -->
         <div class="section-divider"></div>
 
-        <!-- ========== 02 API 参考 ========== -->
+        <!-- 02 API 参考 -->
         <div class="mb-16">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="api_prefix">02</span>
@@ -107,10 +101,10 @@
                     <div>
                         <h3 class="text-sm font-medium text-white mb-3" data-i18n="api_endpoints">端点</h3>
                         <ul class="space-y-2 text-xs text-gray-400">
-                            <li><code class="text-teal-400">POST /judgments</code> – <span data-i18n="api_post_desc">create a record</span></li>
-                            <li><code class="text-teal-400">GET /judgments/{id}</code> – <span data-i18n="api_get_desc">retrieve a record</span></li>
-                            <li><code class="text-teal-400">GET /judgments</code> – <span data-i18n="api_list_desc">list records</span></li>
-                            <li><code class="text-teal-400">GET /judgments/{id}/immutability-proof</code> – <span data-i18n="api_proof_desc">download OTS proof</span></li>
+                            <li><code class="text-teal-400">POST /judgments</code> – <span data-i18n="api_post_desc">创建记录</span></li>
+                            <li><code class="text-teal-400">GET /judgments/{id}</code> – <span data-i18n="api_get_desc">查询记录</span></li>
+                            <li><code class="text-teal-400">GET /judgments</code> – <span data-i18n="api_list_desc">列表查询</span></li>
+                            <li><code class="text-teal-400">GET /judgments/{id}/immutability-proof</code> – <span data-i18n="api_proof_desc">下载 OTS 证明</span></li>
                         </ul>
                     </div>
                     <div>
@@ -119,16 +113,16 @@
                         <pre class="text-xs"><code>X-API-Key: your-key</code></pre>
                         <h3 class="text-sm font-medium text-white mt-4 mb-3" data-i18n="api_errors">错误码</h3>
                         <ul class="space-y-1 text-xs text-gray-400">
-                            <li><code>400</code> – <span data-i18n="err_400">Bad request</span></li>
-                            <li><code>401</code> – <span data-i18n="err_401">Missing or invalid API key</span></li>
-                            <li><code>404</code> – <span data-i18n="err_404">Record not found</span></li>
-                            <li><code>429</code> – <span data-i18n="err_429">Rate limit exceeded</span></li>
-                            <li><code>500</code> – <span data-i18n="err_500">Server error</span></li>
+                            <li><code>400</code> – <span data-i18n="err_400">错误请求</span></li>
+                            <li><code>401</code> – <span data-i18n="err_401">缺少或无效的 API 密钥</span></li>
+                            <li><code>404</code> – <span data-i18n="err_404">记录不存在</span></li>
+                            <li><code>429</code> – <span data-i18n="err_429">超出速率限制</span></li>
+                            <li><code>500</code> – <span data-i18n="err_500">服务器错误</span></li>
                         </ul>
                     </div>
                 </div>
                 <div class="mt-6 text-left">
-                    <a href="/docs.html" class="text-xs text-teal-400 hover:underline" data-i18n="api_full_docs">📖 View full API documentation →</a>
+                    <a href="/docs.html" class="text-xs text-teal-400 hover:underline" data-i18n="api_full_docs">📖 查看完整 API 文档 →</a>
                 </div>
             </div>
         </div>
@@ -136,7 +130,7 @@
         <!-- 视觉分隔线 -->
         <div class="section-divider"></div>
 
-        <!-- ========== 03 SDK 使用指南 ========== -->
+        <!-- 03 SDK 使用指南 - 修复链接 -->
         <div class="mb-16">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="sdk_prefix">03</span>
@@ -145,12 +139,12 @@
             </div>
             <div class="border border-gray-800 rounded-lg p-6 bg-gray-900/20">
                 <div class="grid md:grid-cols-2 gap-8">
-                    <!-- Python -->
+                    <!-- Python (没有本地文件，指向 GitHub) -->
                     <div>
                         <h3 class="text-sm font-medium text-teal-400 mb-2">Python</h3>
-                        <p class="text-xs text-gray-400 mb-2" data-i18n="sdk_python_install">Install:</p>
+                        <p class="text-xs text-gray-400 mb-2" data-i18n="sdk_python_install">安装：</p>
                         <pre class="text-xs"><code>pip install hjs-client</code></pre>
-                        <p class="text-xs text-gray-400 mt-4 mb-2" data-i18n="sdk_python_example">Example:</p>
+                        <p class="text-xs text-gray-400 mt-4 mb-2" data-i18n="sdk_python_example">示例：</p>
                         <pre class="text-xs"><code>from hjs_client import HJSClient
 
 client = HJSClient(api_key="your-key")
@@ -159,20 +153,23 @@ result = client.record_judgment(
     action="test"
 )
 print(result.id)</code></pre>
-                        <a href="/client-py/README.md" class="text-xs text-teal-400 hover:underline mt-2 inline-block" data-i18n="sdk_python_docs">Python SDK docs →</a>
+                        <!-- 修复：指向 GitHub -->
+                        <a href="https://github.com/schchit/hjs-api/tree/main/client-py" class="text-xs text-teal-400 hover:underline mt-2 inline-block" target="_blank" data-i18n="sdk_python_docs">Python SDK 文档 →</a>
                     </div>
-                    <!-- Node.js -->
+                    <!-- Node.js (有本地文件，支持中英文) -->
                     <div>
                         <h3 class="text-sm font-medium text-teal-400 mb-2">Node.js</h3>
-                        <p class="text-xs text-gray-400 mb-2" data-i18n="sdk_node_install">Install:</p>
+                        <p class="text-xs text-gray-400 mb-2" data-i18n="sdk_node_install">安装：</p>
                         <pre class="text-xs"><code>npm install hjs-client</code></pre>
-                        <p class="text-xs text-gray-400 mt-4 mb-2" data-i18n="sdk_node_example">Example:</p>
+                        <p class="text-xs text-gray-400 mt-4 mb-2" data-i18n="sdk_node_example">示例：</p>
                         <pre class="text-xs"><code>const { HJSClient } = require('hjs-client');
 
 const client = new HJSClient('your-key');
 client.recordJudgment('user@example.com', 'test')
   .then(record => console.log(record.id));</code></pre>
-                        <a href="/client-js/README.md" class="text-xs text-teal-400 hover:underline mt-2 inline-block" data-i18n="sdk_node_docs">Node.js SDK docs →</a>
+                        <!-- 修复：根据当前语言跳转不同文件 -->
+                        <a href="/client-js/README.md" id="node-docs-en" class="text-xs text-teal-400 hover:underline mt-2 inline-block" target="_blank" data-i18n="sdk_node_docs">Node.js SDK 文档 →</a>
+                        <a href="/client-js/README.zh-CN.md" id="node-docs-zh" class="text-xs text-teal-400 hover:underline mt-2 inline-block" target="_blank" style="display: none;" data-i18n="sdk_node_docs">Node.js SDK 文档 →</a>
                     </div>
                 </div>
             </div>
@@ -181,7 +178,7 @@ client.recordJudgment('user@example.com', 'test')
         <!-- 视觉分隔线 -->
         <div class="section-divider"></div>
 
-        <!-- ========== 04 验证记录 ========== -->
+        <!-- 04 验证记录 -->
         <div class="mb-16">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="verify_prefix">04</span>
@@ -202,7 +199,7 @@ client.recordJudgment('user@example.com', 'test')
         <!-- 视觉分隔线 -->
         <div class="section-divider"></div>
 
-        <!-- ========== 05 导出功能 ========== -->
+        <!-- 05 导出功能 -->
         <div class="mb-16">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="export_prefix">05</span>
@@ -233,7 +230,7 @@ client.recordJudgment('user@example.com', 'test')
         <!-- 视觉分隔线 -->
         <div class="section-divider"></div>
 
-        <!-- ========== 06 常见问题 ========== -->
+        <!-- 06 常见问题 -->
         <div class="mb-16">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="faq_prefix">06</span>
@@ -265,7 +262,7 @@ client.recordJudgment('user@example.com', 'test')
         <!-- 视觉分隔线 -->
         <div class="section-divider"></div>
 
-        <!-- ========== 07 协议规范 ========== -->
+        <!-- 07 协议规范 -->
         <div class="mb-16">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="spec_prefix">07</span>
@@ -278,7 +275,7 @@ client.recordJudgment('user@example.com', 'test')
             </div>
         </div>
 
-        <!-- ========== 底部 ========== -->
+        <!-- 底部 -->
         <div class="text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-10">
             <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-3" data-i18n="footer_github">GitHub</a>
             <span class="text-gray-700">·</span>
@@ -300,7 +297,7 @@ client.recordJudgment('user@example.com', 'test')
                 subhead: "Everything you need to integrate HJS into your systems.",
                 quickstart_prefix: "01",
                 quickstart_title: "QUICK START",
-                quickstart_1: "Get your API key in the Console.",
+                quickstart_1: "Get your API key in the <a href='/console.html' class='text-teal-400 hover:underline'>Console</a>.",
                 quickstart_2: "Install the SDK (or use the API directly).",
                 quickstart_3: "Create your first record in minutes.",
                 quickstart_example_title: "Example (curl):",
@@ -331,8 +328,8 @@ client.recordJudgment('user@example.com', 'test')
                 verify_prefix: "04",
                 verify_title: "VERIFY RECORDS",
                 verify_desc: "After anchoring, you can verify the integrity of any record using:",
-                verify_ots: "OTS command line – <code>ots verify record.ots</code>",
-                verify_online: "Online verifier – upload your .json and .ots files",
+                verify_ots: "<span class='text-teal-400'>OTS command line</span> – <code>ots verify record.ots</code>",
+                verify_online: "<a href='/verify.html' class='text-teal-400 hover:underline'>Online verifier</a> – upload your .json and .ots files",
                 verify_prog: "Programmatically using the SDK or any OTS library",
                 verify_note: "The proof alone is enough to verify – no need to call our API.",
                 export_prefix: "05",
@@ -368,7 +365,7 @@ client.recordJudgment('user@example.com', 'test')
                 subhead: "集成 HJS 所需的一切。",
                 quickstart_prefix: "01",
                 quickstart_title: "快速开始",
-                quickstart_1: "在控制台获取 API 密钥。",
+                quickstart_1: "在<a href='/console.html' class='text-teal-400 hover:underline'>控制台</a>获取 API 密钥。",
                 quickstart_2: "安装 SDK（或直接调用 API）。",
                 quickstart_3: "几分钟内创建第一条记录。",
                 quickstart_example_title: "示例 (curl):",
@@ -399,8 +396,8 @@ client.recordJudgment('user@example.com', 'test')
                 verify_prefix: "04",
                 verify_title: "验证记录",
                 verify_desc: "锚定后，你可以通过以下方式验证记录的完整性：",
-                verify_ots: "OTS 命令行 – <code>ots verify record.ots</code>",
-                verify_online: "在线验证页面 – 上传 .json 和 .ots 文件",
+                verify_ots: "<span class='text-teal-400'>OTS 命令行</span> – <code>ots verify record.ots</code>",
+                verify_online: "<a href='/verify.html' class='text-teal-400 hover:underline'>在线验证页面</a> – 上传 .json 和 .ots 文件",
                 verify_prog: "使用 SDK 或任何 OTS 库编程验证",
                 verify_note: "仅凭证明文件即可验证，无需调用我们的 API。",
                 export_prefix: "05",
@@ -440,6 +437,19 @@ client.recordJudgment('user@example.com', 'test')
                 }
             });
 
+            // 处理 Node.js 文档链接的显示/隐藏
+            const nodeDocsEn = document.getElementById('node-docs-en');
+            const nodeDocsZh = document.getElementById('node-docs-zh');
+            if (nodeDocsEn && nodeDocsZh) {
+                if (lang === 'en') {
+                    nodeDocsEn.style.display = 'inline-block';
+                    nodeDocsZh.style.display = 'none';
+                } else {
+                    nodeDocsEn.style.display = 'none';
+                    nodeDocsZh.style.display = 'inline-block';
+                }
+            }
+
             const url = new URL(window.location);
             url.searchParams.set('lang', lang);
             window.history.replaceState({}, '', url);
@@ -449,7 +459,7 @@ client.recordJudgment('user@example.com', 'test')
 
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
-            const lang = urlParams.get('lang') || 'zh'; // 默认中文
+            const lang = urlParams.get('lang') || 'zh';
             switchLang(lang);
         })();
     </script>

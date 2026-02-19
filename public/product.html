@@ -9,11 +9,10 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
         body { background: #0a0a0a; }
-        .icon { width: 2rem; height: 2rem; stroke: #5ee0c0; fill: none; stroke-width: 1.5; }
         select {
             background-color: transparent;
             color: #9ca3af;
-            font-size: 0.875rem;
+            font-size: 0.75rem;  /* 与首页一致：text-xs */
             cursor: pointer;
         }
         select:focus { outline: none; }
@@ -22,7 +21,6 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        /* 模块之间的视觉分隔 */
         .section-divider {
             width: 100%;
             height: 1px;
@@ -32,10 +30,10 @@
     </style>
 </head>
 <body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
-    <div class="max-w-4xl mx-auto px-4 pt-20 pb-12">  <!-- 收窄宽度，更易读 -->
-        <!-- 导航栏 -->
-        <div class="flex justify-between items-center mb-20 text-base">
-            <div class="text-white font-semibold text-xl">HJS</div>
+    <div class="max-w-4xl mx-auto px-4 pt-20 pb-12">
+        <!-- 导航栏 - 与首页完全一致：text-base -->
+        <div class="flex justify-between items-center mb-16 text-base">
+            <div class="text-white font-semibold text-lg">HJS</div>
             <div class="flex gap-8 md:gap-10 text-gray-400">
                 <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">首页</a>
                 <a href="/product.html" class="text-white hover:text-teal-400 transition" data-i18n="nav_product">产品</a>
@@ -49,29 +47,37 @@
             </select>
         </div>
 
-        <!-- 简短的产品定位（一句话） -->
-        <div class="mb-16">
-            <p class="text-lg text-gray-300 max-w-2xl" data-i18n="product_tagline">
+        <!-- 产品定位 - 略大一点，但不过分 -->
+        <div class="mb-12">
+            <p class="text-base text-gray-300 max-w-2xl leading-relaxed" data-i18n="product_tagline">
                 为AI决策提供可验证的追溯层 · 修复责任链条，保护隐私
             </p>
         </div>
 
-        <!-- 01 核心流程 - 三步，无框，靠间距区分 -->
+        <!-- 01 核心流程 - 模块标题使用首页的"THE ACCOUNTABILITY GAP"样式 -->
         <div class="mb-16">
-            <h2 class="text-sm font-mono text-teal-400/60 mb-6">01 · 核心流程</h2>
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section1_prefix">01</span>
+                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section1_title">核心流程</span>
+                <div class="flex-1 h-px bg-gray-800"></div>
+            </div>
+            
             <div class="grid md:grid-cols-3 gap-6">
-                <div class="border-l-2 border-teal-500/30 pl-4">
-                    <span class="text-2xl text-teal-400 block mb-2">①</span>
+                <!-- 步骤1 -->
+                <div>
+                    <span class="text-2xl text-teal-400 block mb-3">①</span>
                     <h3 class="text-base font-medium text-white mb-2" data-i18n="step1_title">记录</h3>
                     <p class="text-sm text-gray-400 leading-relaxed" data-i18n="step1_desc">通过API记录谁、什么、何时、上下文。</p>
                 </div>
-                <div class="border-l-2 border-teal-500/30 pl-4">
-                    <span class="text-2xl text-teal-400 block mb-2">②</span>
+                <!-- 步骤2 -->
+                <div>
+                    <span class="text-2xl text-teal-400 block mb-3">②</span>
                     <h3 class="text-base font-medium text-white mb-2" data-i18n="step2_title">锚定（可选）</h3>
                     <p class="text-sm text-gray-400 leading-relaxed" data-i18n="step2_desc">锚定到比特币区块链，生成不可篡改证明。</p>
                 </div>
-                <div class="border-l-2 border-teal-500/30 pl-4">
-                    <span class="text-2xl text-teal-400 block mb-2">③</span>
+                <!-- 步骤3 -->
+                <div>
+                    <span class="text-2xl text-teal-400 block mb-3">③</span>
                     <h3 class="text-base font-medium text-white mb-2" data-i18n="step3_title">验证</h3>
                     <p class="text-sm text-gray-400 leading-relaxed" data-i18n="step3_desc">独立验证记录的完整性。</p>
                 </div>
@@ -81,23 +87,28 @@
         <!-- 视觉分隔线 -->
         <div class="section-divider"></div>
 
-        <!-- 02 核心能力 - 两列，简洁分组 -->
+        <!-- 02 核心功能 - 模块标题 -->
         <div class="mb-16">
-            <h2 class="text-sm font-mono text-teal-400/60 mb-6">02 · 核心能力</h2>
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="bg-gray-900/20 p-5 rounded">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section2_prefix">02</span>
+                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section2_title">核心功能</span>
+                <div class="flex-1 h-px bg-gray-800"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-5">
+                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
                     <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="feature1_title">🔍 公开查询</h3>
                     <p class="text-sm text-gray-400" data-i18n="feature1_desc">任何人都可通过ID检索已锚定的事件。</p>
                 </div>
-                <div class="bg-gray-900/20 p-5 rounded">
+                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
                     <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="feature2_title">📊 控制台管理</h3>
                     <p class="text-sm text-gray-400" data-i18n="feature2_desc">登录后统一管理所有记录。</p>
                 </div>
-                <div class="bg-gray-900/20 p-5 rounded">
+                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
                     <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="feature3_title">📄 导出格式</h3>
                     <p class="text-sm text-gray-400" data-i18n="feature3_desc">JSON、PDF（含二维码）、OTS证明。</p>
                 </div>
-                <div class="bg-gray-900/20 p-5 rounded">
+                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
                     <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="feature4_title">🔐 独立验证</h3>
                     <p class="text-sm text-gray-400" data-i18n="feature4_desc">使用OTS客户端或验证页面。</p>
                 </div>
@@ -107,24 +118,29 @@
         <!-- 视觉分隔线 -->
         <div class="section-divider"></div>
 
-        <!-- 03 价值 - 两列，更简洁 -->
+        <!-- 03 价值 - 模块标题 -->
         <div class="mb-16">
-            <h2 class="text-sm font-mono text-teal-400/60 mb-6">03 · 价值</h2>
-            <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                    <h3 class="text-base font-medium text-teal-400 mb-1" data-i18n="value1_title">⚖️ 厘清责任</h3>
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section3_prefix">03</span>
+                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section3_title">价值</span>
+                <div class="flex-1 h-px bg-gray-800"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-5">
+                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
+                    <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="value1_title">⚖️ 厘清责任</h3>
                     <p class="text-sm text-gray-400" data-i18n="value1_desc">争议中的无可辩驳证据。</p>
                 </div>
-                <div>
-                    <h3 class="text-base font-medium text-teal-400 mb-1" data-i18n="value2_title">✅ 合规证据</h3>
+                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
+                    <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="value2_title">✅ 合规证据</h3>
                     <p class="text-sm text-gray-400" data-i18n="value2_desc">AI监管的审计材料。</p>
                 </div>
-                <div>
-                    <h3 class="text-base font-medium text-teal-400 mb-1" data-i18n="value3_title">⚖️ 法律证据</h3>
+                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
+                    <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="value3_title">⚖️ 法律证据</h3>
                     <p class="text-sm text-gray-400" data-i18n="value3_desc">多司法管辖区认可。</p>
                 </div>
-                <div>
-                    <h3 class="text-base font-medium text-teal-400 mb-1" data-i18n="value4_title">🔐 建立信任</h3>
+                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
+                    <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="value4_title">🔐 建立信任</h3>
                     <p class="text-sm text-gray-400" data-i18n="value4_desc">透明可验证的决策。</p>
                 </div>
             </div>
@@ -133,23 +149,28 @@
         <!-- 视觉分隔线 -->
         <div class="section-divider"></div>
 
-        <!-- 04 隐私与安全 - 强调模块，加浅背景 -->
+        <!-- 04 隐私与安全 - 模块标题 -->
         <div class="mb-16">
-            <h2 class="text-sm font-mono text-teal-400/60 mb-6">04 · 隐私与安全</h2>
-            <div class="bg-gray-900/30 p-6 rounded border border-gray-800">
-                <h3 class="text-base font-medium text-teal-400 mb-3" data-i18n="privacy_title">隐私优先设计</h3>
-                <div class="grid md:grid-cols-3 gap-4 text-sm">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section4_prefix">04</span>
+                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section4_title">隐私与安全</span>
+                <div class="flex-1 h-px bg-gray-800"></div>
+            </div>
+            
+            <div class="border border-gray-800 rounded-lg p-6 bg-gray-900/20">
+                <h3 class="text-base font-medium text-teal-400 mb-4" data-i18n="privacy_title">隐私优先设计</h3>
+                <div class="grid md:grid-cols-3 gap-4">
                     <div>
-                        <p class="text-white font-medium mb-1" data-i18n="privacy1_title">最小化数据</p>
-                        <p class="text-gray-400 text-xs" data-i18n="privacy1_desc">仅收集必要字段</p>
+                        <p class="text-sm font-medium text-white mb-1" data-i18n="privacy1_title">最小化数据</p>
+                        <p class="text-xs text-gray-400" data-i18n="privacy1_desc">仅收集必要字段</p>
                     </div>
                     <div>
-                        <p class="text-white font-medium mb-1" data-i18n="privacy2_title">你始终掌控</p>
-                        <p class="text-gray-400 text-xs" data-i18n="privacy2_desc">可删除、导出、选择锚定</p>
+                        <p class="text-sm font-medium text-white mb-1" data-i18n="privacy2_title">你始终掌控</p>
+                        <p class="text-xs text-gray-400" data-i18n="privacy2_desc">可删除、导出、选择锚定</p>
                     </div>
                     <div>
-                        <p class="text-white font-medium mb-1" data-i18n="privacy3_title">无二次利用</p>
-                        <p class="text-gray-400 text-xs" data-i18n="privacy3_desc">绝不售卖或分析</p>
+                        <p class="text-sm font-medium text-white mb-1" data-i18n="privacy3_title">无二次利用</p>
+                        <p class="text-xs text-gray-400" data-i18n="privacy3_desc">绝不售卖或分析</p>
                     </div>
                 </div>
                 <p class="text-xs text-gray-500 mt-4 pt-3 border-t border-gray-800" data-i18n="privacy_footnote">
@@ -161,21 +182,25 @@
         <!-- 视觉分隔线 -->
         <div class="section-divider"></div>
 
-        <!-- 05 协议与集成 - 合并两个相关模块 -->
+        <!-- 05 协议与集成 - 模块标题 -->
         <div class="mb-16">
-            <h2 class="text-sm font-mono text-teal-400/60 mb-6">05 · 协议与集成</h2>
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section5_prefix">05</span>
+                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section5_title">协议与集成</span>
+                <div class="flex-1 h-px bg-gray-800"></div>
+            </div>
             
-            <!-- 协议中立 - 简洁三列 -->
-            <div class="grid md:grid-cols-3 gap-4 mb-8">
-                <div>
+            <!-- 协议中立 - 三列 -->
+            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                <div class="p-4 border border-gray-800 rounded-lg bg-gray-900/30">
                     <h3 class="text-sm font-medium text-teal-400 mb-1" data-i18n="neutral1_title">开源</h3>
                     <p class="text-xs text-gray-400" data-i18n="neutral1_desc">CC0/MIT，可审查可构建</p>
                 </div>
-                <div>
+                <div class="p-4 border border-gray-800 rounded-lg bg-gray-900/30">
                     <h3 class="text-sm font-medium text-teal-400 mb-1" data-i18n="neutral2_title">基金会治理</h3>
                     <p class="text-xs text-gray-400" data-i18n="neutral2_desc">新加坡CLG基金会持有</p>
                 </div>
-                <div>
+                <div class="p-4 border border-gray-800 rounded-lg bg-gray-900/30">
                     <h3 class="text-sm font-medium text-teal-400 mb-1" data-i18n="neutral3_title">可选锚定</h3>
                     <p class="text-xs text-gray-400" data-i18n="neutral3_desc">你决定是否上链</p>
                 </div>
@@ -183,18 +208,18 @@
             
             <!-- 集成方式 - 两列 -->
             <div class="grid md:grid-cols-2 gap-4 mb-6">
-                <div class="bg-gray-900/20 p-4 rounded">
+                <div class="p-4 border border-gray-800 rounded-lg bg-gray-900/30">
                     <h3 class="text-sm font-medium text-teal-400 mb-1" data-i18n="integrate_api_title">🔧 直接API</h3>
                     <p class="text-xs text-gray-400" data-i18n="integrate_api_desc">任何语言，HTTP请求</p>
                 </div>
-                <div class="bg-gray-900/20 p-4 rounded">
+                <div class="p-4 border border-gray-800 rounded-lg bg-gray-900/30">
                     <h3 class="text-sm font-medium text-teal-400 mb-1" data-i18n="integrate_sdk_title">📦 SDK</h3>
                     <p class="text-xs text-gray-400" data-i18n="integrate_sdk_desc">Python/Node.js，一行安装</p>
                 </div>
             </div>
             
-            <!-- 快速开始 - 最小化 -->
-            <div class="border border-gray-800 rounded p-4">
+            <!-- 快速开始 - 简洁 -->
+            <div class="border border-gray-800 rounded-lg p-4 bg-gray-900/20">
                 <p class="text-sm font-medium text-white mb-2" data-i18n="quick_start_title">快速开始</p>
                 <ol class="list-decimal list-inside text-xs text-gray-400 space-y-0.5">
                     <li data-i18n="quick_start1">控制台生成API密钥</li>
@@ -204,7 +229,7 @@
             </div>
         </div>
 
-        <!-- 底部 - 更简洁 -->
+        <!-- 底部 - 与首页一致 -->
         <div class="text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-10">
             <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-3" data-i18n="footer_github">GitHub</a>
             <span class="text-gray-700">·</span>
@@ -224,6 +249,16 @@
                 nav_console: "Console",
                 nav_lookup: "Lookup",
                 product_tagline: "A verifiable traceability layer for AI decisions · Fix accountability, protect privacy",
+                section1_prefix: "01",
+                section1_title: "CORE PROCESS",
+                section2_prefix: "02",
+                section2_title: "KEY FEATURES",
+                section3_prefix: "03",
+                section3_title: "VALUE",
+                section4_prefix: "04",
+                section4_title: "PRIVACY & SECURITY",
+                section5_prefix: "05",
+                section5_title: "PROTOCOL & INTEGRATION",
                 step1_title: "Record",
                 step1_desc: "Log who, what, when, context via API.",
                 step2_title: "Anchor (optional)",
@@ -280,6 +315,16 @@
                 nav_console: "控制台",
                 nav_lookup: "查询",
                 product_tagline: "为AI决策提供可验证的追溯层 · 修复责任链条，保护隐私",
+                section1_prefix: "01",
+                section1_title: "核心流程",
+                section2_prefix: "02",
+                section2_title: "核心功能",
+                section3_prefix: "03",
+                section3_title: "价值主张",
+                section4_prefix: "04",
+                section4_title: "隐私与安全",
+                section5_prefix: "05",
+                section5_title: "协议与集成",
                 step1_title: "记录",
                 step1_desc: "通过API记录谁、什么、何时、上下文。",
                 step2_title: "锚定（可选）",

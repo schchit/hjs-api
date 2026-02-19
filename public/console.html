@@ -3,19 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HJS · 控制台</title>
+    <title data-i18n="title">HJS · Developer Console</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
         code, pre, .font-mono { font-family: 'JetBrains Mono', monospace !important; }
         body { background: #0a0a0a; }
-        
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #1a1a1a; }
-        ::-webkit-scrollbar-thumb { background: #404040; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
-
+        /* 极简下拉菜单样式 */
+        select {
+            background-color: transparent;
+            color: #9ca3af;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        select:focus { outline: none; }
+        select option { background-color: #111827; color: white; }
+        /* 卡片样式 */
+        .card {
+            background: transparent;
+            border: 1px solid #1f1f1f;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+        .card:hover {
+            background: rgba(31, 31, 31, 0.3);
+            border-color: rgba(94, 224, 192, 0.3);
+        }
+        /* 输入框样式 */
+        .input {
+            background: #1a1a1a;
+            border: 1px solid #1f1f1f;
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            color: white;
+            transition: border-color 0.2s;
+        }
+        .input:focus {
+            border-color: #5ee0c0;
+            outline: none;
+        }
+        /* 标签页样式 */
+        .tab {
+            padding-bottom: 0.5rem;
+            padding-left: 0.25rem;
+            padding-right: 0.25rem;
+            color: #9ca3af;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab:hover {
+            color: #e5e5e5;
+        }
+        .tab-active {
+            color: #5ee0c0;
+            border-bottom-color: #5ee0c0;
+        }
+        /* 按钮样式 */
+        .btn-primary {
+            background: #5ee0c0;
+            color: #0a0a0a;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            background: #4bc5a8;
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: #1f1f1f;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover {
+            background: #2a2a2a;
+        }
+        .btn-danger {
+            background: transparent;
+            color: #ef4444;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
         .animate-spin { animation: spin 1s linear infinite; }
     </style>
@@ -23,11 +104,14 @@
 <body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
     <div id="root"></div>
 
+    <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+
     <script type="text/javascript">
         // API Base URL
         const API_BASE = "https://hjs-api.onrender.com";
 
-        // ---------- Utility Functions (保留原有) ----------
+        // ---------- Utility Functions ----------
         function maskKey(key) {
             if (!key || key.length <= 8) return key;
             return key.slice(0, 4) + '..........' + key.slice(-4);
@@ -35,12 +119,12 @@
 
         function formatDate(dateStr) {
             if (!dateStr) return 'Never';
-            return new Date(dateStr).toLocaleDateString();
+            return new Date(dateStr).toLocaleString();
         }
 
-        // ---------- 主组件 (新视觉 + 原有功能) ----------
+        // ---------- Main Component ----------
         function DeveloperConsole() {
-            // ---------- 原有所有 state 和函数保持不变 ----------
+            // ---------- State ----------
             const [genEmail, setGenEmail] = React.useState('');
             const [genName, setGenName] = React.useState('');
             const [generating, setGenerating] = React.useState(false);
@@ -48,16 +132,27 @@
             const [showKeyDialog, setShowKeyDialog] = React.useState(false);
             const [copied, setCopied] = React.useState(false);
             const [genError, setGenError] = React.useState(null);
+
             const [listEmail, setListEmail] = React.useState('');
             const [keys, setKeys] = React.useState([]);
             const [loadingKeys, setLoadingKeys] = React.useState(false);
             const [listError, setListError] = React.useState(null);
             const [visibleKeys, setVisibleKeys] = React.useState(new Set());
+
             const [revokeKey, setRevokeKey] = React.useState(null);
             const [revoking, setRevoking] = React.useState(false);
+
             const [activeTab, setActiveTab] = React.useState('generate');
 
-            // 保留所有原有函数
+            // 语言相关
+            const [lang, setLang] = React.useState('en');
+            React.useEffect(() => {
+                const params = new URLSearchParams(window.location.search);
+                const l = params.get('lang') || 'en';
+                setLang(l);
+            }, []);
+
+            // ---------- Handlers ----------
             const handleGenerate = async () => {
                 if (!genEmail || !genName) return;
                 setGenerating(true);
@@ -131,72 +226,144 @@
 
             const toggleKeyVisibility = (key) => {
                 const newSet = new Set(visibleKeys);
-                if (newSet.has(key)) {
-                    newSet.delete(key);
-                } else {
-                    newSet.add(key);
-                }
+                if (newSet.has(key)) newSet.delete(key);
+                else newSet.add(key);
                 setVisibleKeys(newSet);
             };
 
-            // ---------- 新视觉的渲染 ----------
-            return React.createElement('div', { className: 'mx-auto max-w-5xl px-4 py-12' }, [
-                // 导航条
-                React.createElement('div', { className: 'flex justify-between items-center mb-12 text-sm', key: 'nav' }, [
-                    React.createElement('div', { className: 'text-white font-semibold' }, 'HJS'),
-                    React.createElement('div', { className: 'flex gap-8 text-gray-400' }, [
-                        React.createElement('a', { href: '/', className: 'hover:text-white' }, '首页'),
-                        React.createElement('a', { href: '/product', className: 'hover:text-white' }, '产品'),
-                        React.createElement('a', { href: '/developers', className: 'hover:text-white' }, '开发者'),
-                        React.createElement('a', { href: '/console', className: 'text-white' }, '控制台')
+            const switchLang = (l) => {
+                setLang(l);
+                const url = new URL(window.location);
+                url.searchParams.set('lang', l);
+                window.history.replaceState({}, '', url);
+            };
+
+            // ---------- Translations ----------
+            const i18n = {
+                en: {
+                    title: "HJS · Developer Console",
+                    page_title: "Developer Console",
+                    generate_tab: "Generate Key",
+                    list_tab: "My Keys",
+                    lookup_tab: "Lookup Record",
+                    email_label: "Email",
+                    key_name_label: "Key Name",
+                    generate_btn: "Generate Key",
+                    generating: "Generating...",
+                    fetch_btn: "Fetch Keys",
+                    loading: "Loading...",
+                    revoke_btn: "Revoke",
+                    revoking: "Revoking...",
+                    cancel: "Cancel",
+                    confirm_revoke: "Yes, Revoke",
+                    copy: "Copy Key",
+                    copied: "Copied!",
+                    no_keys: "No keys found.",
+                    key_generated: "✅ Key generated:",
+                    save_key_dialog: "Save your API key",
+                    save_key_desc: "This key is shown only once. Please copy and store it securely.",
+                    lookup_placeholder: "Enter record ID",
+                    lookup_btn: "Lookup",
+                    error_prefix: "❌ Error:",
+                    email_required: "Please enter your email",
+                    key_name_required: "Please enter a key name",
+                },
+                zh: {
+                    title: "HJS · 开发者控制台",
+                    page_title: "开发者控制台",
+                    generate_tab: "生成密钥",
+                    list_tab: "我的密钥",
+                    lookup_tab: "查询记录",
+                    email_label: "邮箱",
+                    key_name_label: "密钥名称",
+                    generate_btn: "生成密钥",
+                    generating: "生成中...",
+                    fetch_btn: "查询密钥",
+                    loading: "加载中...",
+                    revoke_btn: "吊销",
+                    revoking: "吊销中...",
+                    cancel: "取消",
+                    confirm_revoke: "确认吊销",
+                    copy: "复制密钥",
+                    copied: "已复制！",
+                    no_keys: "暂无密钥",
+                    key_generated: "✅ 密钥生成成功：",
+                    save_key_dialog: "保存你的 API 密钥",
+                    save_key_desc: "该密钥只显示一次，请立即保存。",
+                    lookup_placeholder: "输入记录 ID",
+                    lookup_btn: "查询",
+                    error_prefix: "❌ 错误：",
+                    email_required: "请输入邮箱",
+                    key_name_required: "请输入密钥名称",
+                }
+            };
+            const t = i18n[lang];
+
+            // 更新页面标题
+            React.useEffect(() => {
+                document.title = t.title;
+            }, [lang, t.title]);
+
+            // ---------- Render ----------
+            return React.createElement('div', { className: 'max-w-4xl mx-auto px-4 pt-12 pb-12' }, [
+                // 简化顶部栏：只有 Logo 和语言切换
+                React.createElement('div', { key: 'nav', className: 'flex justify-between items-center mb-12' }, [
+                    React.createElement('div', { className: 'text-white font-semibold text-lg' }, 'HJS'),
+                    React.createElement('select', {
+                        value: lang,
+                        onChange: (e) => switchLang(e.target.value),
+                        className: 'bg-transparent text-gray-400 text-xs'
+                    }, [
+                        React.createElement('option', { value: 'en', key: 'en' }, 'EN'),
+                        React.createElement('option', { value: 'zh', key: 'zh' }, '中文')
                     ])
                 ]),
 
-                // 标题
-                React.createElement('h1', { className: 'text-3xl font-bold mb-8', key: 'title' }, '开发者控制台'),
+                // 页面标题
+                React.createElement('h1', { key: 'title', className: 'text-2xl font-medium text-white mb-8' }, t.page_title),
 
                 // 标签页
-                React.createElement('div', { className: 'flex gap-4 border-b border-gray-800 mb-8', key: 'tabs' }, [
+                React.createElement('div', { key: 'tabs', className: 'flex gap-6 border-b border-gray-800 mb-8' }, [
                     React.createElement('button', {
-                        className: `pb-2 px-1 ${activeTab === 'generate' ? 'text-teal-400 border-b-2 border-teal-400' : 'text-gray-400'}`,
+                        className: `tab ${activeTab === 'generate' ? 'tab-active' : ''}`,
                         onClick: () => setActiveTab('generate')
-                    }, '生成密钥'),
+                    }, t.generate_tab),
                     React.createElement('button', {
-                        className: `pb-2 px-1 ${activeTab === 'list' ? 'text-teal-400 border-b-2 border-teal-400' : 'text-gray-400'}`,
+                        className: `tab ${activeTab === 'list' ? 'tab-active' : ''}`,
                         onClick: () => setActiveTab('list')
-                    }, '我的密钥'),
+                    }, t.list_tab),
                     React.createElement('button', {
-                        className: `pb-2 px-1 ${activeTab === 'lookup' ? 'text-teal-400 border-b-2 border-teal-400' : 'text-gray-400'}`,
+                        className: `tab ${activeTab === 'lookup' ? 'tab-active' : ''}`,
                         onClick: () => setActiveTab('lookup')
-                    }, '查询记录')
+                    }, t.lookup_tab),
                 ]),
 
                 // 生成密钥标签页
-                activeTab === 'generate' && React.createElement('div', { className: 'max-w-md', key: 'generate' }, [
+                activeTab === 'generate' && React.createElement('div', { key: 'generate', className: 'max-w-md' }, [
                     React.createElement('div', { className: 'mb-4' }, [
-                        React.createElement('label', { className: 'block text-sm text-gray-400 mb-1' }, '邮箱'),
+                        React.createElement('label', { className: 'block text-sm text-gray-400 mb-1' }, t.email_label),
                         React.createElement('input', {
                             type: 'email',
                             value: genEmail,
                             onChange: (e) => setGenEmail(e.target.value),
-                            className: 'w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm'
+                            className: 'input w-full'
                         })
                     ]),
                     React.createElement('div', { className: 'mb-4' }, [
-                        React.createElement('label', { className: 'block text-sm text-gray-400 mb-1' }, '密钥名称'),
+                        React.createElement('label', { className: 'block text-sm text-gray-400 mb-1' }, t.key_name_label),
                         React.createElement('input', {
                             type: 'text',
                             value: genName,
                             onChange: (e) => setGenName(e.target.value),
-                            className: 'w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm'
+                            className: 'input w-full'
                         })
                     ]),
-                    genError && React.createElement('div', { className: 'text-red-400 text-sm mb-4' }, genError),
+                    genError && React.createElement('div', { className: 'text-red-400 text-sm mb-4' }, t.error_prefix, ' ', genError),
                     React.createElement('button', {
                         onClick: handleGenerate,
                         disabled: !genEmail || !genName || generating,
-                        className: 'px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 disabled:opacity-50'
-                    }, generating ? '生成中...' : '生成密钥')
+                        className: 'btn-primary'
+                    }, generating ? t.generating : t.generate_btn)
                 ]),
 
                 // 我的密钥标签页
@@ -207,35 +374,36 @@
                             value: listEmail,
                             onChange: (e) => setListEmail(e.target.value),
                             placeholder: 'your@email.com',
-                            className: 'flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm'
+                            className: 'input flex-1'
                         }),
                         React.createElement('button', {
                             onClick: handleListKeys,
                             disabled: !listEmail || loadingKeys,
-                            className: 'px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600'
-                        }, loadingKeys ? '加载中...' : '查询')
+                            className: 'btn-secondary'
+                        }, loadingKeys ? t.loading : t.fetch_btn)
                     ]),
-                    listError && React.createElement('div', { className: 'text-red-400 text-sm mb-4' }, listError),
-                    keys.length > 0 && React.createElement('div', { className: 'space-y-2' }, keys.map(k => 
-                        React.createElement('div', { key: k.key, className: 'bg-gray-800/50 p-4 rounded-lg border border-gray-700' }, [
-                            React.createElement('div', { className: 'flex justify-between items-center' }, [
-                                React.createElement('div', null, [
-                                    React.createElement('div', { className: 'text-sm font-medium' }, k.name || '-'),
-                                    React.createElement('div', { className: 'flex items-center gap-2 mt-1' }, [
-                                        React.createElement('code', { className: 'text-xs text-gray-400' },
-                                            visibleKeys.has(k.key) ? k.key : maskKey(k.key)
-                                        ),
-                                        React.createElement('button', {
-                                            onClick: () => toggleKeyVisibility(k.key),
-                                            className: 'text-gray-400 hover:text-white'
-                                        }, visibleKeys.has(k.key) ? '🙈' : '👁️')
-                                    ])
+                    listError && React.createElement('div', { className: 'text-red-400 text-sm mb-4' }, t.error_prefix, ' ', listError),
+                    keys.length === 0 && !loadingKeys && listEmail && !listError &&
+                        React.createElement('div', { className: 'text-gray-500 text-center py-8' }, t.no_keys),
+                    keys.length > 0 && React.createElement('div', { className: 'space-y-3' }, keys.map(k =>
+                        React.createElement('div', { key: k.key, className: 'card p-4 rounded-lg flex justify-between items-center' }, [
+                            React.createElement('div', { className: 'flex-1' }, [
+                                React.createElement('div', { className: 'text-sm font-medium text-white' }, k.name || '-'),
+                                React.createElement('div', { className: 'flex items-center gap-2 mt-1' }, [
+                                    React.createElement('code', { className: 'text-xs text-gray-400 bg-gray-800 px-2 py-0.5 rounded' },
+                                        visibleKeys.has(k.key) ? k.key : maskKey(k.key)
+                                    ),
+                                    React.createElement('button', {
+                                        onClick: () => toggleKeyVisibility(k.key),
+                                        className: 'text-gray-400 hover:text-white'
+                                    }, visibleKeys.has(k.key) ? '🙈' : '👁️')
                                 ]),
-                                React.createElement('button', {
-                                    onClick: () => setRevokeKey(k.key),
-                                    className: 'text-red-400 text-sm hover:text-red-300'
-                                }, '吊销')
-                            ])
+                                React.createElement('div', { className: 'text-xs text-gray-500 mt-1' }, formatDate(k.created_at)),
+                            ]),
+                            React.createElement('button', {
+                                onClick: () => setRevokeKey(k.key),
+                                className: 'text-red-400 text-sm hover:text-red-300'
+                            }, t.revoke_btn)
                         ])
                     ))
                 ]),
@@ -246,63 +414,74 @@
                         React.createElement('input', {
                             type: 'text',
                             id: 'lookup-id',
-                            placeholder: '输入记录 ID',
-                            className: 'flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm font-mono'
+                            placeholder: t.lookup_placeholder,
+                            className: 'input flex-1 font-mono'
                         }),
                         React.createElement('button', {
                             onClick: () => {
                                 const id = document.getElementById('lookup-id').value;
                                 if (id) window.location.href = `/lookup.html?id=${id}`;
                             },
-                            className: 'px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700'
-                        }, '查询')
+                            className: 'btn-primary'
+                        }, t.lookup_btn)
                     ])
                 ]),
 
-                // 对话框（保留原有）
+                // 生成密钥对话框
                 showKeyDialog && React.createElement('div', {
+                    key: 'dialog',
                     className: 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50',
                     onClick: () => setShowKeyDialog(false)
                 }, React.createElement('div', {
-                    className: 'w-full max-w-md rounded-lg border border-gray-800 bg-gray-900 p-6',
+                    className: 'w-full max-w-md card p-6 rounded-lg',
                     onClick: (e) => e.stopPropagation()
                 }, [
-                    React.createElement('h3', { className: 'text-lg font-semibold mb-2' }, '保存你的 API 密钥'),
-                    React.createElement('p', { className: 'text-sm text-gray-400 mb-4' }, '该密钥只显示一次，请立即保存。'),
+                    React.createElement('h3', { className: 'text-lg font-semibold text-white mb-2' }, t.save_key_dialog),
+                    React.createElement('p', { className: 'text-sm text-gray-400 mb-4' }, t.save_key_desc),
                     React.createElement('div', { className: 'bg-gray-800 p-3 rounded mb-4' }, [
                         React.createElement('code', { className: 'break-all text-teal-400 text-sm' }, newKey)
                     ]),
                     React.createElement('button', {
                         onClick: () => copyToClipboard(newKey),
-                        className: 'w-full bg-teal-600 text-white py-2 rounded hover:bg-teal-700'
-                    }, copied ? '已复制！' : '复制密钥')
+                        className: 'btn-primary w-full'
+                    }, copied ? t.copied : t.copy)
                 ])),
 
                 // 吊销确认对话框
                 revokeKey && React.createElement('div', {
+                    key: 'revoke-dialog',
                     className: 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50',
                     onClick: () => setRevokeKey(null)
                 }, React.createElement('div', {
-                    className: 'w-full max-w-md rounded-lg border border-gray-800 bg-gray-900 p-6',
+                    className: 'w-full max-w-md card p-6 rounded-lg',
                     onClick: (e) => e.stopPropagation()
                 }, [
-                    React.createElement('h3', { className: 'text-lg font-semibold mb-2' }, '吊销 API 密钥'),
-                    React.createElement('p', { className: 'text-sm text-gray-400 mb-4' }, '此操作不可撤销。确定要吊销此密钥吗？'),
+                    React.createElement('h3', { className: 'text-lg font-semibold text-white mb-2' }, t.revoke_btn),
+                    React.createElement('p', { className: 'text-sm text-gray-400 mb-4' }, t.save_key_desc),
                     React.createElement('div', { className: 'bg-gray-800 p-2 rounded mb-4' }, [
                         React.createElement('code', { className: 'text-xs text-gray-400' }, maskKey(revokeKey))
                     ]),
                     React.createElement('div', { className: 'flex justify-end gap-2' }, [
                         React.createElement('button', {
                             onClick: () => setRevokeKey(null),
-                            className: 'px-4 py-2 bg-gray-700 rounded hover:bg-gray-600'
-                        }, '取消'),
+                            className: 'btn-secondary'
+                        }, t.cancel),
                         React.createElement('button', {
                             onClick: handleRevoke,
                             disabled: revoking,
-                            className: 'px-4 py-2 bg-red-600 rounded hover:bg-red-700 disabled:opacity-50'
-                        }, revoking ? '吊销中...' : '确认吊销')
+                            className: 'btn-danger'
+                        }, revoking ? t.revoking : t.confirm_revoke)
                     ])
-                ]))
+                ])),
+
+                // 底部（保留，但可以简化）
+                React.createElement('div', { key: 'footer', className: 'text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-12' }, [
+                    React.createElement('a', { href: 'https://github.com/schchit/hjs-api', className: 'hover:text-gray-400 mx-2' }, 'GitHub'),
+                    React.createElement('span', { className: 'text-gray-700' }, '·'),
+                    React.createElement('a', { href: '/spec/README.md', className: 'hover:text-gray-400 mx-2' }, 'Spec'),
+                    React.createElement('span', { className: 'text-gray-700' }, '·'),
+                    React.createElement('a', { href: '/cases.html', className: 'hover:text-gray-400 mx-2' }, 'Cases'),
+                ])
             ]);
         }
 
@@ -311,23 +490,6 @@
         if (root) {
             ReactDOM.createRoot(root).render(React.createElement(DeveloperConsole));
         }
-    </script>
-
-    <!-- React and ReactDOM -->
-    <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-    <script>
-        (function checkReact() {
-            if (window.React && window.ReactDOM) {
-                console.log('React loaded');
-                const root = document.getElementById('root');
-                if (root && !root.hasChildNodes()) {
-                    ReactDOM.createRoot(root).render(React.createElement(DeveloperConsole));
-                }
-            } else {
-                setTimeout(checkReact, 100);
-            }
-        })();
     </script>
 </body>
 </html>

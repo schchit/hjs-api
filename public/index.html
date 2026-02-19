@@ -11,27 +11,21 @@
         body { background: #0a0a0a; }
         .icon { width: 2.5rem; height: 2.5rem; stroke: #5ee0c0; fill: none; stroke-width: 1.5; }
         .card-text { word-break: keep-all; word-wrap: break-word; }
-        /* 极简下拉菜单样式 */
         select {
             background-color: transparent;
-            color: #9ca3af; /* gray-400 */
+            color: #9ca3af;
             font-size: 0.75rem;
             cursor: pointer;
         }
-        select:focus {
-            outline: none;
-        }
-        select option {
-            background-color: #111827; /* gray-900 */
-            color: white;
-        }
+        select:focus { outline: none; }
+        select option { background-color: #111827; color: white; }
     </style>
 </head>
 <body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
-    <!-- 大幅增加顶部内边距，让内容整体下移 -->
-    <div class="max-w-5xl mx-auto px-4 pt-24 md:pt-32 pb-12">
-        <!-- 极简导航：保留语言下拉，但去掉视觉样式 -->
-        <div class="flex justify-between items-center mb-24 md:mb-32 text-sm">
+    <!-- 整体下移：增加顶部内边距，但保持导航在顶部 -->
+    <div class="max-w-5xl mx-auto px-4 pt-20 pb-12">
+        <!-- 导航 - 保持在最上方 -->
+        <div class="flex justify-between items-center mb-16 text-sm">
             <div class="text-white font-semibold text-lg">HJS</div>
             <div class="flex gap-8 md:gap-10 text-gray-400">
                 <a href="/" class="text-white hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
@@ -40,111 +34,115 @@
                 <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
                 <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
             </div>
-            <!-- 极简语言下拉：透明背景、无边框、灰色文字 -->
             <select onchange="switchLang(this.value)">
                 <option value="en" selected>EN</option>
                 <option value="zh">中文</option>
             </select>
         </div>
 
-        <!-- 核心社会问题 - 标题层级明确 -->
-        <div class="text-center mb-28 md:mb-36">
-            <!-- H1: 最大、最粗、最亮 -->
-            <h1 class="text-5xl md:text-6xl font-bold text-white mb-8 leading-tight max-w-4xl mx-auto px-2" data-i18n="headline">
+        <!-- 核心标题区域 - 左对齐，自然换行 -->
+        <div class="mb-16">
+            <!-- 上标题 - 位置不变，但左对齐 -->
+            <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight max-w-4xl" data-i18n="headline">
                 AI is reshaping society<br>but accountability hasn't caught up
             </h1>
             
-            <!-- H2: 中等粗细，略亮 -->
-            <p class="text-xl md:text-2xl text-gray-300 font-medium max-w-3xl mx-auto px-4 leading-relaxed" data-i18n="subhead">
-                Medical AI, autonomous driving, AI agents in the workplace, AI in education —<br class="hidden sm:block">
+            <!-- 副标题 - 左对齐，自然宽度 -->
+            <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mt-6 leading-relaxed" data-i18n="subhead">
+                Medical AI, autonomous driving, AI agents in the workplace, AI in education —<br>
                 every advance asks the same question: who's responsible when things go wrong?
             </p>
             
-            <!-- 强调句 -->
-            <p class="text-base md:text-lg text-gray-500 mt-6 md:mt-8" data-i18n="subfoot">
+            <!-- 强调句 - 左对齐 -->
+            <p class="text-base md:text-lg text-gray-500 mt-4" data-i18n="subfoot">
                 These are not hypotheticals — they are happening now.
             </p>
         </div>
 
-        <!-- 行业痛点（四个卡片）- 卡片标题用品牌色突出 -->
-        <div class="grid md:grid-cols-2 gap-6 md:gap-8 mb-28 md:mb-36">
-            <!-- 医疗AI -->
-            <div class="p-6 md:p-8 border border-gray-800 rounded-xl bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 hover:shadow-lg 
-                        hover:shadow-teal-500/5 transition-all duration-300">
-                <div class="mb-4">
-                    <svg class="icon" viewBox="0 0 24 24" stroke="currentColor">
-                        <path d="M4 14h16M4 18h16M4 6h16M4 10h16" />
-                        <circle cx="12" cy="12" r="8" stroke="currentColor" fill="none"/>
-                    </svg>
+        <!-- 行业痛点卡片 - 左对齐内容 -->
+        <div class="mb-20">
+            <!-- 区域小标题 - 左对齐 -->
+            <p class="text-xs text-teal-500/60 uppercase tracking-wider mb-4">The accountability gap</p>
+            
+            <div class="grid md:grid-cols-2 gap-5">
+                <!-- 医疗AI -->
+                <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
+                            hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
+                    <div class="flex items-start gap-4">
+                        <svg class="icon flex-shrink-0" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M4 14h16M4 18h16M4 6h16M4 10h16" />
+                            <circle cx="12" cy="12" r="8" stroke="currentColor" fill="none"/>
+                        </svg>
+                        <div>
+                            <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="pain1_title">Medical AI Adoption</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed card-text" data-i18n="pain1_desc">Diagnostic AI is used in thousands of hospitals. When errors occur, is it the doctor, the AI vendor, or the data provider?</p>
+                        </div>
+                    </div>
                 </div>
-                <!-- H3: 品牌色，中等粗细 -->
-                <h3 class="text-lg md:text-xl text-teal-400 font-semibold mb-3" data-i18n="pain1_title">Medical AI Adoption</h3>
-                <p class="text-gray-400 text-sm md:text-base leading-relaxed card-text" data-i18n="pain1_desc">Diagnostic AI is used in thousands of hospitals. When errors occur, is it the doctor, the AI vendor, or the data provider?</p>
-            </div>
-            <!-- 自动驾驶 -->
-            <div class="p-6 md:p-8 border border-gray-800 rounded-xl bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 hover:shadow-lg 
-                        hover:shadow-teal-500/5 transition-all duration-300">
-                <div class="mb-4">
-                    <svg class="icon" viewBox="0 0 24 24" stroke="currentColor">
-                        <path d="M5 12l2-2 3 3 5-5 2 2" />
-                        <circle cx="12" cy="12" r="8" stroke="currentColor" fill="none"/>
-                    </svg>
+                <!-- 自动驾驶 -->
+                <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
+                            hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
+                    <div class="flex items-start gap-4">
+                        <svg class="icon flex-shrink-0" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M5 12l2-2 3 3 5-5 2 2" />
+                            <circle cx="12" cy="12" r="8" stroke="currentColor" fill="none"/>
+                        </svg>
+                        <div>
+                            <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="pain2_title">Autonomous Driving</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed card-text" data-i18n="pain2_desc">L3 vehicles are now on public roads. In an accident, is it the driver, the automaker, or the algorithm?</p>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-lg md:text-xl text-teal-400 font-semibold mb-3" data-i18n="pain2_title">Autonomous Driving</h3>
-                <p class="text-gray-400 text-sm md:text-base leading-relaxed card-text" data-i18n="pain2_desc">L3 vehicles are now on public roads. In an accident, is it the driver, the automaker, or the algorithm?</p>
-            </div>
-            <!-- AI智能体 -->
-            <div class="p-6 md:p-8 border border-gray-800 rounded-xl bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 hover:shadow-lg 
-                        hover:shadow-teal-500/5 transition-all duration-300">
-                <div class="mb-4">
-                    <svg class="icon" viewBox="0 0 24 24" stroke="currentColor">
-                        <circle cx="12" cy="8" r="3" stroke="currentColor" fill="none"/>
-                        <path d="M6 16v2a4 4 0 0 0 8 0v-2" />
-                        <path d="M3 12h18" />
-                    </svg>
+                <!-- AI智能体 -->
+                <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
+                            hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
+                    <div class="flex items-start gap-4">
+                        <svg class="icon flex-shrink-0" viewBox="0 0 24 24" stroke="currentColor">
+                            <circle cx="12" cy="8" r="3" stroke="currentColor" fill="none"/>
+                            <path d="M6 16v2a4 4 0 0 0 8 0v-2" />
+                            <path d="M3 12h18" />
+                        </svg>
+                        <div>
+                            <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="pain3_title">AI Agents</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed card-text" data-i18n="pain3_desc">From customer service to finance, when an AI exceeds its authority, who can answer 'who authorized it'?</p>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-lg md:text-xl text-teal-400 font-semibold mb-3" data-i18n="pain3_title">AI Agents</h3>
-                <p class="text-gray-400 text-sm md:text-base leading-relaxed card-text" data-i18n="pain3_desc">From customer service to finance, when an AI exceeds its authority, who can answer 'who authorized it'?</p>
-            </div>
-            <!-- 教育AI -->
-            <div class="p-6 md:p-8 border border-gray-800 rounded-xl bg-gray-900/30 
-                        hover:bg-gray-900/50 hover:border-teal-500/30 hover:shadow-lg 
-                        hover:shadow-teal-500/5 transition-all duration-300">
-                <div class="mb-4">
-                    <svg class="icon" viewBox="0 0 24 24" stroke="currentColor">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3z" />
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v10a2 2 0 0 0 2 2h8" />
-                    </svg>
+                <!-- 教育AI -->
+                <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
+                            hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
+                    <div class="flex items-start gap-4">
+                        <svg class="icon flex-shrink-0" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3z" />
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v10a2 2 0 0 0 2 2h8" />
+                        </svg>
+                        <div>
+                            <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="pain4_title">AI in Education</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed card-text" data-i18n="pain4_desc">AI tutoring and content generation are now in classrooms. When biased or incorrect material is taught, who is accountable?</p>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-lg md:text-xl text-teal-400 font-semibold mb-3" data-i18n="pain4_title">AI in Education</h3>
-                <p class="text-gray-400 text-sm md:text-base leading-relaxed card-text" data-i18n="pain4_desc">AI tutoring and content generation are now in classrooms. When biased or incorrect material is taught, who is accountable—the teacher, the developer, or the school?</p>
             </div>
         </div>
 
-        <!-- 核心痛点区域 - 优化排版 -->
-        <div class="max-w-3xl mx-auto text-center mb-28 md:mb-36">
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6" data-i18n="core_title">Technology outpaces governance</h2>
-            <p class="text-gray-400 text-base md:text-lg leading-relaxed mb-8 max-w-2xl mx-auto" data-i18n="core_desc">
-                Society is adopting AI rapidly, but accountability frameworks are stuck in the industrial era.<br class="hidden sm:block">
+        <!-- 核心痛点区域 - 左对齐 -->
+        <div class="max-w-3xl mb-20">
+            <p class="text-xs text-teal-500/60 uppercase tracking-wider mb-4">The bigger picture</p>
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-4" data-i18n="core_title">Technology outpaces governance</h2>
+            <p class="text-gray-400 text-base md:text-lg leading-relaxed mb-6" data-i18n="core_desc">
+                Society is adopting AI rapidly, but accountability frameworks are stuck in the industrial era.<br>
                 Every untraceable decision erodes trust in AI.
             </p>
-            <p class="text-gray-300 text-sm md:text-base mb-6 italic" data-i18n="core_footer">
+            <p class="text-gray-300 text-sm md:text-base mb-4" data-i18n="core_footer">
                 This isn't one industry's problem — it's the defining challenge of the AI age.
             </p>
-            <div class="relative inline-block">
-                <div class="absolute inset-0 bg-teal-500/10 blur-xl rounded-full"></div>
-                <p class="relative text-xl md:text-2xl text-teal-400 font-semibold px-6 py-3" data-i18n="core_stat">
-                    71% of CIOs say traceability is required for AI projects.
-                </p>
-            </div>
-            <div class="w-16 h-0.5 bg-teal-500/30 mx-auto mt-8"></div>
+            <p class="text-base md:text-lg text-teal-400 font-medium" data-i18n="core_stat">
+                71% of CIOs say traceability is required for AI projects.
+            </p>
         </div>
 
-        <!-- 按钮 - 透明背景+品牌色边框 -->
-        <div class="text-center">
+        <!-- 按钮 - 左对齐，更自然 -->
+        <div class="mb-16">
             <a href="/product.html" 
                class="inline-block px-8 py-4 border border-teal-500 text-teal-400 
                       rounded-lg hover:bg-teal-500/10 transition-all duration-300 
@@ -155,8 +153,8 @@
             <p class="text-xs text-gray-600 mt-3" data-i18n="cta_note">Problem-focused, not tool-focused</p>
         </div>
 
-        <!-- 底部 -->
-        <div class="text-center text-xs text-gray-600 pt-12 md:pt-16 border-t border-gray-800 mt-16 md:mt-20">
+        <!-- 底部 - 保持居中（底部通常居中） -->
+        <div class="text-center text-xs text-gray-600 pt-12 border-t border-gray-800">
             <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-3 py-2 inline-block" data-i18n="footer_github">GitHub</a>
             <span class="text-gray-700">·</span>
             <a href="/spec/README.md" class="hover:text-gray-400 mx-3 py-2 inline-block" data-i18n="footer_spec">Spec</a>

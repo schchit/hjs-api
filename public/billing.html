@@ -57,7 +57,7 @@
                 <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
                 <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
                 <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
-                <a href="/billing.html" class="text-white">Billing</a>
+                <a href="/billing.html" class="text-white" data-i18n="nav_billing">Billing</a>
                 <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
             </div>
             <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
@@ -133,7 +133,7 @@
                     </div>
                 </div>
 
-                <!-- Rate Summary -->
+                <!-- Rate Summary（更新后定价） -->
                 <div class="border border-gray-800 bg-card p-6">
                     <span class="mb-4 block text-[10px] uppercase tracking-wider text-gray-400" data-i18n="bill_rates">
                         RATES
@@ -141,13 +141,16 @@
                     <div class="space-y-3 font-mono text-sm">
                         <div class="flex items-center justify-between">
                             <span class="text-gray-400" data-i18n="bill_rate_storage">Record Storage</span>
-                            <span class="text-white" id="rate-storage">$0.001/record/mo</span>
+                            <span class="text-white" id="rate-storage">$0.002/record/mo</span>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="text-gray-400" data-i18n="bill_rate_anchor">Anchoring</span>
-                            <span class="text-white" id="rate-anchor">$0.01 + network fee</span>
+                            <span class="text-white" id="rate-anchor">$0.03 + network fee</span>
                         </div>
                     </div>
+                    <p class="text-xs text-gray-500 mt-4" data-i18n="bill_network_note">
+                        Bitcoin network fee passed through at cost. Current estimate: $0.32 per anchor.
+                    </p>
                 </div>
 
                 <!-- Monthly Usage -->
@@ -270,15 +273,8 @@
         const addFundsBtn = document.getElementById('add-funds-btn');
         const presetBtns = document.querySelectorAll('.preset-btn');
 
-        // 费率（硬编码，基础设施风格）
-        const RATES = {
-            storage: 0.001,
-            anchorBase: 0.01
-        };
-
         // ===== 初始化 =====
         if (currentEmail) {
-            // 已登录状态
             unauthState.classList.add('hidden');
             authState.classList.remove('hidden');
             currentEmailSpan.textContent = currentEmail;
@@ -295,7 +291,6 @@
             verifyBtn.disabled = true;
             verifyBtn.textContent = '...';
             
-            // 模拟验证
             await new Promise(r => setTimeout(r, 600));
             
             currentEmail = email;
@@ -313,7 +308,6 @@
             verifyBtn.textContent = 'Verify';
         });
 
-        // ===== 退出登录 =====
         logoutBtn.addEventListener('click', () => {
             currentEmail = '';
             localStorage.removeItem('hjs_console_email');
@@ -326,7 +320,6 @@
             clearBillingData();
         });
 
-        // ===== 启用/禁用功能 =====
         function enableBillingFeatures() {
             customAmount.disabled = false;
             addFundsBtn.disabled = false;
@@ -345,7 +338,6 @@
             updateUI();
         }
 
-        // ===== 加载账单数据 =====
         async function loadBillingData() {
             await Promise.all([
                 fetchBalance(),
@@ -361,7 +353,6 @@
                     const data = await res.json();
                     balance = data.balance || 0;
                 } else {
-                    // 模拟数据
                     balance = 42.50;
                 }
             } catch (err) {
@@ -379,20 +370,35 @@
                     monthRecords.textContent = data.records || 834;
                     monthAnchors.textContent = data.anchors || 23;
                     monthNetwork.textContent = `$${(data.network_fee || 7.36).toFixed(2)}`;
-                    monthTotal.textContent = `$${(data.total || 8.19).toFixed(2)}`;
+                    
+                    // 按新价格计算总额
+                    const storageCost = (data.records || 834) * 0.002;
+                    const anchorCost = (data.anchors || 23) * 0.03;
+                    const network = data.network_fee || 7.36;
+                    const total = storageCost + anchorCost + network;
+                    monthTotal.textContent = `$${total.toFixed(2)}`;
                 } else {
-                    // 模拟数据
                     monthRecords.textContent = '834';
                     monthAnchors.textContent = '23';
                     monthNetwork.textContent = '$7.36';
-                    monthTotal.textContent = '$8.19';
+                    
+                    const storageCost = 834 * 0.002;
+                    const anchorCost = 23 * 0.03;
+                    const network = 7.36;
+                    const total = storageCost + anchorCost + network;
+                    monthTotal.textContent = `$${total.toFixed(2)}`;
                 }
             } catch (err) {
                 console.error('Fetch usage error:', err);
                 monthRecords.textContent = '834';
                 monthAnchors.textContent = '23';
                 monthNetwork.textContent = '$7.36';
-                monthTotal.textContent = '$8.19';
+                
+                const storageCost = 834 * 0.002;
+                const anchorCost = 23 * 0.03;
+                const network = 7.36;
+                const total = storageCost + anchorCost + network;
+                monthTotal.textContent = `$${total.toFixed(2)}`;
             }
         }
 
@@ -403,7 +409,6 @@
                     const data = await res.json();
                     transactions = data.transactions || [];
                 } else {
-                    // 模拟数据
                     transactions = [
                         { id: 'tx_001', date: '2026-02-15', type: 'top-up', amount: 50 },
                         { id: 'tx_002', date: '2026-02-14', type: 'anchor', amount: -12.50 },
@@ -418,7 +423,6 @@
             renderTransactions();
         }
 
-        // ===== 充值 =====
         async function addFunds(amount) {
             if (amount <= 0 || !currentEmail) return;
             
@@ -436,12 +440,10 @@
                     const data = await res.json();
                     balance = data.new_balance;
                     
-                    // 显示成功提示
                     topupSuccess.textContent = `+$${amount.toFixed(2)}`;
                     topupSuccess.classList.remove('hidden');
                     setTimeout(() => topupSuccess.classList.add('hidden'), 2500);
                     
-                    // 添加交易记录
                     transactions.unshift({
                         id: data.transaction_id || `tx_${Date.now()}`,
                         date: new Date().toISOString().split('T')[0],
@@ -452,7 +454,6 @@
                     updateUI();
                     renderTransactions();
                     
-                    // 清空输入
                     customAmount.value = '';
                 } else {
                     alert('充值失败，请重试');
@@ -466,7 +467,6 @@
             }
         }
 
-        // ===== 事件绑定 =====
         presetBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const amount = parseFloat(btn.getAttribute('data-amount'));
@@ -481,7 +481,6 @@
             }
         });
 
-        // ===== UI更新 =====
         function updateUI() {
             balanceSpan.textContent = `$${balance.toFixed(2)}`;
         }
@@ -515,13 +514,13 @@
         // ===== 翻译字典 =====
         const translations = {
             en: {
-        nav_home: "Home",
-        nav_product: "Product",
-        nav_developers: "Developers",
-        nav_console: "Console",
-        nav_lookup: "Lookup",
-        nav_billing: "Billing",
-        nav_governance: "Governance",
+                nav_home: "Home",
+                nav_product: "Product",
+                nav_developers: "Developers",
+                nav_console: "Console",
+                nav_lookup: "Lookup",
+                nav_billing: "Billing",
+                nav_governance: "Governance",
                 bill_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
                 bill_title: "Usage & Billing",
                 bill_subtitle: "Pay only for what you use. No subscriptions. No tiers.",
@@ -533,6 +532,7 @@
                 bill_rates: "RATES",
                 bill_rate_storage: "Record Storage",
                 bill_rate_anchor: "Anchoring",
+                bill_network_note: "Bitcoin network fee passed through at cost. Current estimate: $0.32 per anchor.",
                 bill_month: "THIS MONTH",
                 bill_records: "Records",
                 bill_anchors: "Anchors",
@@ -546,13 +546,13 @@
                 bill_history_empty: "No transactions yet"
             },
             zh: {
-        nav_home: "首页",
-        nav_product: "产品",
-        nav_developers: "开发者",
-        nav_console: "控制台",
-        nav_lookup: "查询",
-        nav_billing: "计费",
-        nav_governance: "治理",
+                nav_home: "首页",
+                nav_product: "产品",
+                nav_developers: "开发者",
+                nav_console: "控制台",
+                nav_lookup: "查询",
+                nav_billing: "计费",
+                nav_governance: "治理",
                 bill_version_tag: "HJS 责任协议 · 草案 0.1 版",
                 bill_title: "用量与计费",
                 bill_subtitle: "按使用付费。无订阅。无套餐。",
@@ -564,6 +564,7 @@
                 bill_rates: "费率",
                 bill_rate_storage: "记录存储",
                 bill_rate_anchor: "锚定服务",
+                bill_network_note: "比特币网络费按实际成本转嫁。当前估算：$0.32/次。",
                 bill_month: "本月用量",
                 bill_records: "记录数",
                 bill_anchors: "锚定数",
@@ -589,7 +590,6 @@
             if (select) select.value = lang;
         }
 
-        // 初始化语言
         (function() {
             const savedLang = localStorage.getItem('hjs_lang');
             const urlParams = new URLSearchParams(window.location.search);

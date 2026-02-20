@@ -74,7 +74,7 @@
                 Record Verification
             </h1>
             <p class="mt-6 max-w-2xl text-sm leading-relaxed text-gray-400" data-i18n="lk_subtitle">
-                Enter a record ID to inspect its structural validity and integrity proof.
+                Inspect complete responsibility chain: Judgment, Delegation, Termination, and Verification.
             </p>
         </section>
 
@@ -132,25 +132,97 @@
 
         <!-- Result -->
         <div id="result" class="hidden pb-24">
-            <!-- 2x2 Indicator Grid -->
-            <div class="mb-10">
-                <h3 class="mb-4 text-[10px] font-medium tracking-widest text-gray-400 uppercase" data-i18n="lk_indicators">VERIFICATION RESULT</h3>
-                <div class="grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-gray-800 bg-gray-800">
-                    <div class="flex flex-col gap-1 bg-card p-5">
-                        <span class="text-[10px] tracking-widest text-gray-400 uppercase" data-i18n="lk_ind_validity">STRUCTURAL VALIDITY</span>
-                        <span id="validity-value" class="font-mono text-sm font-bold text-white"></span>
+            <!-- 四项原语卡片网格 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <!-- Judgment 卡片 -->
+                <div class="border border-gray-800 bg-card p-5">
+                    <h3 class="text-sm font-mono text-steel mb-3 flex items-center gap-2">
+                        <span>①</span> Judgment
+                    </h3>
+                    <div id="judgment-content" class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">actor:</span>
+                            <span id="judgment-actor" class="text-white font-mono">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">intent:</span>
+                            <span id="judgment-intent" class="text-white font-mono">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">context:</span>
+                            <span id="judgment-context" class="text-white font-mono">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">timestamp:</span>
+                            <span id="judgment-timestamp" class="text-white font-mono">-</span>
+                        </div>
                     </div>
-                    <div class="flex flex-col gap-1 bg-card p-5">
-                        <span class="text-[10px] tracking-widest text-gray-400 uppercase" data-i18n="lk_ind_depth">DELEGATION DEPTH</span>
-                        <span id="depth-value" class="font-mono text-sm font-bold text-white"></span>
+                </div>
+
+                <!-- Delegation 卡片 -->
+                <div class="border border-gray-800 bg-card p-5">
+                    <h3 class="text-sm font-mono text-steel mb-3 flex items-center gap-2">
+                        <span>②</span> Delegation <span class="text-xs text-gray-500">(optional)</span>
+                    </h3>
+                    <div id="delegation-content" class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">from:</span>
+                            <span id="delegation-from" class="text-white font-mono">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">to:</span>
+                            <span id="delegation-to" class="text-white font-mono">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">scope:</span>
+                            <span id="delegation-scope" class="text-white font-mono">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">expires:</span>
+                            <span id="delegation-expires" class="text-white font-mono">-</span>
+                        </div>
                     </div>
-                    <div class="flex flex-col gap-1 bg-card p-5">
-                        <span class="text-[10px] tracking-widest text-gray-400 uppercase" data-i18n="lk_ind_termination">TERMINATION STATUS</span>
-                        <span id="termination-value" class="font-mono text-sm font-bold text-white"></span>
+                </div>
+
+                <!-- Termination 卡片 -->
+                <div class="border border-gray-800 bg-card p-5">
+                    <h3 class="text-sm font-mono text-steel mb-3 flex items-center gap-2">
+                        <span>③</span> Termination <span class="text-xs text-gray-500">(optional)</span>
+                    </h3>
+                    <div id="termination-content" class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">reference:</span>
+                            <span id="termination-ref" class="text-white font-mono">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">terminated at:</span>
+                            <span id="termination-time" class="text-white font-mono">-</span>
+                        </div>
                     </div>
-                    <div class="flex flex-col gap-1 bg-card p-5">
-                        <span class="text-[10px] tracking-widest text-gray-400 uppercase" data-i18n="lk_ind_anchor">ANCHOR STATUS</span>
-                        <span id="anchor-value" class="font-mono text-sm font-bold text-white"></span>
+                </div>
+
+                <!-- Verification 卡片 -->
+                <div class="border border-gray-800 bg-card p-5">
+                    <h3 class="text-sm font-mono text-steel mb-3 flex items-center gap-2">
+                        <span>④</span> Verification
+                    </h3>
+                    <div id="verification-content" class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">structural validity:</span>
+                            <span id="verification-validity" class="font-mono text-white">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">delegation depth:</span>
+                            <span id="verification-depth" class="font-mono text-white">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">termination status:</span>
+                            <span id="verification-termination" class="font-mono text-white">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">anchor status:</span>
+                            <span id="verification-anchor" class="font-mono text-white">-</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -175,7 +247,7 @@
         <!-- Empty state -->
         <div id="empty-state" class="border-t border-dashed border-gray-800 py-24 text-center">
             <p class="mx-auto max-w-md text-sm leading-relaxed text-gray-400" data-i18n="lk_empty">
-                Enter a judgment record ID above to retrieve its details. You can download results as JSON, PDF, or OTS proof.
+                Enter a record ID to inspect its complete responsibility chain.
             </p>
         </div>
 
@@ -194,7 +266,6 @@
     <script>
         // API 基础地址
         const API_BASE = 'https://hjs-api.onrender.com';
-        // 公共 API Key（从你的 console 页面复制）
         const PUBLIC_API_KEY = 'ced6bf0b4f9a0a53aa056456e0528fc7ea3d3bd883c5318542ff956241ea5817';
 
         // ===== DOM 元素 =====
@@ -205,11 +276,28 @@
         const resultDiv = document.getElementById('result');
         const emptyState = document.getElementById('empty-state');
         
-        // 结果元素
-        const validityValue = document.getElementById('validity-value');
-        const depthValue = document.getElementById('depth-value');
-        const terminationValue = document.getElementById('termination-value');
-        const anchorValue = document.getElementById('anchor-value');
+        // Judgment 元素
+        const judgmentActor = document.getElementById('judgment-actor');
+        const judgmentIntent = document.getElementById('judgment-intent');
+        const judgmentContext = document.getElementById('judgment-context');
+        const judgmentTimestamp = document.getElementById('judgment-timestamp');
+        
+        // Delegation 元素
+        const delegationFrom = document.getElementById('delegation-from');
+        const delegationTo = document.getElementById('delegation-to');
+        const delegationScope = document.getElementById('delegation-scope');
+        const delegationExpires = document.getElementById('delegation-expires');
+        
+        // Termination 元素
+        const terminationRef = document.getElementById('termination-ref');
+        const terminationTime = document.getElementById('termination-time');
+        
+        // Verification 元素
+        const verificationValidity = document.getElementById('verification-validity');
+        const verificationDepth = document.getElementById('verification-depth');
+        const verificationTermination = document.getElementById('verification-termination');
+        const verificationAnchor = document.getElementById('verification-anchor');
+        
         const jsonDisplay = document.getElementById('json-display');
         
         // 下载按钮
@@ -259,14 +347,12 @@
         async function lookupRecord(id) {
             if (!id) return;
             
-            // 显示加载，隐藏其他
             loadingDiv.classList.remove('hidden');
             errorDiv.classList.add('hidden');
             resultDiv.classList.add('hidden');
             emptyState.classList.add('hidden');
             
             try {
-                // 添加 API Key 头
                 const res = await fetch(`${API_BASE}/judgments/${id}`, {
                     headers: {
                         'X-API-Key': PUBLIC_API_KEY
@@ -280,27 +366,36 @@
                 const data = await res.json();
                 currentResult = data;
                 
-                // 更新指标
-                validityValue.textContent = data.structural_validity || 'INVALID';
-                validityValue.className = data.structural_validity === 'VALID' 
-                    ? 'font-mono text-sm font-bold text-white' 
-                    : 'font-mono text-sm font-bold text-red-400';
+                // 更新 Judgment (从API的实际字段映射)
+                judgmentActor.textContent = data.entity || '-';
+                judgmentIntent.textContent = data.action || '-';
+                judgmentContext.textContent = JSON.stringify(data.scope || {});
+                judgmentTimestamp.textContent = data.timestamp || '-';
                 
-                depthValue.textContent = data.delegation_depth || 0;
-                terminationValue.textContent = data.termination_status || 'unknown';
-                anchorValue.textContent = data.anchor_status || 'none';
+                // 更新 Delegation (模拟或从实际数据获取)
+                delegationFrom.textContent = data.delegation?.from || '-';
+                delegationTo.textContent = data.delegation?.to || '-';
+                delegationScope.textContent = data.delegation?.scope || '-';
+                delegationExpires.textContent = data.delegation?.expires_at || '-';
+                
+                // 更新 Termination
+                terminationRef.textContent = data.termination?.reference || '-';
+                terminationTime.textContent = data.termination?.terminated_at || '-';
+                
+                // 更新 Verification
+                verificationValidity.textContent = data.verification?.structural_validity || 'PENDING';
+                verificationDepth.textContent = data.verification?.delegation_depth || '0';
+                verificationTermination.textContent = data.verification?.termination_status || 'unknown';
+                
+                const anchorType = data.immutability_anchor?.type || 'none';
+                verificationAnchor.textContent = anchorType;
                 
                 // 更新JSON显示
                 jsonDisplay.innerHTML = highlightJson(data);
                 
-                // 更新OTS按钮状态
-                if (data.anchor_status === 'verified') {
-                    downloadOts.disabled = false;
-                } else {
-                    downloadOts.disabled = true;
-                }
+                // OTS按钮状态
+                downloadOts.disabled = anchorType !== 'ots';
                 
-                // 显示结果
                 loadingDiv.classList.add('hidden');
                 resultDiv.classList.remove('hidden');
                 
@@ -326,13 +421,13 @@
 
         downloadPdf.addEventListener('click', () => {
             if (!currentResult) return;
-            // PDF 下载也需要 API Key（通过 URL 参数）
             window.open(`${API_BASE}/judgments/${currentResult.id}?format=pdf&key=${PUBLIC_API_KEY}`, '_blank');
         });
 
         downloadOts.addEventListener('click', () => {
-            if (!currentResult || currentResult.anchor_status !== 'verified') return;
-            // OTS 下载也需要 API Key
+            if (!currentResult) return;
+            const anchorType = currentResult.immutability_anchor?.type;
+            if (anchorType !== 'ots') return;
             window.open(`${API_BASE}/judgments/${currentResult.id}/immutability-proof?key=${PUBLIC_API_KEY}`, '_blank');
         });
 
@@ -377,18 +472,13 @@
                 nav_governance: "Governance",
                 lk_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
                 lk_title: "Record Verification",
-                lk_subtitle: "Enter a record ID to inspect its structural validity and integrity proof.",
+                lk_subtitle: "Inspect complete responsibility chain: Judgment, Delegation, Termination, and Verification.",
                 lk_examples: "Examples:",
                 lk_loading: "Loading...",
                 lk_button: "Lookup",
-                lk_indicators: "VERIFICATION RESULT",
-                lk_ind_validity: "STRUCTURAL VALIDITY",
-                lk_ind_depth: "DELEGATION DEPTH",
-                lk_ind_termination: "TERMINATION STATUS",
-                lk_ind_anchor: "ANCHOR STATUS",
                 lk_json_heading: "FULL RECORD",
                 lk_download_heading: "DOWNLOAD",
-                lk_empty: "Enter a judgment record ID above to retrieve its details. You can download results as JSON, PDF, or OTS proof."
+                lk_empty: "Enter a record ID to inspect its complete responsibility chain."
             },
             zh: {
                 nav_home: "首页",
@@ -400,18 +490,13 @@
                 nav_governance: "治理",
                 lk_version_tag: "HJS 责任协议 · 草案 0.1 版",
                 lk_title: "记录验证",
-                lk_subtitle: "输入记录ID，检查其结构有效性和完整性证明。",
+                lk_subtitle: "查看完整的责任链：判断、授权、终止、验证。",
                 lk_examples: "示例：",
                 lk_loading: "加载中...",
                 lk_button: "查询",
-                lk_indicators: "验证结果",
-                lk_ind_validity: "结构有效性",
-                lk_ind_depth: "授权深度",
-                lk_ind_termination: "终止状态",
-                lk_ind_anchor: "锚定状态",
                 lk_json_heading: "完整记录",
                 lk_download_heading: "下载",
-                lk_empty: "输入记录ID查询详情。可下载 JSON、PDF 或 OTS 证明文件。"
+                lk_empty: "输入记录ID查看完整的责任链。"
             }
         };
 

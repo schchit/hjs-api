@@ -48,55 +48,9 @@
 <body>
     <div class="mx-auto max-w-4xl px-6">
         <!-- ===== 导航栏 ===== -->
-    <div class="flex justify-between items-center py-6 text-base">
-        <div class="text-white font-semibold text-lg">HJS</div>
-        <div class="hidden md:flex gap-6 text-gray-400">
-            <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
-            <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
-            <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
-            <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
-            <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
-            <a href="/billing.html" class="hover:text-teal-400 transition" data-i18n="nav_billing">Billing</a>
-            <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
-        </div>
-        <div class="flex items-center gap-3">
-            <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
-                <option value="en">EN</option>
-                <option value="zh">中文</option>
-            </select>
-            <button id="menu-btn" class="md:hidden text-gray-400 hover:text-white">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
-        </div>
-    </div>
-    <div id="mobile-menu" class="hidden md:hidden border-t border-gray-800 mt-2 py-4">
-        <div class="flex flex-col gap-3 text-gray-400">
-            <a href="/" class="hover:text-teal-400 transition py-2" data-i18n="nav_home">Home</a>
-            <a href="/product.html" class="hover:text-teal-400 transition py-2" data-i18n="nav_product">Product</a>
-            <a href="/developers.html" class="hover:text-teal-400 transition py-2" data-i18n="nav_developers">Developers</a>
-            <a href="/console.html" class="hover:text-teal-400 transition py-2" data-i18n="nav_console">Console</a>
-            <a href="/lookup.html" class="hover:text-teal-400 transition py-2" data-i18n="nav_lookup">Lookup</a>
-            <a href="/billing.html" class="hover:text-teal-400 transition py-2" data-i18n="nav_billing">Billing</a>
-            <a href="/governance.html" class="hover:text-teal-400 transition py-2" data-i18n="nav_governance">Governance</a>
-        </div>
-    </div>
-    <div class="flex flex-wrap gap-4 sm:gap-6 md:gap-8 text-gray-400">
-        <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
-        <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
-        <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
-        <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
-        <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
-        <a href="/billing.html" class="hover:text-teal-400 transition" data-i18n="nav_billing">Billing</a>
-        <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
-    </div>
-    <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
-        <option value="en">EN</option>
-        <option value="zh">中文</option>
-    </select>
-</div>
-            <div class="flex flex-wrap gap-4 sm:gap-6 md:gap-8 text-gray-400">
+        <div class="flex justify-between items-center py-6 text-base">
+            <div class="text-white font-semibold text-lg">HJS</div>
+            <div class="flex gap-8 md:gap-10 text-gray-400">
                 <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
                 <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
                 <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
@@ -471,10 +425,5 @@
             switchLang(lang);
         })();
     </script>
-<script>
-document.getElementById("menu-btn")?.addEventListener("click", function() {
-    document.getElementById("mobile-menu").classList.toggle("hidden");
-});
-</script>
 </body>
 </html>

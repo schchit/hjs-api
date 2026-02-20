@@ -138,26 +138,26 @@
                 <div class="grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-gray-800 bg-gray-800">
                     <div class="flex flex-col gap-1 bg-card p-5">
                         <span class="text-[10px] tracking-widest text-gray-400 uppercase" data-i18n="lk_ind_validity">STRUCTURAL VALIDITY</span>
-                        <span id="validity-value" class="font-mono text-sm font-bold text-white"></span>
+                        <span id="validity-value" class="font-mono text-sm font-bold text-white">N/A</span>
                     </div>
                     <div class="flex flex-col gap-1 bg-card p-5">
                         <span class="text-[10px] tracking-widest text-gray-400 uppercase" data-i18n="lk_ind_depth">DELEGATION DEPTH</span>
-                        <span id="depth-value" class="font-mono text-sm font-bold text-white"></span>
+                        <span id="depth-value" class="font-mono text-sm font-bold text-white">0</span>
                     </div>
                     <div class="flex flex-col gap-1 bg-card p-5">
                         <span class="text-[10px] tracking-widest text-gray-400 uppercase" data-i18n="lk_ind_termination">TERMINATION STATUS</span>
-                        <span id="termination-value" class="font-mono text-sm font-bold text-white"></span>
+                        <span id="termination-value" class="font-mono text-sm font-bold text-white">N/A</span>
                     </div>
                     <div class="flex flex-col gap-1 bg-card p-5">
                         <span class="text-[10px] tracking-widest text-gray-400 uppercase" data-i18n="lk_ind_anchor">ANCHOR STATUS</span>
-                        <span id="anchor-value" class="font-mono text-sm font-bold text-white"></span>
+                        <span id="anchor-value" class="font-mono text-sm font-bold text-white">none</span>
                     </div>
                 </div>
             </div>
 
             <!-- Evidence Package Info -->
             <div class="mb-6 p-4 bg-gray-800/30 rounded border-l-2 border-steel">
-                <h4 class="text-xs font-medium text-steel mb-2 uppercase tracking-wider">📦 Evidence Package</h4>
+                <h4 class="text-xs font-medium text-steel mb-2 uppercase tracking-wider">📦 EVIDENCE PACKAGE</h4>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
                     <div class="flex items-center gap-2">
                         <span class="text-gray-500">JSON</span>
@@ -180,7 +180,7 @@
                 <pre id="json-display" class="overflow-x-auto border border-gray-800 bg-[#1a1a1a] p-5 font-mono text-xs leading-relaxed"></pre>
             </div>
 
-            <!-- Download Buttons (优化版) -->
+            <!-- Download Buttons (统一使用 fetch) -->
             <div class="mb-10">
                 <h3 class="mb-4 text-[10px] font-medium tracking-widest text-gray-400 uppercase" data-i18n="lk_download_heading">DOWNLOAD EVIDENCE PACKAGE</h3>
                 <div class="flex flex-wrap gap-3">
@@ -224,7 +224,7 @@
     <!-- ===== 全局语言层 ===== -->
     <script src="/js/lang.js"></script>
     <script>
-        // API 基础地址
+        // API 基础地址 - 确保这两个常量存在
         const API_BASE = 'https://hjs-api.onrender.com';
         const PUBLIC_API_KEY = 'ced6bf0b4f9a0a53aa056456e0528fc7ea3d3bd883c5318542ff956241ea5817';
 
@@ -330,7 +330,7 @@
                 const data = await res.json();
                 currentResult = data;
                 
-                // 更新指标
+                // 更新指标（适配实际返回的数据）
                 validityValue.textContent = data.structural_validity || 'N/A';
                 depthValue.textContent = data.delegation_depth || '0';
                 terminationValue.textContent = data.termination_status || 'N/A';
@@ -353,7 +353,7 @@
             }
         }
 
-        // ===== 下载功能（优化版） =====
+        // ===== 下载功能（统一使用 fetch，避免弹窗拦截） =====
         downloadJson.addEventListener('click', async () => {
             if (!currentResult) return;
             
@@ -367,9 +367,9 @@
                 a.download = `${currentResult.id}.json`;
                 a.click();
                 URL.revokeObjectURL(url);
-                showStatus('✅ JSON downloaded successfully');
+                showStatus('✅ JSON downloaded');
             } catch (err) {
-                showStatus('❌ Failed to download JSON', true);
+                showStatus('❌ Download failed', true);
             } finally {
                 setDownloading(downloadJson, false);
             }
@@ -381,17 +381,22 @@
             setDownloading(downloadPdf, true);
             
             try {
-                // 尝试在新窗口打开PDF
-                const pdfWindow = window.open(`${API_BASE}/judgments/${currentResult.id}?format=pdf&key=${PUBLIC_API_KEY}`, '_blank');
+                const res = await fetch(`${API_BASE}/judgments/${currentResult.id}?format=pdf`, {
+                    headers: { 'X-API-Key': PUBLIC_API_KEY }
+                });
                 
-                // 如果被浏览器拦截，提示用户
-                if (!pdfWindow) {
-                    showStatus('⚠️ Pop-up blocked. Please allow pop-ups for this site.', true);
-                } else {
-                    showStatus('✅ PDF opened in new tab');
-                }
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${currentResult.id}.pdf`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showStatus('✅ PDF downloaded');
             } catch (err) {
-                showStatus('❌ Failed to download PDF', true);
+                showStatus('❌ PDF download failed', true);
             } finally {
                 setDownloading(downloadPdf, false);
             }
@@ -402,22 +407,37 @@
             
             const anchorType = currentResult.immutability_anchor?.type;
             if (anchorType !== 'ots') {
-                showStatus('❌ OTS proof not available for this record', true);
+                showStatus('❌ OTS not available for this record', true);
                 return;
             }
             
             setDownloading(downloadOts, true);
             
             try {
-                const otsWindow = window.open(`${API_BASE}/judgments/${currentResult.id}/immutability-proof?key=${PUBLIC_API_KEY}`, '_blank');
+                const res = await fetch(`${API_BASE}/judgments/${currentResult.id}/immutability-proof`, {
+                    headers: { 'X-API-Key': PUBLIC_API_KEY }
+                });
                 
-                if (!otsWindow) {
-                    showStatus('⚠️ Pop-up blocked. Please allow pop-ups for this site.', true);
-                } else {
-                    showStatus('✅ OTS proof download started');
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                
+                // 获取文件名（后端可能返回 Content-Disposition）
+                const contentDisposition = res.headers.get('Content-Disposition');
+                let filename = `${currentResult.id}.ots`;
+                if (contentDisposition) {
+                    const match = contentDisposition.match(/filename="?([^"]+)"?/);
+                    if (match) filename = match[1];
                 }
+                
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+                showStatus('✅ OTS downloaded');
             } catch (err) {
-                showStatus('❌ Failed to download OTS proof', true);
+                showStatus('❌ OTS download failed', true);
             } finally {
                 setDownloading(downloadOts, false);
             }

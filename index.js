@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Human Judgment Systems Foundation Ltd.
 
-const express = require('express');
 const { Pool } = require('pg');
+const express = require('express');
 require('dotenv').config();
 const { generateRecordHash } = require('./lib/canonical');
 const { submitToOTS } = require('./lib/ots-utils');
@@ -70,6 +70,89 @@ app.get('/logs', async (req, res) => {
     } catch (err) {
         console.error('Error fetching logs:', err);
         res.status(500).json({ error: 'Failed to fetch logs' });
+    }
+});
+
+// ==================== 获取用量统计 ====================
+app.get('/metrics', async (req, res) => {
+    const { email } = req.query;
+    
+    if (!email) {
+        return res.status(400).json({ error: 'Email required' });
+    }
+    
+    try {
+        // 获取总记录数
+        const totalResult = await pool.query(
+            'SELECT COUNT(*) as count FROM judgments WHERE entity = $1',
+            [email]
+        );
+        
+        // 获取活跃密钥数
+        const keysResult = await pool.query(
+            'SELECT COUNT(*) as count FROM api_keys WHERE user_id = $1',
+            [email]
+        );
+        
+        // 获取平均授权深度（如果有 verification 表）
+        let avgDepth = 0;
+        try {
+            const depthResult = await pool.query(
+                'SELECT AVG(delegation_depth) as avg FROM verifications WHERE email = $1',
+                [email]
+            );
+            avgDepth = depthResult.rows[0]?.avg || 0;
+        } catch (err) {
+            // 表不存在，忽略
+            console.log('Verifications table not yet created');
+        }
+        
+        // 获取最近30天的每日用量
+        const dailyResult = await pool.query(
+            `SELECT date, judgment_count, anchor_count 
+             FROM daily_usage 
+             WHERE email = $1 
+             ORDER BY date DESC 
+             LIMIT 30`,
+            [email]
+        );
+        
+        // 获取本月总计
+        const now = new Date();
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+        
+        const monthResult = await pool.query(
+            `SELECT 
+                COALESCE(SUM(judgment_count), 0) as month_judgments,
+                COALESCE(SUM(anchor_count), 0) as month_anchors
+             FROM daily_usage 
+             WHERE email = $1 AND date BETWEEN $2 AND $3`,
+            [email, firstDay, lastDay]
+        );
+        
+        // 记录日志
+        await addLog(email, 'GET', '/metrics', 200);
+        
+        res.json({
+            total_judgments: parseInt(totalResult.rows[0]?.count || 0),
+            active_keys: parseInt(keysResult.rows[0]?.count || 0),
+            avg_delegation_depth: parseFloat(avgDepth) || 0,
+            monthly: {
+                judgments: parseInt(monthResult.rows[0]?.month_judgments || 0),
+                anchors: parseInt(monthResult.rows[0]?.month_anchors || 0),
+                quota_limit: 1000 // 可以从用户表获取
+            },
+            daily: dailyResult.rows.map(row => ({
+                date: row.date,
+                judgments: row.judgment_count,
+                anchors: row.anchor_count
+            }))
+        });
+        
+    } catch (err) {
+        console.error('Error fetching metrics:', err);
+        res.status(500).json({ error: 'Failed to fetch metrics' });
     }
 });
 
@@ -832,6 +915,32 @@ app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =
       anchorResult.proof,
       anchorResult.anchoredAt
     ]);
+
+    // 更新每日用量
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      await pool.query(
+        `INSERT INTO daily_usage (email, date, judgment_count) 
+         VALUES ($1, $2, 1)
+         ON CONFLICT (email, date) 
+         DO UPDATE SET judgment_count = daily_usage.judgment_count + 1`,
+        [entity, today]
+      );
+      
+      // 如果使用了锚定，也要更新锚定计数
+      if (immutability?.type === 'ots') {
+        await pool.query(
+          `INSERT INTO daily_usage (email, date, anchor_count) 
+           VALUES ($1, $2, 1)
+           ON CONFLICT (email, date) 
+           DO UPDATE SET anchor_count = daily_usage.anchor_count + 1`,
+          [entity, today]
+        );
+      }
+    } catch (err) {
+      console.error('Error updating daily usage:', err);
+      // 不影响主流程，只记录错误
+    }
 
     const responseAnchor = {
       type: anchorResult._error ? 'none' : anchorType

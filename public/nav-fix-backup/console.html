@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HJS · Developer Console</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        .font-mono, code, pre { font-family: 'JetBrains Mono', monospace !important; }
+        body { background: #0a0a0a; color: #e5e5e5; }
+        .text-steel { color: #3B4B5C; }
+        .border-steel { border-color: #3B4B5C; }
+        .bg-steel\/10 { background-color: rgba(59, 75, 92, 0.1); }
+        .bg-steel\/20 { background-color: rgba(59, 75, 92, 0.2); }
+        .hover\:bg-steel\/20:hover { background-color: rgba(59, 75, 92, 0.2); }
+        .bg-card { background: rgba(26, 26, 26, 0.5); }
+        .border-border { border-color: #1f1f1f; }
+        .text-muted-foreground { color: #9ca3af; }
+        .text-foreground { color: #e5e5e5; }
+        .bg-background { background: #0a0a0a; }
+        .hover\:border-steel:hover { border-color: #3B4B5C; }
+        .hover\:text-foreground:hover { color: #e5e5e5; }
+        .disabled\:opacity-60:disabled { opacity: 0.6; }
+        .disabled\:cursor-not-allowed:disabled { cursor: not-allowed; }
+        .focus\:border-steel:focus { border-color: #3B4B5C; }
+        
+        /* 标签页样式 */
+        .tab-button {
+            padding: 0.5rem 0;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-button.active {
+            color: white;
+            border-bottom-color: #3B4B5C;
+        }
+        .tab-button:not(.active) {
+            color: #9ca3af;
+        }
+        .tab-button:not(.active):hover {
+            color: #e5e5e5;
+        }
+        
+        /* 日志滚动 */
+        .log-container {
+            max-height: 200px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #3B4B5C #1f1f1f;
+        }
+        .log-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .log-container::-webkit-scrollbar-track {
+            background: #1f1f1f;
+        }
+        .log-container::-webkit-scrollbar-thumb {
+            background-color: #3B4B5C;
+            border-radius: 3px;
+        }
+        
+        /* 状态颜色 */
+        .status-200 { color: #10b981; }
+        .status-201 { color: #10b981; }
+        .status-404 { color: #ef4444; }
+        .status-500 { color: #f59e0b; }
+        
+        /* 动画 */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        
+        /* 圆角 */
+        .rounded { border-radius: 0.25rem; }
+    </style>
+</head>
+<body>
+    <div class="mx-auto max-w-6xl px-6">
+        <!-- ===== 导航栏 ===== -->
+<div class="flex flex-wrap justify-between items-center py-6 text-base">
+    <div class="text-white font-semibold text-lg">HJS</div>
+    <div class="flex flex-wrap gap-4 sm:gap-6 md:gap-8 text-gray-400">
+        <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
+        <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
+        <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
+        <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
+        <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
+        <a href="/billing.html" class="hover:text-teal-400 transition" data-i18n="nav_billing">Billing</a>
+        <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
+    </div>
+    <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
+        <option value="en">EN</option>
+        <option value="zh">中文</option>
+    </select>
+</div>
+            <div class="flex flex-wrap gap-4 sm:gap-6 md:gap-8 text-gray-400">
+                <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
+                <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
+                <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
+                <a href="/console.html" class="text-white">Console</a>
+                <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
+                <a href="/billing.html" class="hover:text-teal-400 transition" data-i18n="nav_billing">Billing</a>
+                <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
+            </div>
+            <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
+                <option value="en">EN</option>
+                <option value="zh">中文</option>
+            </select>
+        </div>
+
+        <!-- Header -->
+        <section class="pb-8 pt-24">
+            <p class="font-mono text-xs text-gray-500" data-i18n="con_version_tag">
+                HJS Responsibility Protocol · Version 0.1 Draft
+            </p>
+            <h1 class="mt-4 text-3xl font-light leading-tight tracking-tight text-white md:text-4xl" data-i18n="con_title">
+                Developer Console
+            </h1>
+            <p class="mt-4 max-w-xl text-sm leading-relaxed text-gray-400" data-i18n="con_subtitle">
+                Manage API keys, inspect records, and monitor protocol usage.
+            </p>
+        </section>
+
+        <!-- Email authentication -->
+        <section class="mb-12 border border-gray-800 bg-card p-6" id="auth-section">
+            <h2 class="font-mono text-xs uppercase tracking-widest text-gray-400" data-i18n="con_auth_heading">
+                EMAIL AUTHENTICATION
+            </h2>
+            <div class="mt-4 flex gap-2">
+                <input
+                    type="email"
+                    id="email-input"
+                    placeholder="your@email.com"
+                    class="flex-1 border border-gray-800 bg-background px-3 py-2 font-mono text-sm text-white placeholder:text-gray-500 outline-none transition-colors focus:border-steel disabled:opacity-60"
+                />
+                <button
+                    id="verify-btn"
+                    class="shrink-0 border border-steel bg-steel/10 px-5 py-2 text-xs font-medium text-white transition-colors hover:bg-steel/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                    Verify
+                </button>
+                <button
+                    id="logout-btn"
+                    class="shrink-0 border border-gray-700 px-5 py-2 text-xs text-gray-400 transition-colors hover:text-white hidden"
+                >
+                    Logout
+                </button>
+            </div>
+            <p id="auth-status" class="mt-3 font-mono text-xs text-gray-400 hidden">
+                <span data-i18n="con_auth_current">Current</span>: <span id="current-email" class="text-white"></span>
+                <span class="text-steel"> (<span data-i18n="con_auth_active">active</span>)</span>
+            </p>
+        </section>
+
+        <!-- 标签页 -->
+        <div class="border-b border-gray-800 mb-6">
+            <div class="flex gap-6">
+                <button class="tab-button active" id="tab-keys" data-tab="keys">
+                    API Keys & Records
+                </button>
+                <button class="tab-button" id="tab-usage" data-tab="usage">
+                    Usage & Billing
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== Keys & Records 面板 ===== -->
+        <div id="panel-keys" class="panel">
+            <section class="grid gap-6 pb-24 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                <!-- Left: API Keys -->
+                <div class="border border-gray-800 bg-card/50 p-5" id="api-keys-panel">
+                    <h3 class="font-mono text-xs uppercase tracking-widest text-gray-400 mb-4" data-i18n="con_keys_heading">
+                        API KEY MANAGEMENT
+                    </h3>
+                    
+                    <!-- Create Key -->
+                    <div class="mb-6">
+                        <div class="flex gap-2">
+                            <input
+                                type="text"
+                                id="key-name-input"
+                                placeholder="Key name"
+                                class="flex-1 border border-gray-800 bg-background px-3 py-2 text-sm text-white placeholder:text-gray-500 outline-none focus:border-steel disabled:opacity-60"
+                                disabled
+                            />
+                            <button
+                                id="generate-key-btn"
+                                class="shrink-0 border border-steel bg-steel/10 px-4 py-2 text-xs text-white hover:bg-steel/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                                disabled
+                                data-i18n="con_keys_generate"
+                            >
+                                Generate
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Keys List -->
+                    <div id="keys-list" class="space-y-3">
+                        <div class="text-center text-gray-500 text-sm py-8" data-i18n="con_keys_verify_first">
+                            Verify email to load keys
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Middle: Record Lookup -->
+                <div class="border border-gray-800 bg-card/50 p-5" id="record-lookup-panel">
+                    <h3 class="font-mono text-xs uppercase tracking-widest text-gray-400 mb-4" data-i18n="con_lookup_heading">
+                        RECORD LOOKUP
+                    </h3>
+                    
+                    <!-- Lookup Input -->
+                    <div class="mb-4">
+                        <div class="flex gap-2">
+                            <input
+                                type="text"
+                                id="record-id-input"
+                                placeholder="jgd_xxx"
+                                class="flex-1 border border-gray-800 bg-background px-3 py-2 font-mono text-sm text-white placeholder:text-gray-500 outline-none focus:border-steel disabled:opacity-60"
+                                disabled
+                            />
+                            <button
+                                id="lookup-btn"
+                                class="shrink-0 border border-steel bg-steel/10 px-4 py-2 text-xs text-white hover:bg-steel/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                                disabled
+                                data-i18n="con_lookup_button"
+                            >
+                                Lookup
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Example IDs -->
+                    <div class="mb-4">
+                        <p class="text-xs text-gray-500 mb-2" data-i18n="con_lookup_examples">Examples:</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="example-id text-xs text-steel hover:text-white border border-gray-800 px-2 py-1 rounded" data-id="jgd_1771313790343osf2">jgd_1771...osf2</button>
+                            <button class="example-id text-xs text-steel hover:text-white border border-gray-800 px-2 py-1 rounded" data-id="jgd_1771312310200pbtx">jgd_1771...pbtx</button>
+                            <button class="example-id text-xs text-steel hover:text-white border border-gray-800 px-2 py-1 rounded" data-id="jgd_1771309413724aqeh">jgd_1771...aqeh</button>
+                        </div>
+                    </div>
+
+                    <!-- Result Display -->
+                    <div id="lookup-result" class="hidden">
+                        <!-- Loading -->
+                        <div id="lookup-loading" class="hidden">
+                            <div class="flex items-center justify-center py-4">
+                                <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-steel"></div>
+                                <span class="ml-2 text-xs text-gray-400">Loading...</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Error -->
+                        <div id="lookup-error" class="hidden">
+                            <div class="bg-red-900/20 border border-red-800 p-3 rounded">
+                                <p class="text-xs text-red-400" id="lookup-error-message">Record not found</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Success -->
+                        <div id="lookup-success" class="hidden">
+                            <pre class="mt-2 border border-gray-800 bg-background p-3 font-mono text-xs overflow-x-auto" id="lookup-json"></pre>
+                            
+                            <!-- Download Buttons -->
+                            <div class="mt-3 flex gap-2">
+                                <button class="download-btn border border-gray-700 px-3 py-1 text-xs text-gray-400 hover:border-steel hover:text-white rounded disabled:opacity-40 disabled:cursor-not-allowed" data-format="json" disabled>JSON</button>
+                                <button class="download-btn border border-gray-700 px-3 py-1 text-xs text-gray-400 hover:border-steel hover:text-white rounded disabled:opacity-40 disabled:cursor-not-allowed" data-format="pdf" disabled>PDF</button>
+                                <button class="download-btn border border-gray-700 px-3 py-1 text-xs text-gray-400 hover:border-steel hover:text-white rounded disabled:opacity-40 disabled:cursor-not-allowed" data-format="ots" disabled>OTS</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Quick Stats -->
+                <div class="border border-gray-800 bg-card/50 p-5">
+                    <h3 class="font-mono text-xs uppercase tracking-widest text-gray-400 mb-4" data-i18n="con_stats_heading">
+                        QUICK STATS
+                    </h3>
+                    
+                    <!-- Stats -->
+                    <div id="quick-stats" class="space-y-3 mb-6">
+                        <div class="text-center text-gray-500 text-sm py-4" data-i18n="con_stats_verify_first">
+                            Verify email to load stats
+                        </div>
+                    </div>
+
+                    <!-- Recent Logs -->
+                    <h4 class="font-mono text-xs uppercase tracking-widest text-gray-400 mb-2" data-i18n="con_logs_heading">
+                        RECENT REQUESTS
+                    </h4>
+                    <div id="logs-container" class="log-container border border-gray-800 bg-background p-3 font-mono text-xs space-y-1" style="max-height:200px; overflow-y:auto;">
+                        <div class="text-center text-gray-500 py-2" data-i18n="con_logs_verify_first">
+                            Verify email to load logs
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ===== Usage & Billing 面板（包含方案2入口）===== -->
+        <div id="panel-usage" class="panel hidden">
+            <section class="pb-24">
+                <!-- 用量概览卡片 -->
+                <div class="border border-gray-800 bg-card/50 p-6 mb-6">
+                    <h3 class="font-mono text-sm font-medium text-white mb-4">Current Plan: Developer</h3>
+                    
+                    <!-- 余额进度条 -->
+                    <div class="mb-6">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-400">Monthly Quota</span>
+                            <span class="text-white font-mono" id="quota-used">834</span>
+                            <span class="text-gray-500">/ <span id="quota-limit">1000</span></span>
+                        </div>
+                        <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
+                            <div id="quota-bar" class="bg-steel h-2 rounded-full" style="width: 83.4%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs mt-2">
+                            <span class="text-gray-500">Used</span>
+                            <span class="text-gray-500" id="quota-remaining">Remaining: 166</span>
+                        </div>
+                    </div>
+
+                    <!-- 详细用量 -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="border border-gray-800 p-4">
+                            <p class="text-xs text-gray-500 mb-1">Total Judgments</p>
+                            <p class="text-2xl font-mono text-white" id="total-judgments">834</p>
+                        </div>
+                        <div class="border border-gray-800 p-4">
+                            <p class="text-xs text-gray-500 mb-1">Active Keys</p>
+                            <p class="text-2xl font-mono text-white" id="active-keys">5</p>
+                        </div>
+                        <div class="border border-gray-800 p-4">
+                            <p class="text-xs text-gray-500 mb-1">Avg Delegation Depth</p>
+                            <p class="text-2xl font-mono text-white" id="avg-depth">2</p>
+                        </div>
+                    </div>
+
+                    <!-- 用量趋势 -->
+                    <div class="border-t border-gray-800 pt-6">
+                        <h3 class="font-mono text-sm font-medium text-white mb-4">Usage Trend (Last 7 days)</h3>
+                        <div class="h-32 flex items-end gap-2">
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-steel/30 h-16" style="height: 40%"></div>
+                                <span class="text-xs text-gray-500 mt-1">Mon</span>
+                                <span class="text-xs text-steel font-mono">120</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-steel/30 h-20" style="height: 60%"></div>
+                                <span class="text-xs text-gray-500 mt-1">Tue</span>
+                                <span class="text-xs text-steel font-mono">159</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-steel/30 h-24" style="height: 75%"></div>
+                                <span class="text-xs text-gray-500 mt-1">Wed</span>
+                                <span class="text-xs text-steel font-mono">180</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-steel/30 h-28" style="height: 85%"></div>
+                                <span class="text-xs text-gray-500 mt-1">Thu</span>
+                                <span class="text-xs text-steel font-mono">210</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-steel h-32" style="height: 100%"></div>
+                                <span class="text-xs text-gray-500 mt-1">Fri</span>
+                                <span class="text-xs text-steel font-mono">259</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-steel/30 h-20" style="height: 60%"></div>
+                                <span class="text-xs text-gray-500 mt-1">Sat</span>
+                                <span class="text-xs text-steel font-mono">140</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-steel/30 h-12" style="height: 35%"></div>
+                                <span class="text-xs text-gray-500 mt-1">Sun</span>
+                                <span class="text-xs text-steel font-mono">80</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 计费信息 + 方案2入口 -->
+                    <div class="border-t border-gray-800 pt-4 mt-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-white">Current Billing</p>
+                                <p class="text-xs text-gray-500">Free tier · 1000 judgments/month</p>
+                            </div>
+                            <a href="/billing.html" class="border border-steel text-steel px-4 py-2 text-xs hover:bg-steel/10 rounded">
+                                Upgrade Plan →
+                            </a>
+                        </div>
+                        
+                        <!-- 方案2：详细账单入口 -->
+                        <div class="mt-4 pt-4 border-t border-gray-800">
+                            <a href="/billing.html" class="text-steel text-xs hover:underline flex items-center justify-between">
+                                <span>View detailed billing →</span>
+                                <span class="text-gray-500">manage balance, history, rates</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ===== 底部 ===== -->
+        <div class="text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-12">
+            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
+            <span class="text-gray-700">·</span>
+            <a href="/spec/README.md" class="hover:text-gray-400 mx-2">Spec</a>
+            <span class="text-gray-700">·</span>
+            <a href="/cases.html" class="hover:text-gray-400 mx-2">Cases</a>
+        </div>
+    </div>
+
+    <!-- ===== 全局语言层 ===== -->
+    <script src="/js/lang.js"></script>
+    <script>
+        // API 基础地址
+        const API_BASE = 'https://hjs-api.onrender.com';
+
+        // ===== 状态管理 =====
+        let currentEmail = localStorage.getItem('hjs_console_email') || '';
+        let keys = [];
+        let logs = [];
+
+        // ===== DOM 元素 =====
+        const emailInput = document.getElementById('email-input');
+        const verifyBtn = document.getElementById('verify-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const authStatus = document.getElementById('auth-status');
+        const currentEmailSpan = document.getElementById('current-email');
+        
+        // 标签页
+        const tabKeys = document.getElementById('tab-keys');
+        const tabUsage = document.getElementById('tab-usage');
+        const panelKeys = document.getElementById('panel-keys');
+        const panelUsage = document.getElementById('panel-usage');
+        
+        // 初始化邮箱输入
+        if (currentEmail) {
+            emailInput.value = currentEmail;
+            emailInput.disabled = true;
+            verifyBtn.classList.add('hidden');
+            logoutBtn.classList.remove('hidden');
+            authStatus.classList.remove('hidden');
+            currentEmailSpan.textContent = currentEmail;
+            enableAllFeatures();
+            loadAllData();
+        }
+
+        // ===== 标签页切换 =====
+        tabKeys.addEventListener('click', () => {
+            tabKeys.classList.add('active');
+            tabUsage.classList.remove('active');
+            panelKeys.classList.remove('hidden');
+            panelUsage.classList.add('hidden');
+        });
+
+        tabUsage.addEventListener('click', () => {
+            tabUsage.classList.add('active');
+            tabKeys.classList.remove('active');
+            panelUsage.classList.remove('hidden');
+            panelKeys.classList.add('hidden');
+        });
+
+        // ===== 邮箱验证 =====
+        verifyBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            if (!email || !email.includes('@')) return;
+            
+            verifyBtn.disabled = true;
+            verifyBtn.textContent = '...';
+            
+            await new Promise(r => setTimeout(r, 600));
+            
+            currentEmail = email;
+            localStorage.setItem('hjs_console_email', email);
+            
+            emailInput.disabled = true;
+            verifyBtn.classList.add('hidden');
+            logoutBtn.classList.remove('hidden');
+            authStatus.classList.remove('hidden');
+            currentEmailSpan.textContent = email;
+            
+            enableAllFeatures();
+            loadAllData();
+            
+            verifyBtn.disabled = false;
+            verifyBtn.textContent = 'Verify';
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            currentEmail = '';
+            localStorage.removeItem('hjs_console_email');
+            
+            emailInput.disabled = false;
+            emailInput.value = '';
+            verifyBtn.classList.remove('hidden');
+            logoutBtn.classList.add('hidden');
+            authStatus.classList.add('hidden');
+            
+            disableAllFeatures();
+            clearAllData();
+        });
+
+        function enableAllFeatures() {
+            document.querySelectorAll('#api-keys-panel input, #api-keys-panel button, #record-lookup-panel input, #record-lookup-panel button').forEach(el => {
+                if (el.id !== 'verify-btn' && el.id !== 'logout-btn') {
+                    el.disabled = false;
+                }
+            });
+        }
+
+        function disableAllFeatures() {
+            document.querySelectorAll('#api-keys-panel input, #api-keys-panel button, #record-lookup-panel input, #record-lookup-panel button').forEach(el => {
+                if (el.id !== 'verify-btn' && el.id !== 'logout-btn') {
+                    el.disabled = true;
+                }
+            });
+        }
+
+        function clearAllData() {
+            keys = [];
+            logs = [];
+            renderKeysList();
+            renderQuickStats();
+            renderLogs();
+            
+            document.getElementById('lookup-result').classList.add('hidden');
+            document.getElementById('lookup-loading').classList.add('hidden');
+            document.getElementById('lookup-error').classList.add('hidden');
+            document.getElementById('lookup-success').classList.add('hidden');
+        }
+
+        async function loadAllData() {
+            await Promise.all([
+                fetchKeys(),
+                fetchLogs()
+            ]);
+        }
+
+        async function fetchKeys() {
+            if (!currentEmail) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/developer/keys?email=${encodeURIComponent(currentEmail)}`);
+                addLog('GET', '/developer/keys', res.status);
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    keys = Array.isArray(data) ? data : [];
+                } else {
+                    keys = [];
+                }
+            } catch (err) {
+                console.error('Fetch keys error:', err);
+                keys = [];
+            }
+            
+            renderKeysList();
+            renderQuickStats();
+        }
+
+        async function generateKey(name) {
+            if (!currentEmail || !name) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/developer/keys`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: currentEmail, name })
+                });
+                
+                addLog('POST', '/developer/keys', res.status);
+                
+                if (res.ok) {
+                    await fetchKeys();
+                }
+            } catch (err) {
+                console.error('Generate key error:', err);
+            }
+        }
+
+        async function revokeKey(keyId) {
+            if (!currentEmail || !keyId) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/developer/keys/${keyId}?email=${encodeURIComponent(currentEmail)}`, {
+                    method: 'DELETE'
+                });
+                
+                addLog('DELETE', `/developer/keys/${keyId}`, res.status);
+                
+                if (res.ok) {
+                    await fetchKeys();
+                }
+            } catch (err) {
+                console.error('Revoke key error:', err);
+            }
+        }
+
+        async function fetchLogs() {
+            if (!currentEmail) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/logs?email=${encodeURIComponent(currentEmail)}&limit=10`);
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    logs = data.logs || [];
+                } else {
+                    logs = [
+                        { time: new Date().toLocaleTimeString(), method: 'GET', path: '/developer/keys', status: 200 },
+                        { time: new Date(Date.now() - 60000).toLocaleTimeString(), method: 'POST', path: '/judgment', status: 201 },
+                        { time: new Date(Date.now() - 120000).toLocaleTimeString(), method: 'GET', path: '/verify/jgd_xxx', status: 404 },
+                        { time: new Date(Date.now() - 180000).toLocaleTimeString(), method: 'DELETE', path: '/keys/xxx', status: 200 }
+                    ];
+                }
+            } catch (err) {
+                console.error('Fetch logs error:', err);
+                logs = [];
+            }
+            
+            renderLogs();
+        }
+
+        async function lookupRecord(id) {
+            if (!id) return null;
+            
+            try {
+                const res = await fetch(`${API_BASE}/judgments/${id}`);
+                addLog('GET', `/judgments/${id}`, res.status);
+                
+                if (res.ok) {
+                    return await res.json();
+                }
+            } catch (err) {
+                console.error('Lookup error:', err);
+            }
+            return null;
+        }
+
+        function addLog(method, path, status) {
+            const logEntry = {
+                time: new Date().toLocaleTimeString(),
+                method,
+                path,
+                status
+            };
+            logs = [logEntry, ...logs].slice(0, 10);
+            renderLogs();
+        }
+
+        function renderKeysList() {
+            const container = document.getElementById('keys-list');
+            
+            if (!currentEmail) {
+                container.innerHTML = `<div class="text-center text-gray-500 text-sm py-8" data-i18n="con_keys_verify_first">Verify email to load keys</div>`;
+                return;
+            }
+            
+            if (keys.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-500 text-sm py-8" data-i18n="con_keys_no_keys">No API keys found</div>`;
+                return;
+            }
+            
+            let html = '';
+            keys.forEach(k => {
+                const maskedKey = k.key && k.key.length > 8 ? 
+                    k.key.substring(0, 4) + '...' + k.key.substring(k.key.length - 4) : 
+                    k.key || 'N/A';
+                
+                html += `
+                    <div class="border border-gray-800 p-3" data-key-id="${k.key || k.id || ''}">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="text-sm font-medium text-white">${k.name || '-'}</div>
+                                <div class="font-mono text-xs text-gray-400 mt-1">
+                                    <span class="key-value hidden">${k.key || ''}</span>
+                                    <span class="key-masked">${maskedKey}</span>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-1">${k.created_at ? new Date(k.created_at).toLocaleString() : 'N/A'}</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="toggle-key text-gray-400 hover:text-white" title="Show/Hide">
+                                    👁️
+                                </button>
+                                <button class="revoke-key text-gray-400 hover:text-red-400" title="Revoke">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="text-xs px-2 py-0.5 ${k.status === 'active' ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'}">${k.status || 'active'}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            container.querySelectorAll('.toggle-key').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const card = e.target.closest('[data-key-id]');
+                    const masked = card.querySelector('.key-masked');
+                    const full = card.querySelector('.key-value');
+                    
+                    if (masked.classList.contains('hidden')) {
+                        masked.classList.remove('hidden');
+                        full.classList.add('hidden');
+                        btn.textContent = '👁️';
+                    } else {
+                        masked.classList.add('hidden');
+                        full.classList.remove('hidden');
+                        btn.textContent = '🙈';
+                    }
+                });
+            });
+            
+            container.querySelectorAll('.revoke-key').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const card = e.target.closest('[data-key-id]');
+                    const keyId = card.getAttribute('data-key-id');
+                    showRevokeDialog(keyId);
+                });
+            });
+        }
+
+        function renderQuickStats() {
+            const container = document.getElementById('quick-stats');
+            
+            if (!currentEmail) {
+                container.innerHTML = `<div class="text-center text-gray-500 text-sm py-4" data-i18n="con_stats_verify_first">Verify email to load stats</div>`;
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="flex justify-between border-b border-gray-800 pb-2">
+                    <span class="text-gray-400" data-i18n="con_metrics_total">Total Judgments</span>
+                    <span class="text-white font-mono">834</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-800 pb-2">
+                    <span class="text-gray-400" data-i18n="con_metrics_active">Active Keys</span>
+                    <span class="text-white font-mono">${keys.length}</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-800 pb-2">
+                    <span class="text-gray-400" data-i18n="con_metrics_depth">Avg Depth</span>
+                    <span class="text-white font-mono">2</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Monthly Usage</span>
+                    <span class="text-white font-mono">83%</span>
+                </div>
+            `;
+        }
+
+        function renderLogs() {
+            const container = document.getElementById('logs-container');
+            
+            if (!currentEmail) {
+                container.innerHTML = `<div class="text-center text-gray-500 py-2" data-i18n="con_logs_verify_first">Verify email to load logs</div>`;
+                return;
+            }
+            
+            if (logs.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-500 py-2" data-i18n="con_logs_no_logs">No recent requests</div>`;
+                return;
+            }
+            
+            let html = '';
+            logs.forEach(log => {
+                const statusClass = log.status >= 200 && log.status < 300 ? 'status-200' : 
+                                   log.status >= 400 && log.status < 500 ? 'status-404' : 
+                                   log.status >= 500 ? 'status-500' : '';
+                
+                html += `
+                    <div class="flex items-center gap-2 text-xs border-b border-gray-800 pb-1">
+                        <span class="text-gray-500">[${log.time}]</span>
+                        <span class="text-steel">${log.method}</span>
+                        <span class="text-gray-400">${log.path}</span>
+                        <span class="${statusClass}">${log.status}</span>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        document.getElementById('generate-key-btn').addEventListener('click', () => {
+            const nameInput = document.getElementById('key-name-input');
+            const name = nameInput.value.trim();
+            if (name) {
+                generateKey(name);
+                nameInput.value = '';
+            }
+        });
+
+        document.getElementById('lookup-btn').addEventListener('click', async () => {
+            const idInput = document.getElementById('record-id-input');
+            const id = idInput.value.trim();
+            if (!id) return;
+            
+            const resultDiv = document.getElementById('lookup-result');
+            const loadingDiv = document.getElementById('lookup-loading');
+            const errorDiv = document.getElementById('lookup-error');
+            const successDiv = document.getElementById('lookup-success');
+            const jsonPre = document.getElementById('lookup-json');
+            const errorMsg = document.getElementById('lookup-error-message');
+            
+            resultDiv.classList.remove('hidden');
+            loadingDiv.classList.remove('hidden');
+            errorDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+            
+            document.querySelectorAll('.download-btn').forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            const data = await lookupRecord(id);
+            
+            loadingDiv.classList.add('hidden');
+            
+            if (data) {
+                jsonPre.textContent = JSON.stringify(data, null, 2);
+                successDiv.classList.remove('hidden');
+                
+                document.querySelectorAll('.download-btn').forEach(btn => {
+                    btn.disabled = false;
+                });
+            } else {
+                errorMsg.textContent = `Record not found: ${id}`;
+                errorDiv.classList.remove('hidden');
+            }
+        });
+
+        document.querySelectorAll('.example-id').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('record-id-input').value = btn.getAttribute('data-id');
+            });
+        });
+
+        document.querySelectorAll('.download-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = document.getElementById('record-id-input').value.trim();
+                if (!id) return;
+                
+                const format = btn.getAttribute('data-format');
+                let url = `${API_BASE}/judgments/${id}`;
+                
+                if (format === 'pdf') {
+                    url += '?format=pdf';
+                } else if (format === 'ots') {
+                    url = `${API_BASE}/judgments/${id}/immutability-proof`;
+                }
+                
+                window.open(url, '_blank');
+            });
+        });
+
+        function showRevokeDialog(keyId) {
+            const dialog = document.createElement('div');
+            dialog.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50';
+            dialog.innerHTML = `
+                <div class="w-full max-w-md border border-gray-800 bg-card p-6">
+                    <h3 class="text-lg font-semibold text-white mb-2" data-i18n="con_revoke_title">Revoke API Key</h3>
+                    <p class="text-sm text-gray-400 mb-4" data-i18n="con_revoke_desc">This action cannot be undone.</p>
+                    <div class="bg-gray-800 p-2 rounded mb-4">
+                        <code class="text-xs text-gray-400">${keyId.substring(0, 4)}...${keyId.substring(keyId.length - 4)}</code>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button class="cancel-revoke border border-gray-700 px-4 py-2 text-sm text-gray-400 hover:text-white">
+                            Cancel
+                        </button>
+                        <button class="confirm-revoke bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700">
+                            Revoke
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(dialog);
+            
+            dialog.querySelector('.cancel-revoke').addEventListener('click', () => {
+                document.body.removeChild(dialog);
+            });
+            
+            dialog.querySelector('.confirm-revoke').addEventListener('click', async () => {
+                await revokeKey(keyId);
+                document.body.removeChild(dialog);
+            });
+        }
+
+        // ===== 翻译字典 =====
+        const translations = {
+            en: {
+        nav_home: "Home",
+        nav_product: "Product",
+        nav_developers: "Developers",
+        nav_console: "Console",
+        nav_lookup: "Lookup",
+        nav_billing: "Billing",
+        nav_governance: "Governance",
+                con_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
+                con_title: "Developer Console",
+                con_subtitle: "Manage API keys, inspect records, and monitor protocol usage.",
+                con_auth_heading: "EMAIL AUTHENTICATION",
+                con_auth_verify: "Verify",
+                con_auth_logout: "Logout",
+                con_auth_current: "Current",
+                con_auth_active: "active",
+                con_keys_heading: "API KEY MANAGEMENT",
+                con_keys_generate: "Generate",
+                con_keys_verify_first: "Verify email to load keys",
+                con_keys_no_keys: "No API keys found",
+                con_lookup_heading: "RECORD LOOKUP",
+                con_lookup_button: "Lookup",
+                con_lookup_examples: "Examples:",
+                con_download_json: "JSON",
+                con_download_pdf: "PDF",
+                con_download_ots: "OTS",
+                con_stats_heading: "QUICK STATS",
+                con_stats_verify_first: "Verify email to load stats",
+                con_logs_heading: "RECENT REQUESTS",
+                con_logs_verify_first: "Verify email to load logs",
+                con_logs_no_logs: "No recent requests",
+                con_revoke_title: "Revoke API Key",
+                con_revoke_desc: "This action cannot be undone.",
+                con_metrics_total: "Total Judgments",
+                con_metrics_active: "Active Keys",
+                con_metrics_depth: "Avg Depth"
+            },
+            zh: {
+        nav_home: "首页",
+        nav_product: "产品",
+        nav_developers: "开发者",
+        nav_console: "控制台",
+        nav_lookup: "查询",
+        nav_billing: "计费",
+        nav_governance: "治理",
+                con_version_tag: "HJS 责任协议 · 草案 0.1 版",
+                con_title: "开发者控制台",
+                con_subtitle: "管理 API 密钥、查询记录、监控协议使用情况。",
+                con_auth_heading: "邮箱验证",
+                con_auth_verify: "验证",
+                con_auth_logout: "退出",
+                con_auth_current: "当前邮箱",
+                con_auth_active: "已激活",
+                con_keys_heading: "API 密钥管理",
+                con_keys_generate: "生成",
+                con_keys_verify_first: "验证邮箱后加载密钥",
+                con_keys_no_keys: "暂无密钥",
+                con_lookup_heading: "记录查询",
+                con_lookup_button: "查询",
+                con_lookup_examples: "示例：",
+                con_download_json: "JSON",
+                con_download_pdf: "PDF",
+                con_download_ots: "OTS",
+                con_stats_heading: "快速统计",
+                con_stats_verify_first: "验证邮箱后加载统计",
+                con_logs_heading: "最近请求",
+                con_logs_verify_first: "验证邮箱后加载日志",
+                con_logs_no_logs: "暂无请求记录",
+                con_revoke_title: "吊销 API 密钥",
+                con_revoke_desc: "此操作无法撤销。",
+                con_metrics_total: "总记录数",
+                con_metrics_active: "活跃密钥",
+                con_metrics_depth: "平均深度"
+            }
+        };
+
+        function switchLang(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+            const select = document.querySelector('select');
+            if (select) select.value = lang;
+        }
+
+        (function() {
+            const savedLang = localStorage.getItem('hjs_lang');
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            const lang = savedLang || urlLang || 'en';
+            switchLang(lang);
+        })();
+    </script>
+</body>
+</html>

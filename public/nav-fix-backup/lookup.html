@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HJS · Record Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        .font-mono, code, pre { font-family: 'JetBrains Mono', monospace !important; }
+        body { background: #0a0a0a; color: #e5e5e5; }
+        .text-steel { color: #3B4B5C; }
+        .border-steel { border-color: #3B4B5C; }
+        .bg-steel\/10 { background-color: rgba(59, 75, 92, 0.1); }
+        .bg-steel\/20 { background-color: rgba(59, 75, 92, 0.2); }
+        .hover\:bg-steel\/20:hover { background-color: rgba(59, 75, 92, 0.2); }
+        .bg-card { background: rgba(26, 26, 26, 0.5); }
+        .border-border { border-color: #1f1f1f; }
+        .text-muted-foreground { color: #9ca3af; }
+        .text-foreground { color: #e5e5e5; }
+        .bg-background { background: #0a0a0a; }
+        .hover\:border-steel:hover { border-color: #3B4B5C; }
+        .hover\:text-foreground:hover { color: #e5e5e5; }
+        .disabled\:opacity-40:disabled { opacity: 0.4; }
+        .disabled\:cursor-not-allowed:disabled { cursor: not-allowed; }
+        .focus\:border-steel:focus { border-color: #3B4B5C; }
+        
+        /* JSON 语法高亮 */
+        .json-key { color: #3B4B5C; }
+        .json-string { color: #f9c096; }
+        .json-number { color: #96c0f9; }
+        .json-boolean { color: #f996b5; }
+        .json-null { color: #b096f9; }
+        
+        /* 动画 */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        
+        /* 圆角 */
+        .rounded-sm { border-radius: 0.125rem; }
+    </style>
+</head>
+<body>
+    <div class="mx-auto max-w-4xl px-6">
+        <!-- ===== 导航栏 ===== -->
+<div class="flex flex-wrap justify-between items-center py-6 text-base">
+    <div class="text-white font-semibold text-lg">HJS</div>
+    <div class="flex flex-wrap gap-4 sm:gap-6 md:gap-8 text-gray-400">
+        <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
+        <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
+        <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
+        <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
+        <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
+        <a href="/billing.html" class="hover:text-teal-400 transition" data-i18n="nav_billing">Billing</a>
+        <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
+    </div>
+    <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
+        <option value="en">EN</option>
+        <option value="zh">中文</option>
+    </select>
+</div>
+            <div class="flex flex-wrap gap-4 sm:gap-6 md:gap-8 text-gray-400">
+                <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
+                <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
+                <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
+                <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
+                <a href="/lookup.html" class="text-white" data-i18n="nav_lookup">Lookup</a>
+                <a href="/billing.html" class="hover:text-teal-400 transition" data-i18n="nav_billing">Billing</a>
+                <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
+            </div>
+            <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
+                <option value="en">EN</option>
+                <option value="zh">中文</option>
+            </select>
+        </div>
+
+        <!-- Header -->
+        <section class="py-24">
+            <p class="mb-4 font-mono text-xs text-gray-500" data-i18n="lk_version_tag">
+                HJS Responsibility Protocol · Version 0.1 Draft
+            </p>
+            <h1 class="text-3xl font-light leading-tight tracking-tight text-white md:text-4xl" data-i18n="lk_title">
+                Record Verification
+            </h1>
+            <p class="mt-6 max-w-2xl text-sm leading-relaxed text-gray-400" data-i18n="lk_subtitle">
+                Enter a record ID to inspect its structural validity and integrity proof.
+            </p>
+        </section>
+
+        <hr class="border-gray-800">
+
+        <!-- Query Card -->
+        <section class="py-12">
+            <div class="rounded-sm border border-gray-800 bg-card p-6">
+                <!-- Input + Button -->
+                <div class="flex flex-col gap-3 sm:flex-row">
+                    <input
+                        type="text"
+                        id="record-id"
+                        placeholder="jgd_xxx"
+                        class="flex-1 border border-gray-800 bg-[#1a1a1a] px-4 py-2.5 font-mono text-sm text-white placeholder:text-gray-500 outline-none transition-colors focus:border-steel"
+                    />
+                    <button
+                        id="lookup-btn"
+                        class="inline-flex items-center justify-center border border-steel bg-steel/10 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-steel/20 disabled:cursor-not-allowed disabled:opacity-40"
+                        data-i18n="lk_button"
+                    >
+                        Lookup
+                    </button>
+                </div>
+
+                <!-- Example IDs -->
+                <div class="mt-4">
+                    <span class="text-xs text-gray-400" data-i18n="lk_examples">Examples:</span>
+                    <div class="mt-2 flex flex-wrap gap-2">
+                        <button class="example-id border border-gray-800 px-3 py-1.5 font-mono text-xs text-steel transition-colors hover:border-steel" data-id="jgd_1771313790343osf2">
+                            jgd_1771...osf2
+                        </button>
+                        <button class="example-id border border-gray-800 px-3 py-1.5 font-mono text-xs text-steel transition-colors hover:border-steel" data-id="jgd_1771312310200pbtx">
+                            jgd_1771...pbtx
+                        </button>
+                        <button class="example-id border border-gray-800 px-3 py-1.5 font-mono text-xs text-steel transition-colors hover:border-steel" data-id="jgd_1771309413724aqeh">
+                            jgd_1771...aqeh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading -->
+        <div id="loading" class="hidden flex items-center justify-center py-16">
+            <svg class="size-5 animate-spin text-gray-400" viewBox="0 0 24 24" fill="none">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+            </svg>
+            <span class="ml-3 text-sm text-gray-400" data-i18n="lk_loading">Loading...</span>
+        </div>
+
+        <!-- Error -->
+        <div id="error" class="hidden mb-8 border border-red-800 bg-red-900/10 px-5 py-4 font-mono text-xs text-red-400"></div>
+
+        <!-- Result -->
+        <div id="result" class="hidden pb-24">
+            <!-- 2x2 Indicator Grid -->
+            <div class="mb-10">
+                <h3 class="mb-4 text-[10px] font-medium tracking-widest text-gray-400 uppercase" data-i18n="lk_indicators">VERIFICATION RESULT</h3>
+                <div class="grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-gray-800 bg-gray-800">
+                    <div class="flex flex-col gap-1 bg-card p-5">
+                        <span class="text-[10px] tracking-widest text-gray-400 uppercase" data-i18n="lk_ind_validity">STRUCTURAL VALIDITY</span>
+                        <span id="validity-value" class="font-mono text-sm font-bold text-white"></span>
+                    </div>
+                    <div class="flex flex-col gap-1 bg-card p-5">
+                        <span class="text-[10px] tracking-widest text-gray-400 uppercase" data-i18n="lk_ind_depth">DELEGATION DEPTH</span>
+                        <span id="depth-value" class="font-mono text-sm font-bold text-white"></span>
+                    </div>
+                    <div class="flex flex-col gap-1 bg-card p-5">
+                        <span class="text-[10px] tracking-widest text-gray-400 uppercase" data-i18n="lk_ind_termination">TERMINATION STATUS</span>
+                        <span id="termination-value" class="font-mono text-sm font-bold text-white"></span>
+                    </div>
+                    <div class="flex flex-col gap-1 bg-card p-5">
+                        <span class="text-[10px] tracking-widest text-gray-400 uppercase" data-i18n="lk_ind_anchor">ANCHOR STATUS</span>
+                        <span id="anchor-value" class="font-mono text-sm font-bold text-white"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full JSON -->
+            <div class="mb-10">
+                <h3 class="mb-4 text-[10px] font-medium tracking-widest text-gray-400 uppercase" data-i18n="lk_json_heading">FULL RECORD</h3>
+                <pre id="json-display" class="overflow-x-auto border border-gray-800 bg-[#1a1a1a] p-5 font-mono text-xs leading-relaxed"></pre>
+            </div>
+
+            <!-- Download Buttons -->
+            <div class="mb-10">
+                <h3 class="mb-4 text-[10px] font-medium tracking-widest text-gray-400 uppercase" data-i18n="lk_download_heading">DOWNLOAD</h3>
+                <div class="flex flex-wrap gap-3">
+                    <button id="download-json" class="download-btn border border-gray-700 px-4 py-2 text-xs text-gray-400 transition-colors hover:border-steel hover:text-white" data-format="json">JSON</button>
+                    <button id="download-pdf" class="download-btn border border-gray-700 px-4 py-2 text-xs text-gray-400 transition-colors hover:border-steel hover:text-white" data-format="pdf">PDF</button>
+                    <button id="download-ots" class="download-btn border border-gray-700 px-4 py-2 text-xs text-gray-400 transition-colors hover:border-steel hover:text-white disabled:opacity-40 disabled:cursor-not-allowed" data-format="ots" disabled>OTS Proof</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty state -->
+        <div id="empty-state" class="border-t border-dashed border-gray-800 py-24 text-center">
+            <p class="mx-auto max-w-md text-sm leading-relaxed text-gray-400" data-i18n="lk_empty">
+                Enter a judgment record ID above to retrieve its details. You can download results as JSON, PDF, or OTS proof.
+            </p>
+        </div>
+
+        <!-- ===== 底部 ===== -->
+        <div class="text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-12">
+            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
+            <span class="text-gray-700">·</span>
+            <a href="/spec/README.md" class="hover:text-gray-400 mx-2">Spec</a>
+            <span class="text-gray-700">·</span>
+            <a href="/cases.html" class="hover:text-gray-400 mx-2">Cases</a>
+        </div>
+    </div>
+
+    <!-- ===== 全局语言层 ===== -->
+    <script src="/js/lang.js"></script>
+    <script>
+        // API 基础地址 - 修复为真实后端
+        const API_BASE = 'https://hjs-api.onrender.com';
+
+        // ===== DOM 元素 =====
+        const input = document.getElementById('record-id');
+        const lookupBtn = document.getElementById('lookup-btn');
+        const loadingDiv = document.getElementById('loading');
+        const errorDiv = document.getElementById('error');
+        const resultDiv = document.getElementById('result');
+        const emptyState = document.getElementById('empty-state');
+        
+        // 结果元素
+        const validityValue = document.getElementById('validity-value');
+        const depthValue = document.getElementById('depth-value');
+        const terminationValue = document.getElementById('termination-value');
+        const anchorValue = document.getElementById('anchor-value');
+        const jsonDisplay = document.getElementById('json-display');
+        
+        // 下载按钮
+        const downloadJson = document.getElementById('download-json');
+        const downloadPdf = document.getElementById('download-pdf');
+        const downloadOts = document.getElementById('download-ots');
+
+        // 示例ID
+        const exampleBtns = document.querySelectorAll('.example-id');
+
+        // 当前查询结果
+        let currentResult = null;
+
+        // ===== JSON 语法高亮 =====
+        function highlightJson(obj) {
+            if (obj === null) return '<span class="json-null">null</span>';
+            if (typeof obj === 'boolean') return `<span class="json-boolean">${obj}</span>`;
+            if (typeof obj === 'number') return `<span class="json-number">${obj}</span>`;
+            if (typeof obj === 'string') return `<span class="json-string">"${obj}"</span>`;
+            if (Array.isArray(obj)) {
+                if (obj.length === 0) return '[]';
+                let html = '[<br>';
+                obj.forEach((item, i) => {
+                    html += '  ' + highlightJson(item);
+                    if (i < obj.length - 1) html += ',';
+                    html += '<br>';
+                });
+                html += ']';
+                return html;
+            }
+            if (typeof obj === 'object') {
+                const entries = Object.entries(obj);
+                if (entries.length === 0) return '{}';
+                let html = '{<br>';
+                entries.forEach(([key, value], i) => {
+                    html += `  <span class="json-key">"${key}"</span>: ${highlightJson(value)}`;
+                    if (i < entries.length - 1) html += ',';
+                    html += '<br>';
+                });
+                html += '}';
+                return html;
+            }
+            return String(obj);
+        }
+
+        // ===== 查询记录 =====
+        async function lookupRecord(id) {
+            if (!id) return;
+            
+            // 显示加载，隐藏其他
+            loadingDiv.classList.remove('hidden');
+            errorDiv.classList.add('hidden');
+            resultDiv.classList.add('hidden');
+            emptyState.classList.add('hidden');
+            
+            try {
+                const res = await fetch(`${API_BASE}/judgments/${id}`);
+                
+                if (!res.ok) {
+                    throw new Error(`Record not found: ${id}`);
+                }
+                
+                const data = await res.json();
+                currentResult = data;
+                
+                // 更新指标
+                validityValue.textContent = data.structural_validity || 'INVALID';
+                validityValue.className = data.structural_validity === 'VALID' 
+                    ? 'font-mono text-sm font-bold text-white' 
+                    : 'font-mono text-sm font-bold text-red-400';
+                
+                depthValue.textContent = data.delegation_depth || 0;
+                terminationValue.textContent = data.termination_status || 'unknown';
+                anchorValue.textContent = data.anchor_status || 'none';
+                
+                // 更新JSON显示
+                jsonDisplay.innerHTML = highlightJson(data);
+                
+                // 更新OTS按钮状态
+                if (data.anchor_status === 'verified') {
+                    downloadOts.disabled = false;
+                } else {
+                    downloadOts.disabled = true;
+                }
+                
+                // 显示结果
+                loadingDiv.classList.add('hidden');
+                resultDiv.classList.remove('hidden');
+                
+            } catch (err) {
+                loadingDiv.classList.add('hidden');
+                errorDiv.textContent = err.message;
+                errorDiv.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+            }
+        }
+
+        // ===== 下载功能 =====
+        downloadJson.addEventListener('click', () => {
+            if (!currentResult) return;
+            const blob = new Blob([JSON.stringify(currentResult, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentResult.id}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        downloadPdf.addEventListener('click', () => {
+            if (!currentResult) return;
+            window.open(`${API_BASE}/judgments/${currentResult.id}?format=pdf`, '_blank');
+        });
+
+        downloadOts.addEventListener('click', () => {
+            if (!currentResult || currentResult.anchor_status !== 'verified') return;
+            window.open(`${API_BASE}/judgments/${currentResult.id}/immutability-proof`, '_blank');
+        });
+
+        // ===== 事件绑定 =====
+        lookupBtn.addEventListener('click', () => {
+            lookupRecord(input.value.trim());
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                lookupRecord(input.value.trim());
+            }
+        });
+
+        exampleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                input.value = id;
+                lookupRecord(id);
+            });
+        });
+
+        // ===== 从URL参数自动查询 =====
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if (id) {
+                input.value = id;
+                lookupRecord(id);
+            }
+        })();
+
+        // ===== 翻译字典 =====
+        const translations = {
+            en: {
+                nav_home: "Home",
+                nav_product: "Product",
+                nav_developers: "Developers",
+                nav_console: "Console",
+                nav_lookup: "Lookup",
+                nav_billing: "Billing",
+                nav_governance: "Governance",
+                lk_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
+                lk_title: "Record Verification",
+                lk_subtitle: "Enter a record ID to inspect its structural validity and integrity proof.",
+                lk_examples: "Examples:",
+                lk_loading: "Loading...",
+                lk_button: "Lookup",
+                lk_indicators: "VERIFICATION RESULT",
+                lk_ind_validity: "STRUCTURAL VALIDITY",
+                lk_ind_depth: "DELEGATION DEPTH",
+                lk_ind_termination: "TERMINATION STATUS",
+                lk_ind_anchor: "ANCHOR STATUS",
+                lk_json_heading: "FULL RECORD",
+                lk_download_heading: "DOWNLOAD",
+                lk_empty: "Enter a judgment record ID above to retrieve its details. You can download results as JSON, PDF, or OTS proof."
+            },
+            zh: {
+                nav_home: "首页",
+                nav_product: "产品",
+                nav_developers: "开发者",
+                nav_console: "控制台",
+                nav_lookup: "查询",
+                nav_billing: "计费",
+                nav_governance: "治理",
+                lk_version_tag: "HJS 责任协议 · 草案 0.1 版",
+                lk_title: "记录验证",
+                lk_subtitle: "输入记录ID，检查其结构有效性和完整性证明。",
+                lk_examples: "示例：",
+                lk_loading: "加载中...",
+                lk_button: "查询",
+                lk_indicators: "验证结果",
+                lk_ind_validity: "结构有效性",
+                lk_ind_depth: "授权深度",
+                lk_ind_termination: "终止状态",
+                lk_ind_anchor: "锚定状态",
+                lk_json_heading: "完整记录",
+                lk_download_heading: "下载",
+                lk_empty: "输入记录ID查询详情。可下载 JSON、PDF 或 OTS 证明文件。"
+            }
+        };
+
+        function switchLang(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+            const select = document.querySelector('select');
+            if (select) select.value = lang;
+        }
+
+        (function() {
+            const savedLang = localStorage.getItem('hjs_lang');
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            const lang = savedLang || urlLang || 'en';
+            switchLang(lang);
+        })();
+    </script>
+</body>
+</html>

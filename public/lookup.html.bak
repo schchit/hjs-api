@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HJS · Record Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        .font-mono, code, pre { font-family: 'JetBrains Mono', monospace !important; }
+        body { background: #0a0a0a; color: #e5e5e5; }
+        .text-steel { color: #3B4B5C; }
+        .border-steel { border-color: #3B4B5C; }
+        .bg-steel\/10 { background-color: rgba(59, 75, 92, 0.1); }
+        .bg-steel\/20 { background-color: rgba(59, 75, 92, 0.2); }
+        .hover\:bg-steel\/20:hover { background-color: rgba(59, 75, 92, 0.2); }
+        .bg-card { background: rgba(26, 26, 26, 0.5); }
+        .border-border { border-color: #1f1f1f; }
+        .text-muted-foreground { color: #9ca3af; }
+        .text-foreground { color: #e5e5e5; }
+        .bg-background { background: #0a0a0a; }
+        .hover\:border-steel:hover { border-color: #3B4B5C; }
+        .hover\:text-foreground:hover { color: #e5e5e5; }
+        .disabled\:opacity-40:disabled { opacity: 0.4; }
+        .disabled\:cursor-not-allowed:disabled { cursor: not-allowed; }
+        .focus\:border-steel:focus { border-color: #3B4B5C; }
+        
+        /* JSON 语法高亮 */
+        .json-key { color: #3B4B5C; }
+        .json-string { color: #f9c096; }
+        .json-number { color: #96c0f9; }
+        .json-boolean { color: #f996b5; }
+        .json-null { color: #b096f9; }
+        
+        /* 动画 */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        
+        /* 圆角 */
+        .rounded-sm { border-radius: 0.125rem; }
+    </style>
+</head>
+<body>
+    <div class="mx-auto max-w-4xl px-6">
+        <!-- ===== 导航栏 ===== -->
+        <div class="flex justify-between items-center py-6 text-base">
+            <div class="text-white font-semibold text-lg">HJS</div>
+            <div class="flex gap-8 md:gap-10 text-gray-400">
+                <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
+                <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
+                <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
+                <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
+                <a href="/lookup.html" class="text-white" data-i18n="nav_lookup">Lookup</a>
+                <a href="/billing.html" class="hover:text-teal-400 transition" data-i18n="nav_billing">Billing</a>
+                <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
+            </div>
+            <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
+                <option value="en">EN</option>
+                <option value="zh">中文</option>
+            </select>
+        </div>
+
+        <!-- Header -->
+        <section class="py-24">
+            <p class="mb-4 font-mono text-xs text-gray-500" data-i18n="lk_version_tag">
+                HJS Responsibility Protocol · Version 0.1 Draft
+            </p>
+            <h1 class="text-3xl font-light leading-tight tracking-tight text-white md:text-4xl" data-i18n="lk_title">
+                Record Verification
+            </h1>
+            <p class="mt-6 max-w-2xl text-sm leading-relaxed text-gray-400" data-i18n="lk_subtitle">
+                Inspect complete responsibility chain: Judgment, Delegation, Termination, and Verification.
+            </p>
+        </section>
+
+        <hr class="border-gray-800">
+
+        <!-- Query Card -->
+        <section class="py-12">
+            <div class="rounded-sm border border-gray-800 bg-card p-6">
+                <!-- Input + Button -->
+                <div class="flex flex-col gap-3 sm:flex-row">
+                    <input
+                        type="text"
+                        id="record-id"
+                        placeholder="jgd_xxx"
+                        class="flex-1 border border-gray-800 bg-[#1a1a1a] px-4 py-2.5 font-mono text-sm text-white placeholder:text-gray-500 outline-none transition-colors focus:border-steel"
+                    />
+                    <button
+                        id="lookup-btn"
+                        class="inline-flex items-center justify-center border border-steel bg-steel/10 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-steel/20 disabled:cursor-not-allowed disabled:opacity-40"
+                        data-i18n="lk_button"
+                    >
+                        Lookup
+                    </button>
+                </div>
+
+                <!-- Example IDs -->
+                <div class="mt-4">
+                    <span class="text-xs text-gray-400" data-i18n="lk_examples">Examples:</span>
+                    <div class="mt-2 flex flex-wrap gap-2">
+                        <button class="example-id border border-gray-800 px-3 py-1.5 font-mono text-xs text-steel transition-colors hover:border-steel" data-id="jgd_1771313790343osf2">
+                            jgd_1771...osf2
+                        </button>
+                        <button class="example-id border border-gray-800 px-3 py-1.5 font-mono text-xs text-steel transition-colors hover:border-steel" data-id="jgd_1771312310200pbtx">
+                            jgd_1771...pbtx
+                        </button>
+                        <button class="example-id border border-gray-800 px-3 py-1.5 font-mono text-xs text-steel transition-colors hover:border-steel" data-id="jgd_1771309413724aqeh">
+                            jgd_1771...aqeh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading -->
+        <div id="loading" class="hidden flex items-center justify-center py-16">
+            <svg class="size-5 animate-spin text-gray-400" viewBox="0 0 24 24" fill="none">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+            </svg>
+            <span class="ml-3 text-sm text-gray-400" data-i18n="lk_loading">Loading...</span>
+        </div>
+
+        <!-- Error -->
+        <div id="error" class="hidden mb-8 border border-red-800 bg-red-900/10 px-5 py-4 font-mono text-xs text-red-400"></div>
+
+        <!-- Result -->
+        <div id="result" class="hidden pb-24">
+            <!-- 四项原语卡片网格 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <!-- Judgment 卡片 -->
+                <div class="border border-gray-800 bg-card p-5">
+                    <h3 class="text-sm font-mono text-steel mb-3 flex items-center gap-2">
+                        <span>①</span> Judgment
+                    </h3>
+                    <div id="judgment-content" class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">actor:</span>
+                            <span id="judgment-actor" class="text-white font-mono">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">intent:</span>
+                            <span id="judgment-intent" class="text-white font-mono">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">context:</span>
+                            <span id="judgment-context" class="text-white font-mono">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">timestamp:</span>
+                            <span id="judgment-timestamp" class="text-white font-mono">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delegation 卡片 -->
+                <div class="border border-gray-800 bg-card p-5">
+                    <h3 class="text-sm font-mono text-steel mb-3 flex items-center gap-2">
+                        <span>②</span> Delegation <span class="text-xs text-gray-500">(optional)</span>
+                    </h3>
+                    <div id="delegation-content" class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">from:</span>
+                            <span id="delegation-from" class="text-white font-mono">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">to:</span>
+                            <span id="delegation-to" class="text-white font-mono">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">scope:</span>
+                            <span id="delegation-scope" class="text-white font-mono">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">expires:</span>
+                            <span id="delegation-expires" class="text-white font-mono">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Termination 卡片 -->
+                <div class="border border-gray-800 bg-card p-5">
+                    <h3 class="text-sm font-mono text-steel mb-3 flex items-center gap-2">
+                        <span>③</span> Termination <span class="text-xs text-gray-500">(optional)</span>
+                    </h3>
+                    <div id="termination-content" class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">reference:</span>
+                            <span id="termination-ref" class="text-white font-mono">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">terminated at:</span>
+                            <span id="termination-time" class="text-white font-mono">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verification 卡片（优化版） -->
+                <div class="border border-gray-800 bg-card p-5">
+                    <h3 class="text-sm font-mono text-steel mb-3 flex items-center gap-2">
+                        <span>④</span> Verification
+                    </h3>
+                    <div id="verification-content" class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">structural validity:</span>
+                            <span id="verification-validity" class="font-mono text-green-400">VALID</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">delegation depth:</span>
+                            <span id="verification-depth" class="font-mono text-white">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">termination status:</span>
+                            <span id="verification-termination" class="font-mono text-white">active</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">anchor status:</span>
+                            <span id="verification-anchor" class="font-mono text-white">none</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full JSON -->
+            <div class="mb-10">
+                <h3 class="mb-4 text-[10px] font-medium tracking-widest text-gray-400 uppercase" data-i18n="lk_json_heading">FULL RECORD</h3>
+                <pre id="json-display" class="overflow-x-auto border border-gray-800 bg-[#1a1a1a] p-5 font-mono text-xs leading-relaxed"></pre>
+            </div>
+
+            <!-- Download Buttons -->
+            <div class="mb-10">
+                <h3 class="mb-4 text-[10px] font-medium tracking-widest text-gray-400 uppercase" data-i18n="lk_download_heading">DOWNLOAD</h3>
+                <div class="flex flex-wrap gap-3">
+                    <button id="download-json" class="download-btn border border-gray-700 px-4 py-2 text-xs text-gray-400 transition-colors hover:border-steel hover:text-white" data-format="json">JSON</button>
+                    <button id="download-pdf" class="download-btn border border-gray-700 px-4 py-2 text-xs text-gray-400 transition-colors hover:border-steel hover:text-white" data-format="pdf">PDF</button>
+                    <button id="download-ots" class="download-btn border border-gray-700 px-4 py-2 text-xs text-gray-400 transition-colors hover:border-steel hover:text-white disabled:opacity-40 disabled:cursor-not-allowed" data-format="ots" disabled>OTS Proof</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty state -->
+        <div id="empty-state" class="border-t border-dashed border-gray-800 py-24 text-center">
+            <p class="mx-auto max-w-md text-sm leading-relaxed text-gray-400" data-i18n="lk_empty">
+                Enter a record ID to inspect its complete responsibility chain.
+            </p>
+        </div>
+
+        <!-- ===== 底部 ===== -->
+        <div class="text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-12">
+            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
+            <span class="text-gray-700">·</span>
+            <a href="/spec/README.md" class="hover:text-gray-400 mx-2">Spec</a>
+            <span class="text-gray-700">·</span>
+            <a href="/cases.html" class="hover:text-gray-400 mx-2">Cases</a>
+        </div>
+    </div>
+
+    <!-- ===== 全局语言层 ===== -->
+    <script src="/js/lang.js"></script>
+    <script>
+        // API 基础地址
+        const API_BASE = 'https://hjs-api.onrender.com';
+        const PUBLIC_API_KEY = 'ced6bf0b4f9a0a53aa056456e0528fc7ea3d3bd883c5318542ff956241ea5817';
+
+        // ===== DOM 元素 =====
+        const input = document.getElementById('record-id');
+        const lookupBtn = document.getElementById('lookup-btn');
+        const loadingDiv = document.getElementById('loading');
+        const errorDiv = document.getElementById('error');
+        const resultDiv = document.getElementById('result');
+        const emptyState = document.getElementById('empty-state');
+        
+        // Judgment 元素
+        const judgmentActor = document.getElementById('judgment-actor');
+        const judgmentIntent = document.getElementById('judgment-intent');
+        const judgmentContext = document.getElementById('judgment-context');
+        const judgmentTimestamp = document.getElementById('judgment-timestamp');
+        
+        // Delegation 元素
+        const delegationFrom = document.getElementById('delegation-from');
+        const delegationTo = document.getElementById('delegation-to');
+        const delegationScope = document.getElementById('delegation-scope');
+        const delegationExpires = document.getElementById('delegation-expires');
+        
+        // Termination 元素
+        const terminationRef = document.getElementById('termination-ref');
+        const terminationTime = document.getElementById('termination-time');
+        
+        // Verification 元素（优化版）
+        const verificationValidity = document.getElementById('verification-validity');
+        const verificationDepth = document.getElementById('verification-depth');
+        const verificationTermination = document.getElementById('verification-termination');
+        const verificationAnchor = document.getElementById('verification-anchor');
+        
+        const jsonDisplay = document.getElementById('json-display');
+        
+        // 下载按钮
+        const downloadJson = document.getElementById('download-json');
+        const downloadPdf = document.getElementById('download-pdf');
+        const downloadOts = document.getElementById('download-ots');
+
+        // 示例ID
+        const exampleBtns = document.querySelectorAll('.example-id');
+
+        // 当前查询结果
+        let currentResult = null;
+
+        // ===== JSON 语法高亮 =====
+        function highlightJson(obj) {
+            if (obj === null) return '<span class="json-null">null</span>';
+            if (typeof obj === 'boolean') return `<span class="json-boolean">${obj}</span>`;
+            if (typeof obj === 'number') return `<span class="json-number">${obj}</span>`;
+            if (typeof obj === 'string') return `<span class="json-string">"${obj}"</span>`;
+            if (Array.isArray(obj)) {
+                if (obj.length === 0) return '[]';
+                let html = '[<br>';
+                obj.forEach((item, i) => {
+                    html += '  ' + highlightJson(item);
+                    if (i < obj.length - 1) html += ',';
+                    html += '<br>';
+                });
+                html += ']';
+                return html;
+            }
+            if (typeof obj === 'object') {
+                const entries = Object.entries(obj);
+                if (entries.length === 0) return '{}';
+                let html = '{<br>';
+                entries.forEach(([key, value], i) => {
+                    html += `  <span class="json-key">"${key}"</span>: ${highlightJson(value)}`;
+                    if (i < entries.length - 1) html += ',';
+                    html += '<br>';
+                });
+                html += '}';
+                return html;
+            }
+            return String(obj);
+        }
+
+        // ===== 查询记录（优化版） =====
+        async function lookupRecord(id) {
+            if (!id) return;
+            
+            loadingDiv.classList.remove('hidden');
+            errorDiv.classList.add('hidden');
+            resultDiv.classList.add('hidden');
+            emptyState.classList.add('hidden');
+            
+            try {
+                const res = await fetch(`${API_BASE}/judgments/${id}`, {
+                    headers: {
+                        'X-API-Key': PUBLIC_API_KEY
+                    }
+                });
+                
+                if (!res.ok) {
+                    throw new Error(`Record not found: ${id}`);
+                }
+                
+                const data = await res.json();
+                currentResult = data;
+                
+                // 更新 Judgment (从API的实际字段映射)
+                judgmentActor.textContent = data.entity || '-';
+                judgmentIntent.textContent = data.action || '-';
+                judgmentContext.textContent = JSON.stringify(data.scope || {});
+                judgmentTimestamp.textContent = data.timestamp || '-';
+                
+                // 更新 Delegation (从数据推断)
+                const hasDelegation = data.delegation || false;
+                delegationFrom.textContent = data.delegation?.from || '-';
+                delegationTo.textContent = data.delegation?.to || '-';
+                delegationScope.textContent = data.delegation?.scope || '-';
+                delegationExpires.textContent = data.delegation?.expires_at || '-';
+                
+                // 更新 Termination
+                const hasTermination = data.termination || false;
+                terminationRef.textContent = data.termination?.reference || '-';
+                terminationTime.textContent = data.termination?.terminated_at || '-';
+                
+                // ===== 优化后的 Verification 显示逻辑 =====
+                // 结构有效性：记录存在就是有效
+                verificationValidity.textContent = 'VALID';
+                verificationValidity.className = 'font-mono text-green-400';
+                
+                // 授权深度：有delegation就是1，否则0
+                const depth = hasDelegation ? '1' : '0';
+                verificationDepth.textContent = depth;
+                
+                // 终止状态：有termination就是terminated，否则active
+                const termStatus = hasTermination ? 'terminated' : 'active';
+                verificationTermination.textContent = termStatus;
+                
+                // 锚定状态：从 immutability_anchor 获取
+                const anchorType = data.immutability_anchor?.type || 'none';
+                verificationAnchor.textContent = anchorType;
+                
+                // 更新JSON显示
+                jsonDisplay.innerHTML = highlightJson(data);
+                
+                // OTS按钮状态
+                downloadOts.disabled = anchorType !== 'ots';
+                
+                loadingDiv.classList.add('hidden');
+                resultDiv.classList.remove('hidden');
+                
+            } catch (err) {
+                loadingDiv.classList.add('hidden');
+                errorDiv.textContent = err.message;
+                errorDiv.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+            }
+        }
+
+        // ===== 下载功能 =====
+        downloadJson.addEventListener('click', () => {
+            if (!currentResult) return;
+            const blob = new Blob([JSON.stringify(currentResult, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentResult.id}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        downloadPdf.addEventListener('click', () => {
+            if (!currentResult) return;
+            window.open(`${API_BASE}/judgments/${currentResult.id}?format=pdf&key=${PUBLIC_API_KEY}`, '_blank');
+        });
+
+        downloadOts.addEventListener('click', () => {
+            if (!currentResult) return;
+            const anchorType = currentResult.immutability_anchor?.type;
+            if (anchorType !== 'ots') return;
+            window.open(`${API_BASE}/judgments/${currentResult.id}/immutability-proof?key=${PUBLIC_API_KEY}`, '_blank');
+        });
+
+        // ===== 事件绑定 =====
+        lookupBtn.addEventListener('click', () => {
+            lookupRecord(input.value.trim());
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                lookupRecord(input.value.trim());
+            }
+        });
+
+        exampleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                input.value = id;
+                lookupRecord(id);
+            });
+        });
+
+        // ===== 从URL参数自动查询 =====
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if (id) {
+                input.value = id;
+                lookupRecord(id);
+            }
+        })();
+
+        // ===== 翻译字典 =====
+        const translations = {
+            en: {
+                nav_home: "Home",
+                nav_product: "Product",
+                nav_developers: "Developers",
+                nav_console: "Console",
+                nav_lookup: "Lookup",
+                nav_billing: "Billing",
+                nav_governance: "Governance",
+                lk_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
+                lk_title: "Record Verification",
+                lk_subtitle: "Inspect complete responsibility chain: Judgment, Delegation, Termination, and Verification.",
+                lk_examples: "Examples:",
+                lk_loading: "Loading...",
+                lk_button: "Lookup",
+                lk_indicators: "VERIFICATION RESULT",
+                lk_json_heading: "FULL RECORD",
+                lk_download_heading: "DOWNLOAD",
+                lk_empty: "Enter a record ID to inspect its complete responsibility chain."
+            },
+            zh: {
+                nav_home: "首页",
+                nav_product: "产品",
+                nav_developers: "开发者",
+                nav_console: "控制台",
+                nav_lookup: "查询",
+                nav_billing: "计费",
+                nav_governance: "治理",
+                lk_version_tag: "HJS 责任协议 · 草案 0.1 版",
+                lk_title: "记录验证",
+                lk_subtitle: "查看完整的责任链：判断、授权、终止、验证。",
+                lk_examples: "示例：",
+                lk_loading: "加载中...",
+                lk_button: "查询",
+                lk_indicators: "验证结果",
+                lk_json_heading: "完整记录",
+                lk_download_heading: "下载",
+                lk_empty: "输入记录ID查看完整的责任链。"
+            }
+        };
+
+        function switchLang(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+            const select = document.querySelector('select');
+            if (select) select.value = lang;
+        }
+
+        (function() {
+            const savedLang = localStorage.getItem('hjs_lang');
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            const lang = savedLang || urlLang || 'en';
+            switchLang(lang);
+        })();
+    </script>
+</body>
+</html>

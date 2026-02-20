@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Human Judgment Systems Foundation Ltd.
 
-const { Pool } = require('pg');
 const express = require('express');
 const { Pool } = require('pg');
 require('dotenv').config();

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HJS · Usage & Billing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        .font-mono, code, pre { font-family: 'JetBrains Mono', monospace !important; }
+        body { background: #0a0a0a; color: #e5e5e5; }
+        .text-steel { color: #3B4B5C; }
+        .border-steel { border-color: #3B4B5C; }
+        .bg-steel\/10 { background-color: rgba(59, 75, 92, 0.1); }
+        .bg-steel\/20 { background-color: rgba(59, 75, 92, 0.2); }
+        .hover\:bg-steel\/20:hover { background-color: rgba(59, 75, 92, 0.2); }
+        .bg-card { background: rgba(26, 26, 26, 0.5); }
+        .border-border { border-color: #1f1f1f; }
+        .text-muted-foreground { color: #9ca3af; }
+        .text-foreground { color: #e5e5e5; }
+        .bg-background { background: #0a0a0a; }
+        .hover\:border-steel:hover { border-color: #3B4B5C; }
+        .hover\:text-foreground:hover { color: #e5e5e5; }
+        .disabled\:opacity-60:disabled { opacity: 0.6; }
+        .disabled\:cursor-not-allowed:disabled { cursor: not-allowed; }
+        .focus\:border-steel:focus { border-color: #3B4B5C; }
+        .focus\:ring-steel:focus { ring-color: #3B4B5C; }
+        
+        /* 动画 */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-in {
+            animation: fade-in 0.3s ease-out;
+        }
+        
+        /* 圆角 */
+        .rounded { border-radius: 0.25rem; }
+    </style>
+</head>
+<body>
+    <div class="mx-auto max-w-5xl px-6">
+        <!-- ===== 导航栏 ===== -->
+        <div class="flex justify-between items-center py-6 text-base">
+            <div class="text-white font-semibold text-lg">HJS</div>
+            <div class="flex gap-8 md:gap-10 text-gray-400">
+                <a href="/" class="hover:text-teal-400 transition">Home</a>
+                <a href="/product.html" class="hover:text-teal-400 transition">Product</a>
+                <a href="/developers.html" class="hover:text-teal-400 transition">Developers</a>
+                <a href="/console.html" class="hover:text-teal-400 transition">Console</a>
+                <a href="/lookup.html" class="hover:text-teal-400 transition">Lookup</a>
+                <a href="/billing.html" class="text-white">Billing</a>
+                <a href="/governance.html" class="hover:text-teal-400 transition">Governance</a>
+            </div>
+            <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
+                <option value="en">EN</option>
+                <option value="zh">中文</option>
+            </select>
+        </div>
+
+        <!-- Header -->
+        <section class="pb-8 pt-24">
+            <p class="font-mono text-xs text-gray-500" data-i18n="bill_version_tag">
+                HJS Responsibility Protocol · Version 0.1 Draft
+            </p>
+            <h1 class="mt-4 text-3xl font-light leading-tight tracking-tight text-white md:text-4xl" data-i18n="bill_title">
+                Usage & Billing
+            </h1>
+            <p class="mt-4 max-w-xl text-sm leading-relaxed text-gray-400" data-i18n="bill_subtitle">
+                Pay only for what you use. No subscriptions. No tiers.
+            </p>
+        </section>
+
+        <!-- Auth -->
+        <div id="auth-section" class="mb-12">
+            <!-- 未认证状态 -->
+            <div id="unauth-state" class="border border-gray-800 bg-card p-6">
+                <h2 class="font-mono text-xs uppercase tracking-widest text-gray-400" data-i18n="bill_auth_heading">
+                    EMAIL AUTHENTICATION
+                </h2>
+                <div class="mt-4 flex gap-2">
+                    <input
+                        type="email"
+                        id="email-input"
+                        placeholder="your@email.com"
+                        class="flex-1 border border-gray-800 bg-background px-3 py-2 font-mono text-sm text-white placeholder:text-gray-500 outline-none transition-colors focus:border-steel"
+                    />
+                    <button
+                        id="verify-btn"
+                        class="shrink-0 border border-steel bg-steel/10 px-5 py-2 text-xs font-medium text-white transition-colors hover:bg-steel/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                        Verify
+                    </button>
+                </div>
+            </div>
+
+            <!-- 已认证状态（初始隐藏） -->
+            <div id="auth-state" class="hidden border-b border-gray-800 pb-4">
+                <div class="flex justify-between items-center">
+                    <p class="font-mono text-xs text-gray-400">
+                        <span data-i18n="con_auth_current">Current</span>: <span id="current-email" class="text-white"></span>
+                    </p>
+                    <button
+                        id="logout-btn"
+                        class="border border-gray-700 px-4 py-1.5 text-xs text-gray-400 transition-colors hover:text-white"
+                    >
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content (initially dimmed) -->
+        <section id="billing-content" class="grid gap-6 pb-12 md:grid-cols-2 opacity-40 pointer-events-none">
+            <!-- Left column: Balance + Rates + Monthly usage -->
+            <div class="flex flex-col gap-6">
+                <!-- Balance -->
+                <div class="border border-gray-800 bg-card p-6">
+                    <span class="text-[10px] uppercase tracking-wider text-gray-400" data-i18n="bill_balance">
+                        CURRENT BALANCE
+                    </span>
+                    <div class="mt-2 flex items-baseline gap-3">
+                        <span class="font-mono text-4xl font-light text-white" id="balance-amount">$--</span>
+                        <span id="topup-success" class="hidden font-mono text-sm text-steel animate-in"></span>
+                    </div>
+                </div>
+
+                <!-- Rate Summary -->
+                <div class="border border-gray-800 bg-card p-6">
+                    <span class="mb-4 block text-[10px] uppercase tracking-wider text-gray-400" data-i18n="bill_rates">
+                        RATES
+                    </span>
+                    <div class="space-y-3 font-mono text-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-400" data-i18n="bill_rate_storage">Record Storage</span>
+                            <span class="text-white" id="rate-storage">$0.001/record/mo</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-400" data-i18n="bill_rate_anchor">Anchoring</span>
+                            <span class="text-white" id="rate-anchor">$0.01 + network fee</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly Usage -->
+                <div class="border border-gray-800 bg-card p-6">
+                    <span class="mb-4 block text-[10px] uppercase tracking-wider text-gray-400" data-i18n="bill_month">
+                        THIS MONTH
+                    </span>
+                    <div class="space-y-2 font-mono text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400" data-i18n="bill_records">Records</span>
+                            <span class="text-white" id="month-records">--</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400" data-i18n="bill_anchors">Anchors</span>
+                            <span class="text-white" id="month-anchors">--</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400" data-i18n="bill_network_fee">Network Fee</span>
+                            <span class="text-white" id="month-network">$--</span>
+                        </div>
+                        <div class="mt-3 flex justify-between border-t border-gray-800 pt-3">
+                            <span class="font-medium text-white" data-i18n="bill_total">Total</span>
+                            <span class="font-medium text-white" id="month-total">$--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right column: Top-up + Batch tip + History -->
+            <div class="flex flex-col gap-6">
+                <!-- Top-up -->
+                <div class="border border-gray-800 bg-card p-6">
+                    <span class="mb-4 block text-[10px] uppercase tracking-wider text-gray-400" data-i18n="bill_topup">
+                        ADD FUNDS
+                    </span>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="preset-btn border border-gray-700 px-5 py-2.5 font-mono text-sm text-white transition-colors hover:border-steel hover:bg-steel/10 disabled:opacity-40 disabled:cursor-not-allowed" data-amount="10">$10</button>
+                        <button class="preset-btn border border-gray-700 px-5 py-2.5 font-mono text-sm text-white transition-colors hover:border-steel hover:bg-steel/10 disabled:opacity-40 disabled:cursor-not-allowed" data-amount="50">$50</button>
+                        <button class="preset-btn border border-gray-700 px-5 py-2.5 font-mono text-sm text-white transition-colors hover:border-steel hover:bg-steel/10 disabled:opacity-40 disabled:cursor-not-allowed" data-amount="100">$100</button>
+                    </div>
+                    <div class="mt-3 flex gap-2">
+                        <input
+                            type="number"
+                            id="custom-amount"
+                            min="1"
+                            step="1"
+                            placeholder="Custom $"
+                            class="min-w-0 flex-1 border border-gray-700 bg-background px-3 py-2.5 font-mono text-sm text-white placeholder:text-gray-500 outline-none transition-colors focus:border-steel disabled:opacity-40"
+                            disabled
+                        />
+                        <button
+                            id="add-funds-btn"
+                            class="shrink-0 border border-steel bg-steel/10 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-steel/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                            disabled
+                        >
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Batch anchoring tip -->
+                <div class="border-l-2 border-steel bg-steel/5 px-5 py-4">
+                    <p class="font-mono text-xs leading-relaxed text-gray-400" data-i18n="bill_batch_tip">
+                        Batch anchoring with Merkle tree reduces network fee by up to 99%. 
+                        Network fee is amortized across batch. HJS fee applies per anchor.
+                    </p>
+                </div>
+
+                <!-- Transaction History -->
+                <div class="border border-gray-800 bg-card p-6">
+                    <span class="mb-4 block text-[10px] uppercase tracking-wider text-gray-400" data-i18n="bill_history">
+                        TRANSACTION HISTORY
+                    </span>
+                    <div id="history-container" class="space-y-0 divide-y divide-gray-800">
+                        <p class="font-mono text-xs text-gray-400 py-4 text-center" data-i18n="bill_history_empty">
+                            No transactions yet
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 底部 ===== -->
+        <div class="text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-12">
+            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
+            <span class="text-gray-700">·</span>
+            <a href="/spec/README.md" class="hover:text-gray-400 mx-2">Spec</a>
+            <span class="text-gray-700">·</span>
+            <a href="/cases.html" class="hover:text-gray-400 mx-2">Cases</a>
+        </div>
+    </div>
+
+    <!-- ===== 全局语言层 ===== -->
+    <script src="/js/lang.js"></script>
+    <script>
+        // API 基础地址
+        const API_BASE = 'https://hjs-api.onrender.com';
+
+        // ===== 状态管理 =====
+        let currentEmail = localStorage.getItem('hjs_console_email') || '';
+        let balance = 0;
+        let transactions = [];
+
+        // ===== DOM 元素 =====
+        const unauthState = document.getElementById('unauth-state');
+        const authState = document.getElementById('auth-state');
+        const billingContent = document.getElementById('billing-content');
+        const emailInput = document.getElementById('email-input');
+        const verifyBtn = document.getElementById('verify-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const currentEmailSpan = document.getElementById('current-email');
+        const balanceSpan = document.getElementById('balance-amount');
+        const topupSuccess = document.getElementById('topup-success');
+        const monthRecords = document.getElementById('month-records');
+        const monthAnchors = document.getElementById('month-anchors');
+        const monthNetwork = document.getElementById('month-network');
+        const monthTotal = document.getElementById('month-total');
+        const historyContainer = document.getElementById('history-container');
+        const customAmount = document.getElementById('custom-amount');
+        const addFundsBtn = document.getElementById('add-funds-btn');
+        const presetBtns = document.querySelectorAll('.preset-btn');
+
+        // 费率（硬编码，基础设施风格）
+        const RATES = {
+            storage: 0.001,
+            anchorBase: 0.01
+        };
+
+        // ===== 初始化 =====
+        if (currentEmail) {
+            // 已登录状态
+            unauthState.classList.add('hidden');
+            authState.classList.remove('hidden');
+            currentEmailSpan.textContent = currentEmail;
+            billingContent.classList.remove('opacity-40', 'pointer-events-none');
+            enableBillingFeatures();
+            loadBillingData();
+        }
+
+        // ===== 邮箱验证 =====
+        verifyBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            if (!email || !email.includes('@')) return;
+            
+            verifyBtn.disabled = true;
+            verifyBtn.textContent = '...';
+            
+            // 模拟验证
+            await new Promise(r => setTimeout(r, 600));
+            
+            currentEmail = email;
+            localStorage.setItem('hjs_console_email', email);
+            
+            unauthState.classList.add('hidden');
+            authState.classList.remove('hidden');
+            currentEmailSpan.textContent = email;
+            billingContent.classList.remove('opacity-40', 'pointer-events-none');
+            
+            enableBillingFeatures();
+            loadBillingData();
+            
+            verifyBtn.disabled = false;
+            verifyBtn.textContent = 'Verify';
+        });
+
+        // ===== 退出登录 =====
+        logoutBtn.addEventListener('click', () => {
+            currentEmail = '';
+            localStorage.removeItem('hjs_console_email');
+            
+            unauthState.classList.remove('hidden');
+            authState.classList.add('hidden');
+            billingContent.classList.add('opacity-40', 'pointer-events-none');
+            
+            disableBillingFeatures();
+            clearBillingData();
+        });
+
+        // ===== 启用/禁用功能 =====
+        function enableBillingFeatures() {
+            customAmount.disabled = false;
+            addFundsBtn.disabled = false;
+            presetBtns.forEach(btn => btn.disabled = false);
+        }
+
+        function disableBillingFeatures() {
+            customAmount.disabled = true;
+            addFundsBtn.disabled = true;
+            presetBtns.forEach(btn => btn.disabled = true);
+        }
+
+        function clearBillingData() {
+            balance = 0;
+            transactions = [];
+            updateUI();
+        }
+
+        // ===== 加载账单数据 =====
+        async function loadBillingData() {
+            await Promise.all([
+                fetchBalance(),
+                fetchUsage(),
+                fetchTransactions()
+            ]);
+        }
+
+        async function fetchBalance() {
+            try {
+                const res = await fetch(`${API_BASE}/billing/balance?email=${encodeURIComponent(currentEmail)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    balance = data.balance || 0;
+                } else {
+                    // 模拟数据
+                    balance = 42.50;
+                }
+            } catch (err) {
+                console.error('Fetch balance error:', err);
+                balance = 42.50;
+            }
+            updateUI();
+        }
+
+        async function fetchUsage() {
+            try {
+                const res = await fetch(`${API_BASE}/billing/usage?email=${encodeURIComponent(currentEmail)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    monthRecords.textContent = data.records || 834;
+                    monthAnchors.textContent = data.anchors || 23;
+                    monthNetwork.textContent = `$${(data.network_fee || 7.36).toFixed(2)}`;
+                    monthTotal.textContent = `$${(data.total || 8.19).toFixed(2)}`;
+                } else {
+                    // 模拟数据
+                    monthRecords.textContent = '834';
+                    monthAnchors.textContent = '23';
+                    monthNetwork.textContent = '$7.36';
+                    monthTotal.textContent = '$8.19';
+                }
+            } catch (err) {
+                console.error('Fetch usage error:', err);
+                monthRecords.textContent = '834';
+                monthAnchors.textContent = '23';
+                monthNetwork.textContent = '$7.36';
+                monthTotal.textContent = '$8.19';
+            }
+        }
+
+        async function fetchTransactions() {
+            try {
+                const res = await fetch(`${API_BASE}/billing/transactions?email=${encodeURIComponent(currentEmail)}&limit=10`);
+                if (res.ok) {
+                    const data = await res.json();
+                    transactions = data.transactions || [];
+                } else {
+                    // 模拟数据
+                    transactions = [
+                        { id: 'tx_001', date: '2026-02-15', type: 'top-up', amount: 50 },
+                        { id: 'tx_002', date: '2026-02-14', type: 'anchor', amount: -12.50 },
+                        { id: 'tx_003', date: '2026-02-13', type: 'top-up', amount: 100 },
+                        { id: 'tx_004', date: '2026-02-12', type: 'storage', amount: -5.20 }
+                    ];
+                }
+            } catch (err) {
+                console.error('Fetch transactions error:', err);
+                transactions = [];
+            }
+            renderTransactions();
+        }
+
+        // ===== 充值 =====
+        async function addFunds(amount) {
+            if (amount <= 0 || !currentEmail) return;
+            
+            addFundsBtn.disabled = true;
+            addFundsBtn.textContent = '...';
+            
+            try {
+                const res = await fetch(`${API_BASE}/billing/topup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: currentEmail, amount })
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    balance = data.new_balance;
+                    
+                    // 显示成功提示
+                    topupSuccess.textContent = `+$${amount.toFixed(2)}`;
+                    topupSuccess.classList.remove('hidden');
+                    setTimeout(() => topupSuccess.classList.add('hidden'), 2500);
+                    
+                    // 添加交易记录
+                    transactions.unshift({
+                        id: data.transaction_id || `tx_${Date.now()}`,
+                        date: new Date().toISOString().split('T')[0],
+                        type: 'top-up',
+                        amount: amount
+                    });
+                    
+                    updateUI();
+                    renderTransactions();
+                    
+                    // 清空输入
+                    customAmount.value = '';
+                } else {
+                    alert('充值失败，请重试');
+                }
+            } catch (err) {
+                console.error('Top-up error:', err);
+                alert('充值失败，请检查网络');
+            } finally {
+                addFundsBtn.disabled = false;
+                addFundsBtn.textContent = 'Add';
+            }
+        }
+
+        // ===== 事件绑定 =====
+        presetBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const amount = parseFloat(btn.getAttribute('data-amount'));
+                addFunds(amount);
+            });
+        });
+
+        addFundsBtn.addEventListener('click', () => {
+            const amount = parseFloat(customAmount.value);
+            if (amount > 0) {
+                addFunds(amount);
+            }
+        });
+
+        // ===== UI更新 =====
+        function updateUI() {
+            balanceSpan.textContent = `$${balance.toFixed(2)}`;
+        }
+
+        function renderTransactions() {
+            if (transactions.length === 0) {
+                historyContainer.innerHTML = `<p class="font-mono text-xs text-gray-400 py-4 text-center" data-i18n="bill_history_empty">No transactions yet</p>`;
+                return;
+            }
+            
+            let html = '';
+            transactions.slice(0, 5).forEach(tx => {
+                const isTopup = tx.type === 'top-up' || tx.amount > 0;
+                html += `
+                    <div class="flex items-center justify-between py-3 font-mono text-xs">
+                        <div class="flex flex-col gap-0.5">
+                            <span class="text-white">${tx.id.substring(0, 8)}...</span>
+                            <span class="text-gray-500">${tx.date}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="uppercase tracking-wider ${isTopup ? 'text-steel' : 'text-gray-400'}">${tx.type}</span>
+                            <span class="text-white">${isTopup ? '+' : '-'}$${Math.abs(tx.amount).toFixed(2)}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            historyContainer.innerHTML = html;
+        }
+
+        // ===== 翻译字典 =====
+        const translations = {
+            en: {
+                bill_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
+                bill_title: "Usage & Billing",
+                bill_subtitle: "Pay only for what you use. No subscriptions. No tiers.",
+                bill_auth_heading: "EMAIL AUTHENTICATION",
+                con_auth_placeholder: "your@email.com",
+                con_auth_verify: "Verify",
+                con_auth_current: "Current",
+                bill_balance: "CURRENT BALANCE",
+                bill_rates: "RATES",
+                bill_rate_storage: "Record Storage",
+                bill_rate_anchor: "Anchoring",
+                bill_month: "THIS MONTH",
+                bill_records: "Records",
+                bill_anchors: "Anchors",
+                bill_network_fee: "Network Fee",
+                bill_total: "Total",
+                bill_topup: "ADD FUNDS",
+                bill_custom: "Custom $",
+                bill_add: "Add",
+                bill_batch_tip: "Batch anchoring with Merkle tree reduces network fee by up to 99%. Network fee is amortized across batch. HJS fee applies per anchor.",
+                bill_history: "TRANSACTION HISTORY",
+                bill_history_empty: "No transactions yet"
+            },
+            zh: {
+                bill_version_tag: "HJS 责任协议 · 草案 0.1 版",
+                bill_title: "用量与计费",
+                bill_subtitle: "按使用付费。无订阅。无套餐。",
+                bill_auth_heading: "邮箱验证",
+                con_auth_placeholder: "your@email.com",
+                con_auth_verify: "验证",
+                con_auth_current: "当前邮箱",
+                bill_balance: "当前余额",
+                bill_rates: "费率",
+                bill_rate_storage: "记录存储",
+                bill_rate_anchor: "锚定服务",
+                bill_month: "本月用量",
+                bill_records: "记录数",
+                bill_anchors: "锚定数",
+                bill_network_fee: "网络费",
+                bill_total: "总计",
+                bill_topup: "充值",
+                bill_custom: "自定义金额",
+                bill_add: "充值",
+                bill_batch_tip: "使用默克尔树批量锚定可降低高达99%的网络费。网络费按批次分摊。HJS处理费按次收取。",
+                bill_history: "交易历史",
+                bill_history_empty: "暂无交易记录"
+            }
+        };
+
+        function switchLang(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+            const select = document.querySelector('select');
+            if (select) select.value = lang;
+        }
+
+        // 初始化语言
+        (function() {
+            const savedLang = localStorage.getItem('hjs_lang');
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            const lang = savedLang || urlLang || 'en';
+            switchLang(lang);
+        })();
+    </script>
+</body>
+</html>

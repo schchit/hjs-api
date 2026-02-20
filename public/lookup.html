@@ -55,7 +55,7 @@
                 <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
                 <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
                 <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
-                <a href="/lookup.html" class="text-white">Lookup</a>
+                <a href="/lookup.html" class="text-white" data-i18n="nav_lookup">Lookup</a>
                 <a href="/billing.html" class="hover:text-teal-400 transition" data-i18n="nav_billing">Billing</a>
                 <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
             </div>
@@ -94,6 +94,7 @@
                     <button
                         id="lookup-btn"
                         class="inline-flex items-center justify-center border border-steel bg-steel/10 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-steel/20 disabled:cursor-not-allowed disabled:opacity-40"
+                        data-i18n="lk_button"
                     >
                         Lookup
                     </button>
@@ -191,7 +192,7 @@
     <!-- ===== 全局语言层 ===== -->
     <script src="/js/lang.js"></script>
     <script>
-        // API 基础地址
+        // API 基础地址 - 修复为真实后端
         const API_BASE = 'https://hjs-api.onrender.com';
 
         // ===== DOM 元素 =====
@@ -358,13 +359,13 @@
         // ===== 翻译字典 =====
         const translations = {
             en: {
-        nav_home: "Home",
-        nav_product: "Product",
-        nav_developers: "Developers",
-        nav_console: "Console",
-        nav_lookup: "Lookup",
-        nav_billing: "Billing",
-        nav_governance: "Governance",
+                nav_home: "Home",
+                nav_product: "Product",
+                nav_developers: "Developers",
+                nav_console: "Console",
+                nav_lookup: "Lookup",
+                nav_billing: "Billing",
+                nav_governance: "Governance",
                 lk_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
                 lk_title: "Record Verification",
                 lk_subtitle: "Enter a record ID to inspect its structural validity and integrity proof.",
@@ -381,13 +382,13 @@
                 lk_empty: "Enter a judgment record ID above to retrieve its details. You can download results as JSON, PDF, or OTS proof."
             },
             zh: {
-        nav_home: "首页",
-        nav_product: "产品",
-        nav_developers: "开发者",
-        nav_console: "控制台",
-        nav_lookup: "查询",
-        nav_billing: "计费",
-        nav_governance: "治理",
+                nav_home: "首页",
+                nav_product: "产品",
+                nav_developers: "开发者",
+                nav_console: "控制台",
+                nav_lookup: "查询",
+                nav_billing: "计费",
+                nav_governance: "治理",
                 lk_version_tag: "HJS 责任协议 · 草案 0.1 版",
                 lk_title: "记录验证",
                 lk_subtitle: "输入记录ID，检查其结构有效性和完整性证明。",

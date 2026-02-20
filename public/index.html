@@ -3,245 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="title">HJS · AI Accountability</title>
+    <title>HJS Responsibility Protocol</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
-        body { background: #0a0a0a; }
-        .icon { width: 2.5rem; height: 2.5rem; stroke: #5ee0c0; fill: none; stroke-width: 1.5; }
-        .card-text { word-break: keep-all; word-wrap: break-word; }
-        select {
-            background-color: transparent;
-            color: #9ca3af;
-            font-size: 0.75rem;
-            cursor: pointer;
-        }
-        select:focus { outline: none; }
-        select option { background-color: #111827; color: white; }
+        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
+        body { background: #0a0a0a; color: #e5e5e5; }
+        .text-steel { color: #3B4B5C; }
+        .border-steel { border-color: #3B4B5C; }
+        .hover\:bg-steel\/10:hover { background-color: rgba(59, 75, 92, 0.1); }
     </style>
 </head>
-<body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
-    <div class="max-w-5xl mx-auto px-4 pt-20 pb-12">
-        <!-- 导航 - 字号调大1.2倍 (text-sm → text-base)，与标题间距增加25% (mb-32 → mb-40) -->
-        <div class="flex justify-between items-center mb-40 text-base">  <!-- 这里修改 -->
+<body>
+    <div class="mx-auto max-w-5xl px-6">
+        <!-- ===== 导航栏 ===== -->
+        <div class="flex justify-between items-center py-6 text-base">
             <div class="text-white font-semibold text-lg">HJS</div>
             <div class="flex gap-8 md:gap-10 text-gray-400">
-                <a href="/" class="text-white hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
-                <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
-                <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
-                <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
-                <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
+                <a href="/" class="text-white">Home</a>
+                <a href="/product.html" class="hover:text-teal-400 transition">Product</a>
+                <a href="/developers.html" class="hover:text-teal-400 transition">Developers</a>
+                <a href="/console.html" class="hover:text-teal-400 transition">Console</a>
+                <a href="/lookup.html" class="hover:text-teal-400 transition">Lookup</a>
+                <a href="/governance.html" class="hover:text-teal-400 transition">Governance</a>
             </div>
-            <select onchange="switchLang(this.value)">
-                <option value="en" selected>EN</option>
+            <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
+                <option value="en">EN</option>
                 <option value="zh">中文</option>
             </select>
         </div>
 
-        <!-- 核心标题区域 - 保持原样 -->
-        <div class="mb-16">
-            <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight max-w-4xl" data-i18n="headline">
-                AI is reshaping society<br>but accountability hasn't caught up
+        <!-- ===== 首页内容 ===== -->
+        <!-- Screen 1: Protocol Identifier -->
+        <section class="flex min-h-[calc(100vh-3.5rem)] flex-col justify-center py-24">
+            <p class="font-mono text-xs text-gray-500" data-i18n="home_version_tag">
+                HJS Responsibility Protocol · Version 0.1 Draft
+            </p>
+            <h1 class="mt-6 max-w-3xl text-4xl font-light leading-tight tracking-tight text-white md:text-5xl" data-i18n="home_headline">
+                A minimal deterministic structure<br>for binding responsibility in AI systems
             </h1>
-            
-            <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mt-6 leading-relaxed" data-i18n="subhead">
-                Medical AI, autonomous driving, AI agents in the workplace, AI in education —<br>
-                every advance asks the same question: who's responsible when things go wrong?
-            </p>
-            
-            <p class="text-base md:text-lg text-gray-500 mt-4" data-i18n="subfoot">
-                These are not hypotheticals — they are happening now.
-            </p>
-        </div>
+        </section>
 
-        <!-- 行业痛点卡片 -->
-        <div class="mb-20">
-            <p class="text-xs text-teal-500/60 uppercase tracking-wider mb-4">THE ACCOUNTABILITY GAP</p>
-            
-            <div class="grid md:grid-cols-2 gap-5">
-                <!-- 医疗AI -->
-                <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                            hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                    <div class="flex items-start gap-4">
-                        <svg class="icon flex-shrink-0" viewBox="0 0 24 24" stroke="currentColor">
-                            <path d="M4 14h16M4 18h16M4 6h16M4 10h16" />
-                            <circle cx="12" cy="12" r="8" stroke="currentColor" fill="none"/>
-                        </svg>
-                        <div>
-                            <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="pain1_title">Medical AI Adoption</h3>
-                            <p class="text-gray-400 text-sm leading-relaxed card-text" data-i18n="pain1_desc">Diagnostic AI is used in thousands of hospitals. When errors occur, is it the doctor, the AI vendor, or the data provider?</p>
-                        </div>
+        <!-- Screen 2: Core Model Diagram -->
+        <section class="py-24">
+            <div class="font-mono text-sm leading-loose text-gray-400">
+                <div class="flex flex-col items-start">
+                    <span class="text-white" data-i18n="diagram_actor">Actor</span>
+                    <span class="ml-2 text-steel" aria-hidden="true">│</span>
+                    <span class="ml-2 text-steel" aria-hidden="true">▼</span>
+                    <span class="text-white" data-i18n="diagram_judgment">Judgment</span>
+                    <span class="ml-2 text-steel" aria-hidden="true">│</span>
+                    <span class="ml-2 text-steel" aria-hidden="true">▼</span>
+                    <span class="text-gray-500" data-i18n="diagram_delegation">Delegation (OPTIONAL)</span>
+                    <span class="ml-2 text-steel" aria-hidden="true">│</span>
+                    <span class="ml-2 text-steel" aria-hidden="true">▼</span>
+                    <span class="text-gray-500" data-i18n="diagram_termination">Termination (OPTIONAL)</span>
+                    <span class="ml-2 text-steel" aria-hidden="true">│</span>
+                    <span class="ml-2 text-steel" aria-hidden="true">▼</span>
+                    <span class="text-white" data-i18n="diagram_verification">Verification</span>
+                    <span class="ml-2 text-steel" aria-hidden="true">│</span>
+                    <span class="ml-2 text-steel" aria-hidden="true">▼</span>
+                    <span class="text-gray-500" data-i18n="diagram_integrity">Integrity Proof (OPTIONAL)</span>
+                </div>
+
+                <div class="mt-8 max-w-lg space-y-1 text-xs text-gray-500">
+                    <p data-i18n="home_diagram_note1">Each arrow defines a structural invariant.</p>
+                    <p data-i18n="home_diagram_note2">All primitives are deterministic and verifiable.</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-gray-800">
+
+        <!-- Screen 3: Definition Summary -->
+        <section class="py-24">
+            <p class="text-sm text-gray-500" data-i18n="home_def_intro">
+                The protocol defines four primitives:
+            </p>
+
+            <div class="mt-10 space-y-10">
+                <!-- Judgment -->
+                <div>
+                    <h3 class="font-mono text-sm font-medium text-white" data-i18n="prim_judgment">Judgment</h3>
+                    <div class="mt-2 space-y-1 text-sm text-gray-400">
+                        <p data-i18n="prim_judgment_must">MUST include actor and timestamp.</p>
+                        <p data-i18n="prim_judgment_may">MAY include context and delegation reference.</p>
                     </div>
                 </div>
-                <!-- 自动驾驶 -->
-                <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                            hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                    <div class="flex items-start gap-4">
-                        <svg class="icon flex-shrink-0" viewBox="0 0 24 24" stroke="currentColor">
-                            <path d="M5 12l2-2 3 3 5-5 2 2" />
-                            <circle cx="12" cy="12" r="8" stroke="currentColor" fill="none"/>
-                        </svg>
-                        <div>
-                            <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="pain2_title">Autonomous Driving</h3>
-                            <p class="text-gray-400 text-sm leading-relaxed card-text" data-i18n="pain2_desc">L3 vehicles are now on public roads. In an accident, is it the driver, the automaker, or the algorithm?</p>
-                        </div>
+
+                <!-- Delegation -->
+                <div>
+                    <h3 class="font-mono text-sm font-medium text-white" data-i18n="prim_delegation">Delegation</h3>
+                    <div class="mt-2 space-y-1 text-sm text-gray-400">
+                        <p data-i18n="prim_delegation_must">MUST reference a prior Judgment.</p>
+                        <p data-i18n="prim_delegation_may">MAY define scope and expiry.</p>
                     </div>
                 </div>
-                <!-- AI智能体 -->
-                <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                            hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                    <div class="flex items-start gap-4">
-                        <svg class="icon flex-shrink-0" viewBox="0 0 24 24" stroke="currentColor">
-                            <circle cx="12" cy="8" r="3" stroke="currentColor" fill="none"/>
-                            <path d="M6 16v2a4 4 0 0 0 8 0v-2" />
-                            <path d="M3 12h18" />
-                        </svg>
-                        <div>
-                            <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="pain3_title">AI Agents</h3>
-                            <p class="text-gray-400 text-sm leading-relaxed card-text" data-i18n="pain3_desc">From customer service to finance, when an AI exceeds its authority, who can answer 'who authorized it'?</p>
-                        </div>
+
+                <!-- Termination -->
+                <div>
+                    <h3 class="font-mono text-sm font-medium text-white" data-i18n="prim_termination">Termination</h3>
+                    <div class="mt-2 space-y-1 text-sm text-gray-400">
+                        <p data-i18n="prim_termination_must">MUST reference a valid Judgment or Delegation.</p>
+                        <p data-i18n="prim_termination_def">Defines the end of responsibility.</p>
                     </div>
                 </div>
-                <!-- 教育AI -->
-                <div class="p-6 border border-gray-800 rounded-lg bg-gray-900/30 
-                            hover:bg-gray-900/50 hover:border-teal-500/30 transition-all">
-                    <div class="flex items-start gap-4">
-                        <svg class="icon flex-shrink-0" viewBox="0 0 24 24" stroke="currentColor">
-                            <path d="M2 3h6a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3z" />
-                            <path d="M22 3h-6a4 4 0 0 0-4 4v10a2 2 0 0 0 2 2h8" />
-                        </svg>
-                        <div>
-                            <h3 class="text-lg font-semibold text-teal-400 mb-2" data-i18n="pain4_title">AI in Education</h3>
-                            <p class="text-gray-400 text-sm leading-relaxed card-text" data-i18n="pain4_desc">AI tutoring and content generation are now in classrooms. When biased or incorrect material is taught, who is accountable—the teacher, the developer, or the school?</p>
-                        </div>
+
+                <!-- Verification -->
+                <div>
+                    <h3 class="font-mono text-sm font-medium text-white" data-i18n="prim_verification">Verification</h3>
+                    <div class="mt-2 space-y-1 text-sm text-gray-400">
+                        <p data-i18n="prim_verification_eval">Evaluates structural validity, delegation chain, termination status.</p>
+                        <p data-i18n="prim_verification_output">Output is deterministic: VALID or INVALID.</p>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- 核心痛点区域 -->
-        <div class="max-w-3xl mb-20">
-            <p class="text-xs text-teal-500/60 uppercase tracking-wider mb-4">THE BIGGER PICTURE</p>
-            <h2 class="text-2xl md:text-3xl font-bold text-white mb-4" data-i18n="core_title">Technology outpaces governance</h2>
-            <p class="text-gray-400 text-base md:text-lg leading-relaxed mb-6" data-i18n="core_desc">
-                Society is adopting AI rapidly, but accountability frameworks are stuck in the industrial era.<br>
-                Every untraceable decision erodes trust in AI.
-            </p>
-            <p class="text-gray-300 text-sm md:text-base mb-4" data-i18n="core_footer">
-                This isn't one industry's problem — it's the defining challenge of the AI age.
-            </p>
-            <p class="text-base md:text-lg text-teal-400 font-medium" data-i18n="core_stat">
-                71% of CIOs say traceability is required for AI projects.
-            </p>
-        </div>
+        <hr class="border-gray-800">
 
-        <!-- 按钮 -->
-        <div class="mb-16">
-            <a href="/product.html" 
-               class="inline-block px-8 py-4 border border-teal-500 text-teal-400 
-                      rounded-lg hover:bg-teal-500/10 transition-all duration-300 
-                      text-base md:text-lg font-medium"
-               data-i18n="cta">
-                See how we fix the chain
-            </a>
-            <p class="text-xs text-gray-600 mt-3" data-i18n="cta_note">Problem-focused, not tool-focused</p>
-        </div>
+        <!-- Screen 4: Implementation Entry -->
+        <section class="py-24">
+            <div class="max-w-2xl space-y-4 text-sm leading-relaxed text-gray-400">
+                <p data-i18n="home_impl_p1">HJS provides a hosted reference implementation.</p>
+                <p class="text-white" data-i18n="home_impl_p2">This service executes the protocol.</p>
+                <p data-i18n="home_impl_p3">You MAY implement the protocol independently.</p>
+                <p data-i18n="home_impl_p4">The specification is open and publicly available.</p>
+            </div>
 
-        <!-- 底部 -->
-        <div class="text-center text-xs text-gray-600 pt-12 border-t border-gray-800">
-            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-3 py-2 inline-block" data-i18n="footer_github">GitHub</a>
+            <!-- Action Buttons -->
+            <div class="mt-12 flex flex-wrap gap-3">
+                <a href="/developers" class="inline-flex items-center justify-center border border-steel px-5 py-2.5 text-sm text-white transition-colors hover:bg-steel/10" data-i18n="home_btn_spec">View Specification</a>
+                <a href="/console" class="inline-flex items-center justify-center border border-gray-700 px-5 py-2.5 text-sm text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="home_btn_record">Start Recording</a>
+                <a href="/verify" class="inline-flex items-center justify-center border border-gray-700 px-5 py-2.5 text-sm text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="home_btn_verify">Verify Record</a>
+            </div>
+        </section>
+
+        <!-- ===== 底部 ===== -->
+        <div class="text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-12">
+            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
             <span class="text-gray-700">·</span>
-            <a href="/spec/README.md" class="hover:text-gray-400 mx-3 py-2 inline-block" data-i18n="footer_spec">Spec</a>
+            <a href="/spec/README.md" class="hover:text-gray-400 mx-2">Spec</a>
             <span class="text-gray-700">·</span>
-            <a href="/cases.html" class="hover:text-gray-400 mx-3 py-2 inline-block" data-i18n="footer_cases">Cases</a>
+            <a href="/cases.html" class="hover:text-gray-400 mx-2">Cases</a>
         </div>
     </div>
 
+    <!-- ===== 全局语言层 ===== -->
+    <script src="/js/lang.js"></script>
     <script>
+        // 翻译字典
         const translations = {
             en: {
-                title: "HJS · AI Accountability",
-                nav_home: "Home",
-                nav_product: "Product",
-                nav_developers: "Developers",
-                nav_console: "Console",
-                nav_lookup: "Lookup",
-                headline: "AI is reshaping society<br>but accountability hasn't caught up",
-                subhead: "Medical AI, autonomous driving, AI agents in the workplace, AI in education —<br>every advance asks the same question: who's responsible when things go wrong?",
-                subfoot: "These are not hypotheticals — they are happening now.",
-                pain1_title: "Medical AI Adoption",
-                pain1_desc: "Diagnostic AI is used in thousands of hospitals. When errors occur, is it the doctor, the AI vendor, or the data provider?",
-                pain2_title: "Autonomous Driving",
-                pain2_desc: "L3 vehicles are now on public roads. In an accident, is it the driver, the automaker, or the algorithm?",
-                pain3_title: "AI Agents",
-                pain3_desc: "From customer service to finance, when an AI exceeds its authority, who can answer 'who authorized it'?",
-                pain4_title: "AI in Education",
-                pain4_desc: "AI tutoring and content generation are now in classrooms. When biased or incorrect material is taught, who is accountable—the teacher, the developer, or the school?",
-                core_title: "Technology outpaces governance",
-                core_desc: "Society is adopting AI rapidly, but accountability frameworks are stuck in the industrial era.<br>Every untraceable decision erodes trust in AI.",
-                core_footer: "This isn't one industry's problem — it's the defining challenge of the AI age.",
-                core_stat: "71% of CIOs say traceability is required for AI projects.",
-                cta: "See how we fix the chain",
-                cta_note: "Problem-focused, not tool-focused",
-                footer_github: "GitHub",
-                footer_spec: "Spec",
-                footer_cases: "Cases"
+                home_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
+                home_headline: "A minimal deterministic structure<br>for binding responsibility in AI systems",
+                diagram_actor: "Actor",
+                diagram_judgment: "Judgment",
+                diagram_delegation: "Delegation (OPTIONAL)",
+                diagram_termination: "Termination (OPTIONAL)",
+                diagram_verification: "Verification",
+                diagram_integrity: "Integrity Proof (OPTIONAL)",
+                home_diagram_note1: "Each arrow defines a structural invariant.",
+                home_diagram_note2: "All primitives are deterministic and verifiable.",
+                home_def_intro: "The protocol defines four primitives:",
+                prim_judgment: "Judgment",
+                prim_judgment_must: "MUST include actor and timestamp.",
+                prim_judgment_may: "MAY include context and delegation reference.",
+                prim_delegation: "Delegation",
+                prim_delegation_must: "MUST reference a prior Judgment.",
+                prim_delegation_may: "MAY define scope and expiry.",
+                prim_termination: "Termination",
+                prim_termination_must: "MUST reference a valid Judgment or Delegation.",
+                prim_termination_def: "Defines the end of responsibility.",
+                prim_verification: "Verification",
+                prim_verification_eval: "Evaluates structural validity, delegation chain, termination status.",
+                prim_verification_output: "Output is deterministic: VALID or INVALID.",
+                home_impl_p1: "HJS provides a hosted reference implementation.",
+                home_impl_p2: "This service executes the protocol.",
+                home_impl_p3: "You MAY implement the protocol independently.",
+                home_impl_p4: "The specification is open and publicly available.",
+                home_btn_spec: "View Specification",
+                home_btn_record: "Start Recording",
+                home_btn_verify: "Verify Record"
             },
             zh: {
-                title: "HJS · AI责任追溯",
-                nav_home: "首页",
-                nav_product: "产品",
-                nav_developers: "开发者",
-                nav_console: "控制台",
-                nav_lookup: "查询",
-                headline: "AI正在重塑社会<br>但责任链条还没跟上",
-                subhead: "医疗AI普及、自动驾驶上路、AI智能体走入职场、教育AI应用——<br>每一次进步，都在拷问同一个问题：出事了，谁负责？",
-                subfoot: "这不是假设，而是正在发生的现实。",
-                pain1_title: "医疗AI普及",
-                pain1_desc: "辅助诊断已覆盖数千家医院，但误诊发生时，责任在医生、AI厂商、还是数据提供方？",
-                pain2_title: "自动驾驶上路",
-                pain2_desc: "L3级车辆已获准在公共道路行驶，一旦发生事故，是车主、车企、还是算法负责？",
-                pain3_title: "AI智能体渗透",
-                pain3_desc: "从客服到财务，AI自主执行任务时出现越权或错误，谁能回答“谁给了它权限”？",
-                pain4_title: "教育AI应用",
-                pain4_desc: "AI辅助教学、生成内容已进入课堂，当算法推荐偏差或错误内容时，教师、开发者还是学校该负责？",
-                core_title: "技术走在了制度前面",
-                core_desc: "社会正加速采纳AI，但责任链条的设计仍停留在工业时代。<br>每一次无法追溯的决策，都在透支社会对AI的信任。",
-                core_footer: "这不是某个行业的问题，是整个AI时代的共同挑战。",
-                core_stat: "71%的CIO表示，可追溯性是AI项目的必要条件。",
-                cta: "了解我们如何修复责任链条",
-                cta_note: "只讲问题，不讲工具",
-                footer_github: "GitHub",
-                footer_spec: "协议",
-                footer_cases: "案例"
+                home_version_tag: "HJS 责任协议 · 草案 0.1 版",
+                home_headline: "为 AI 系统绑定责任的<br>最小确定性结构",
+                diagram_actor: "行为者",
+                diagram_judgment: "判断",
+                diagram_delegation: "授权（可选）",
+                diagram_termination: "终止（可选）",
+                diagram_verification: "验证",
+                diagram_integrity: "完整性证明（可选）",
+                home_diagram_note1: "每个箭头定义一个结构不变量",
+                home_diagram_note2: "所有原语都是确定性的且可验证",
+                home_def_intro: "协议定义了四个原语：",
+                prim_judgment: "判断",
+                prim_judgment_must: "必须包含行为者和时间戳",
+                prim_judgment_may: "可包含上下文和授权引用",
+                prim_delegation: "授权",
+                prim_delegation_must: "必须引用一个先前的判断",
+                prim_delegation_may: "可定义范围和有效期",
+                prim_termination: "终止",
+                prim_termination_must: "必须引用一个有效的判断或授权",
+                prim_termination_def: "定义责任的结束",
+                prim_verification: "验证",
+                prim_verification_eval: "评估结构有效性、授权链、终止状态",
+                prim_verification_output: "输出是确定性的：有效或无效",
+                home_impl_p1: "HJS 提供托管的参考实现",
+                home_impl_p2: "该服务执行协议",
+                home_impl_p3: "你可以独立实现该协议",
+                home_impl_p4: "规范是开放且公开可用的",
+                home_btn_spec: "查看规范",
+                home_btn_record: "开始记录",
+                home_btn_verify: "验证记录"
             }
         };
 
         function switchLang(lang) {
-    localStorage.setItem('hjs_lang', lang);
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[lang] && translations[lang][key]) {
-                    if (el.tagName === 'TITLE') {
-                        el.textContent = translations[lang][key];
-                    } else {
-                        el.innerHTML = translations[lang][key];
-                    }
+                    el.innerHTML = translations[lang][key];
                 }
             });
-
-            const url = new URL(window.location);
-            url.searchParams.set('lang', lang);
-            window.history.replaceState({}, '', url);
-        }
-
-        (function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const lang = urlParams.get('lang') || 'en';
-            switchLang(lang);
+            // 更新下拉菜单选中状态
             const select = document.querySelector('select');
             if (select) select.value = lang;
+        }
+
+        // 初始化语言
+        (function() {
+            const savedLang = localStorage.getItem('hjs_lang');
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            const lang = savedLang || urlLang || 'en';
+            switchLang(lang);
         })();
     </script>
 </body>

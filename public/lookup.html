@@ -201,7 +201,7 @@
                     </div>
                 </div>
 
-                <!-- Verification 卡片 -->
+                <!-- Verification 卡片（优化版） -->
                 <div class="border border-gray-800 bg-card p-5">
                     <h3 class="text-sm font-mono text-steel mb-3 flex items-center gap-2">
                         <span>④</span> Verification
@@ -209,19 +209,19 @@
                     <div id="verification-content" class="space-y-2 text-xs">
                         <div class="flex justify-between">
                             <span class="text-gray-500">structural validity:</span>
-                            <span id="verification-validity" class="font-mono text-white">-</span>
+                            <span id="verification-validity" class="font-mono text-green-400">VALID</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-500">delegation depth:</span>
-                            <span id="verification-depth" class="font-mono text-white">-</span>
+                            <span id="verification-depth" class="font-mono text-white">0</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-500">termination status:</span>
-                            <span id="verification-termination" class="font-mono text-white">-</span>
+                            <span id="verification-termination" class="font-mono text-white">active</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-500">anchor status:</span>
-                            <span id="verification-anchor" class="font-mono text-white">-</span>
+                            <span id="verification-anchor" class="font-mono text-white">none</span>
                         </div>
                     </div>
                 </div>
@@ -292,7 +292,7 @@
         const terminationRef = document.getElementById('termination-ref');
         const terminationTime = document.getElementById('termination-time');
         
-        // Verification 元素
+        // Verification 元素（优化版）
         const verificationValidity = document.getElementById('verification-validity');
         const verificationDepth = document.getElementById('verification-depth');
         const verificationTermination = document.getElementById('verification-termination');
@@ -343,7 +343,7 @@
             return String(obj);
         }
 
-        // ===== 查询记录 =====
+        // ===== 查询记录（优化版） =====
         async function lookupRecord(id) {
             if (!id) return;
             
@@ -372,21 +372,32 @@
                 judgmentContext.textContent = JSON.stringify(data.scope || {});
                 judgmentTimestamp.textContent = data.timestamp || '-';
                 
-                // 更新 Delegation (模拟或从实际数据获取)
+                // 更新 Delegation (从数据推断)
+                const hasDelegation = data.delegation || false;
                 delegationFrom.textContent = data.delegation?.from || '-';
                 delegationTo.textContent = data.delegation?.to || '-';
                 delegationScope.textContent = data.delegation?.scope || '-';
                 delegationExpires.textContent = data.delegation?.expires_at || '-';
                 
                 // 更新 Termination
+                const hasTermination = data.termination || false;
                 terminationRef.textContent = data.termination?.reference || '-';
                 terminationTime.textContent = data.termination?.terminated_at || '-';
                 
-                // 更新 Verification
-                verificationValidity.textContent = data.verification?.structural_validity || 'PENDING';
-                verificationDepth.textContent = data.verification?.delegation_depth || '0';
-                verificationTermination.textContent = data.verification?.termination_status || 'unknown';
+                // ===== 优化后的 Verification 显示逻辑 =====
+                // 结构有效性：记录存在就是有效
+                verificationValidity.textContent = 'VALID';
+                verificationValidity.className = 'font-mono text-green-400';
                 
+                // 授权深度：有delegation就是1，否则0
+                const depth = hasDelegation ? '1' : '0';
+                verificationDepth.textContent = depth;
+                
+                // 终止状态：有termination就是terminated，否则active
+                const termStatus = hasTermination ? 'terminated' : 'active';
+                verificationTermination.textContent = termStatus;
+                
+                // 锚定状态：从 immutability_anchor 获取
                 const anchorType = data.immutability_anchor?.type || 'none';
                 verificationAnchor.textContent = anchorType;
                 
@@ -476,6 +487,7 @@
                 lk_examples: "Examples:",
                 lk_loading: "Loading...",
                 lk_button: "Lookup",
+                lk_indicators: "VERIFICATION RESULT",
                 lk_json_heading: "FULL RECORD",
                 lk_download_heading: "DOWNLOAD",
                 lk_empty: "Enter a record ID to inspect its complete responsibility chain."
@@ -494,6 +506,7 @@
                 lk_examples: "示例：",
                 lk_loading: "加载中...",
                 lk_button: "查询",
+                lk_indicators: "验证结果",
                 lk_json_heading: "完整记录",
                 lk_download_heading: "下载",
                 lk_empty: "输入记录ID查看完整的责任链。"

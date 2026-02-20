@@ -3,400 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="title">HJS · AI traceability layer</title>
+    <title>HJS · Hosted Protocol Execution</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
-        body { background: #0a0a0a; }
-        select {
-            background-color: transparent;
-            color: #9ca3af;
-            font-size: 0.75rem;  /* 与首页一致：text-xs */
-            cursor: pointer;
-        }
-        select:focus { outline: none; }
-        select option { background-color: #111827; color: white; }
-        html {
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        .section-divider {
-            width: 100%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #333, transparent);
-            margin: 3rem 0;
-        }
+        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
+        body { background: #0a0a0a; color: #e5e5e5; }
+        .text-steel { color: #3B4B5C; }
+        .border-steel { border-color: #3B4B5C; }
+        .bg-card { background: rgba(26, 26, 26, 0.5); }
+        .border-border { border-color: #1f1f1f; }
+        .text-muted-foreground { color: #9ca3af; }
+        .text-foreground { color: #e5e5e5; }
+        .hover\:border-steel:hover { border-color: #3B4B5C; }
+        .hover\:text-foreground:hover { color: #e5e5e5; }
     </style>
 </head>
-<body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
-    <div class="max-w-4xl mx-auto px-4 pt-20 pb-12">
-        <!-- 导航栏 - 与首页完全一致：text-base -->
-        <div class="flex justify-between items-center mb-16 text-base">
+<body>
+    <div class="mx-auto max-w-5xl px-6">
+        <!-- ===== 导航栏 ===== -->
+        <div class="flex justify-between items-center py-6 text-base">
             <div class="text-white font-semibold text-lg">HJS</div>
             <div class="flex gap-8 md:gap-10 text-gray-400">
-                <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">首页</a>
-                <a href="/product.html" class="text-white hover:text-teal-400 transition" data-i18n="nav_product">产品</a>
-                <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">开发者</a>
-                <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">控制台</a>
-                <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">查询</a>
+                <a href="/" class="hover:text-teal-400 transition">Home</a>
+                <a href="/product.html" class="text-white">Product</a>
+                <a href="/developers.html" class="hover:text-teal-400 transition">Developers</a>
+                <a href="/console.html" class="hover:text-teal-400 transition">Console</a>
+                <a href="/lookup.html" class="hover:text-teal-400 transition">Lookup</a>
+                <a href="/governance.html" class="hover:text-teal-400 transition">Governance</a>
             </div>
-            <select onchange="switchLang(this.value)">
+            <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
                 <option value="en">EN</option>
-                <option value="zh" selected>中文</option>
+                <option value="zh">中文</option>
             </select>
         </div>
 
-        <!-- 产品定位 - 略大一点，但不过分 -->
-        <div class="mb-12">
-            <p class="text-base text-gray-300 max-w-2xl leading-relaxed" data-i18n="product_tagline">
-                为AI决策提供可验证的追溯层 · 修复责任链条，保护隐私
+        <!-- Header -->
+        <section class="py-24">
+            <p class="font-mono text-xs text-gray-500" data-i18n="prod_version_tag">
+                HJS Responsibility Protocol · Version 0.1 Draft
             </p>
-        </div>
+            <h1 class="mt-4 text-3xl font-light leading-tight tracking-tight text-white md:text-4xl" data-i18n="prod_title">
+                Hosted Protocol Execution
+            </h1>
+            <p class="mt-6 max-w-2xl text-sm leading-relaxed text-gray-400" data-i18n="prod_subtitle">
+                This service executes the HJS Responsibility Protocol.
+            </p>
+        </section>
 
-        <!-- 01 核心流程 - 模块标题使用首页的"THE ACCOUNTABILITY GAP"样式 -->
-        <div class="mb-16">
-            <div class="flex items-center gap-3 mb-6">
-                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section1_prefix">01</span>
-                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section1_title">核心流程</span>
-                <div class="flex-1 h-px bg-gray-800"></div>
-            </div>
-            
-            <div class="grid md:grid-cols-3 gap-6">
-                <!-- 步骤1 -->
-                <div>
-                    <span class="text-2xl text-teal-400 block mb-3">①</span>
-                    <h3 class="text-base font-medium text-white mb-2" data-i18n="step1_title">记录</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed" data-i18n="step1_desc">通过API记录谁、什么、何时、上下文。</p>
-                </div>
-                <!-- 步骤2 -->
-                <div>
-                    <span class="text-2xl text-teal-400 block mb-3">②</span>
-                    <h3 class="text-base font-medium text-white mb-2" data-i18n="step2_title">锚定（可选）</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed" data-i18n="step2_desc">锚定到比特币区块链，生成不可篡改证明。</p>
-                </div>
-                <!-- 步骤3 -->
-                <div>
-                    <span class="text-2xl text-teal-400 block mb-3">③</span>
-                    <h3 class="text-base font-medium text-white mb-2" data-i18n="step3_title">验证</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed" data-i18n="step3_desc">独立验证记录的完整性。</p>
-                </div>
-            </div>
-        </div>
+        <hr class="border-gray-800">
 
-        <!-- 视觉分隔线 -->
-        <div class="section-divider"></div>
-
-        <!-- 02 核心功能 - 模块标题 -->
-        <div class="mb-16">
-            <div class="flex items-center gap-3 mb-6">
-                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section2_prefix">02</span>
-                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section2_title">核心功能</span>
-                <div class="flex-1 h-px bg-gray-800"></div>
-            </div>
-            
-            <div class="grid md:grid-cols-2 gap-5">
-                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
-                    <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="feature1_title">🔍 公开查询</h3>
-                    <p class="text-sm text-gray-400" data-i18n="feature1_desc">任何人都可通过ID检索已锚定的事件。</p>
-                </div>
-                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
-                    <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="feature2_title">📊 控制台管理</h3>
-                    <p class="text-sm text-gray-400" data-i18n="feature2_desc">登录后统一管理所有记录。</p>
-                </div>
-                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
-                    <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="feature3_title">📄 导出格式</h3>
-                    <p class="text-sm text-gray-400" data-i18n="feature3_desc">JSON、PDF（含二维码）、OTS证明。</p>
-                </div>
-                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
-                    <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="feature4_title">🔐 独立验证</h3>
-                    <p class="text-sm text-gray-400" data-i18n="feature4_desc">使用OTS客户端或验证页面。</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 视觉分隔线 -->
-        <div class="section-divider"></div>
-
-        <!-- 03 价值 - 模块标题 -->
-        <div class="mb-16">
-            <div class="flex items-center gap-3 mb-6">
-                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section3_prefix">03</span>
-                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section3_title">价值</span>
-                <div class="flex-1 h-px bg-gray-800"></div>
-            </div>
-            
-            <div class="grid md:grid-cols-2 gap-5">
-                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
-                    <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="value1_title">⚖️ 厘清责任</h3>
-                    <p class="text-sm text-gray-400" data-i18n="value1_desc">争议中的无可辩驳证据。</p>
-                </div>
-                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
-                    <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="value2_title">✅ 合规证据</h3>
-                    <p class="text-sm text-gray-400" data-i18n="value2_desc">AI监管的审计材料。</p>
-                </div>
-                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
-                    <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="value3_title">⚖️ 法律证据</h3>
-                    <p class="text-sm text-gray-400" data-i18n="value3_desc">多司法管辖区认可。</p>
-                </div>
-                <div class="p-5 border border-gray-800 rounded-lg bg-gray-900/30">
-                    <h3 class="text-base font-medium text-teal-400 mb-2" data-i18n="value4_title">🔐 建立信任</h3>
-                    <p class="text-sm text-gray-400" data-i18n="value4_desc">透明可验证的决策。</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 视觉分隔线 -->
-        <div class="section-divider"></div>
-
-        <!-- 04 隐私与安全 - 模块标题 -->
-        <div class="mb-16">
-            <div class="flex items-center gap-3 mb-6">
-                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section4_prefix">04</span>
-                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section4_title">隐私与安全</span>
-                <div class="flex-1 h-px bg-gray-800"></div>
-            </div>
-            
-            <div class="border border-gray-800 rounded-lg p-6 bg-gray-900/20">
-                <h3 class="text-base font-medium text-teal-400 mb-4" data-i18n="privacy_title">隐私优先设计</h3>
-                <div class="grid md:grid-cols-3 gap-4">
-                    <div>
-                        <p class="text-sm font-medium text-white mb-1" data-i18n="privacy1_title">最小化数据</p>
-                        <p class="text-xs text-gray-400" data-i18n="privacy1_desc">仅收集必要字段</p>
+        <!-- Endpoint Cards -->
+        <section class="py-24">
+            <div class="space-y-6">
+                <!-- Record Judgment -->
+                <div class="border border-gray-800 bg-[#1a1a1a]/50 p-6">
+                    <div class="flex flex-wrap items-baseline gap-3">
+                        <h3 class="font-mono text-sm font-medium text-white" data-i18n="prod_ep1_title">Record Judgment</h3>
+                        <code class="border border-steel/30 bg-black/50 px-2 py-0.5 font-mono text-xs text-steel">POST /judgment</code>
                     </div>
-                    <div>
-                        <p class="text-sm font-medium text-white mb-1" data-i18n="privacy2_title">你始终掌控</p>
-                        <p class="text-xs text-gray-400" data-i18n="privacy2_desc">可删除、导出、选择锚定</p>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-white mb-1" data-i18n="privacy3_title">无二次利用</p>
-                        <p class="text-xs text-gray-400" data-i18n="privacy3_desc">绝不售卖或分析</p>
+                    <p class="mt-4 text-sm leading-relaxed text-gray-400" data-i18n="prod_ep1_desc">A Judgment binds:</p>
+                    <ul class="mt-3 space-y-1 pl-1">
+                        <li class="flex items-baseline gap-2 text-sm text-gray-400">
+                            <span class="text-steel">·</span>
+                            <span data-i18n="prod_ep1_bind1">actor identifier</span>
+                        </li>
+                        <li class="flex items-baseline gap-2 text-sm text-gray-400">
+                            <span class="text-steel">·</span>
+                            <span data-i18n="prod_ep1_bind2">decision content</span>
+                        </li>
+                        <li class="flex items-baseline gap-2 text-sm text-gray-400">
+                            <span class="text-steel">·</span>
+                            <span data-i18n="prod_ep1_bind3">contextual metadata</span>
+                        </li>
+                        <li class="flex items-baseline gap-2 text-sm text-gray-400">
+                            <span class="text-steel">·</span>
+                            <span data-i18n="prod_ep1_bind4">timestamp</span>
+                        </li>
+                    </ul>
+                    <p class="mt-4 border-l-2 border-gray-700 pl-4 font-mono text-xs leading-relaxed text-gray-400" data-i18n="prod_ep1_rule">
+                        A Judgment MUST include actor and timestamp.
+                    </p>
+                    <div class="mt-5">
+                        <button class="border border-gray-700 px-4 py-1.5 text-xs text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="prod_try_it">View Example</button>
                     </div>
                 </div>
-                <p class="text-xs text-gray-500 mt-4 pt-3 border-t border-gray-800" data-i18n="privacy_footnote">
-                    TLS 1.3 · AES-256 · 审计日志 · 可配置保留期
-                </p>
-            </div>
-        </div>
 
-        <!-- 视觉分隔线 -->
-        <div class="section-divider"></div>
+                <!-- Bind Delegation -->
+                <div class="border border-gray-800 bg-[#1a1a1a]/50 p-6">
+                    <div class="flex flex-wrap items-baseline gap-3">
+                        <h3 class="font-mono text-sm font-medium text-white" data-i18n="prod_ep2_title">Bind Delegation</h3>
+                        <code class="border border-steel/30 bg-black/50 px-2 py-0.5 font-mono text-xs text-steel">POST /delegation</code>
+                    </div>
+                    <p class="mt-4 text-sm leading-relaxed text-gray-400" data-i18n="prod_ep2_desc">Delegation defines authority transfer.</p>
+                    <p class="mt-4 border-l-2 border-gray-700 pl-4 font-mono text-xs leading-relaxed text-gray-400" data-i18n="prod_ep2_rule">
+                        A Delegation MUST reference a prior Judgment.
+                    </p>
+                    <p class="mt-1 border-l-2 border-gray-700 pl-4 font-mono text-xs leading-relaxed text-gray-400" data-i18n="prod_ep2_rule2">
+                        Delegation MAY define scope and expiry.
+                    </p>
+                    <div class="mt-5">
+                        <button class="border border-gray-700 px-4 py-1.5 text-xs text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="prod_try_it">View Example</button>
+                    </div>
+                </div>
 
-        <!-- 05 协议与集成 - 模块标题 -->
-        <div class="mb-16">
-            <div class="flex items-center gap-3 mb-6">
-                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section5_prefix">05</span>
-                <span class="text-xs text-teal-500/60 uppercase tracking-wider" data-i18n="section5_title">协议与集成</span>
-                <div class="flex-1 h-px bg-gray-800"></div>
-            </div>
-            
-            <!-- 协议中立 - 三列 -->
-            <div class="grid md:grid-cols-3 gap-4 mb-6">
-                <div class="p-4 border border-gray-800 rounded-lg bg-gray-900/30">
-                    <h3 class="text-sm font-medium text-teal-400 mb-1" data-i18n="neutral1_title">开源</h3>
-                    <p class="text-xs text-gray-400" data-i18n="neutral1_desc">CC0/MIT，可审查可构建</p>
+                <!-- Terminate Responsibility -->
+                <div class="border border-gray-800 bg-[#1a1a1a]/50 p-6">
+                    <div class="flex flex-wrap items-baseline gap-3">
+                        <h3 class="font-mono text-sm font-medium text-white" data-i18n="prod_ep3_title">Terminate Responsibility</h3>
+                        <code class="border border-steel/30 bg-black/50 px-2 py-0.5 font-mono text-xs text-steel">POST /termination</code>
+                    </div>
+                    <p class="mt-4 text-sm leading-relaxed text-gray-400" data-i18n="prod_ep3_desc">Termination defines the end of responsibility.</p>
+                    <p class="mt-4 border-l-2 border-gray-700 pl-4 font-mono text-xs leading-relaxed text-gray-400" data-i18n="prod_ep3_rule">
+                        Termination MUST reference a valid Judgment or Delegation.
+                    </p>
+                    <div class="mt-5">
+                        <button class="border border-gray-700 px-4 py-1.5 text-xs text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="prod_try_it">View Example</button>
+                    </div>
                 </div>
-                <div class="p-4 border border-gray-800 rounded-lg bg-gray-900/30">
-                    <h3 class="text-sm font-medium text-teal-400 mb-1" data-i18n="neutral2_title">基金会治理</h3>
-                    <p class="text-xs text-gray-400" data-i18n="neutral2_desc">新加坡CLG基金会持有</p>
-                </div>
-                <div class="p-4 border border-gray-800 rounded-lg bg-gray-900/30">
-                    <h3 class="text-sm font-medium text-teal-400 mb-1" data-i18n="neutral3_title">可选锚定</h3>
-                    <p class="text-xs text-gray-400" data-i18n="neutral3_desc">你决定是否上链</p>
-                </div>
-            </div>
-            
-            <!-- 集成方式 - 两列 -->
-            <div class="grid md:grid-cols-2 gap-4 mb-6">
-                <div class="p-4 border border-gray-800 rounded-lg bg-gray-900/30">
-                    <h3 class="text-sm font-medium text-teal-400 mb-1" data-i18n="integrate_api_title">🔧 直接API</h3>
-                    <p class="text-xs text-gray-400" data-i18n="integrate_api_desc">任何语言，HTTP请求</p>
-                </div>
-                <div class="p-4 border border-gray-800 rounded-lg bg-gray-900/30">
-                    <h3 class="text-sm font-medium text-teal-400 mb-1" data-i18n="integrate_sdk_title">📦 SDK</h3>
-                    <p class="text-xs text-gray-400" data-i18n="integrate_sdk_desc">Python/Node.js，一行安装</p>
-                </div>
-            </div>
-            
-            <!-- 快速开始 - 简洁 -->
-            <div class="border border-gray-800 rounded-lg p-4 bg-gray-900/20">
-                <p class="text-sm font-medium text-white mb-2" data-i18n="quick_start_title">快速开始</p>
-                <ol class="list-decimal list-inside text-xs text-gray-400 space-y-0.5">
-                    <li data-i18n="quick_start1">控制台生成API密钥</li>
-                    <li data-i18n="quick_start2">选择接入方式</li>
-                    <li data-i18n="quick_start3">几分钟创建第一条记录</li>
-                </ol>
-            </div>
-        </div>
 
-        <!-- 底部 - 与首页一致 -->
-        <div class="text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-10">
-            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-3" data-i18n="footer_github">GitHub</a>
+                <!-- Verify Record -->
+                <div class="border border-gray-800 bg-[#1a1a1a]/50 p-6">
+                    <div class="flex flex-wrap items-baseline gap-3">
+                        <h3 class="font-mono text-sm font-medium text-white" data-i18n="prod_ep4_title">Verify Record</h3>
+                        <code class="border border-steel/30 bg-black/50 px-2 py-0.5 font-mono text-xs text-steel">GET /verify/{id}</code>
+                    </div>
+                    <p class="mt-4 text-sm leading-relaxed text-gray-400" data-i18n="prod_ep4_desc">Verification is deterministic.</p>
+                    <p class="mt-4 border-l-2 border-gray-700 pl-4 font-mono text-xs leading-relaxed text-gray-400" data-i18n="prod_ep4_rule">
+                        Integrity proof MAY be anchored to a public network.
+                    </p>
+                    <p class="mt-1 border-l-2 border-gray-700 pl-4 font-mono text-xs leading-relaxed text-gray-400" data-i18n="prod_ep4_rule2">
+                        Verification does not require trust in this service.
+                    </p>
+                    <div class="mt-5">
+                        <button class="border border-gray-700 px-4 py-1.5 text-xs text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="prod_try_it">View Example</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-gray-800">
+
+        <!-- Performance & SLA + Pricing -->
+        <section class="py-24">
+            <div class="grid gap-px overflow-hidden border border-gray-800 bg-gray-800 sm:grid-cols-2">
+                <!-- Performance & SLA -->
+                <div class="flex flex-col gap-4 bg-[#1a1a1a]/50 p-6">
+                    <h3 class="text-xs font-medium tracking-widest text-gray-400 uppercase" data-i18n="prod_sla_heading">PERFORMANCE & SLA</h3>
+                    <ul class="space-y-2">
+                        <li class="text-sm text-gray-400">
+                            <span class="font-mono text-white">99.9%</span> <span data-i18n="prod_sla_uptime">uptime for judgment recording</span>
+                        </li>
+                        <li class="text-sm text-gray-400">
+                            {"< "}<span class="font-mono text-white">100ms</span> <span data-i18n="prod_sla_latency">response time (p95)</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Pricing -->
+                <div class="flex flex-col gap-4 bg-[#1a1a1a]/50 p-6">
+                    <h3 class="text-xs font-medium tracking-widest text-gray-400 uppercase" data-i18n="prod_pricing_heading">PRICING</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li>
+                            <span class="font-mono text-white">Free</span> <span data-i18n="prod_pricing_free">1,000 judgments/month</span>
+                        </li>
+                        <li>
+                            <span class="font-mono text-white">$0.001</span> <span data-i18n="prod_pricing_paygo">per additional judgment</span>
+                        </li>
+                        <li>
+                            <span class="font-mono text-white">Enterprise</span> <span data-i18n="prod_pricing_enterprise">custom (contact)</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 底部 ===== -->
+        <div class="text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-12">
+            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
             <span class="text-gray-700">·</span>
-            <a href="/spec/README.md" class="hover:text-gray-400 mx-3" data-i18n="footer_spec">协议</a>
+            <a href="/spec/README.md" class="hover:text-gray-400 mx-2">Spec</a>
             <span class="text-gray-700">·</span>
-            <a href="/cases.html" class="hover:text-gray-400 mx-3" data-i18n="footer_cases">案例</a>
+            <a href="/cases.html" class="hover:text-gray-400 mx-2">Cases</a>
         </div>
     </div>
 
+    <!-- ===== 全局语言层 ===== -->
+    <script src="/js/lang.js"></script>
     <script>
         const translations = {
             en: {
-                title: "HJS · AI traceability layer",
-                nav_home: "Home",
-                nav_product: "Product",
-                nav_developers: "Developers",
-                nav_console: "Console",
-                nav_lookup: "Lookup",
-                product_tagline: "A verifiable traceability layer for AI decisions · Fix accountability, protect privacy",
-                section1_prefix: "01",
-                section1_title: "CORE PROCESS",
-                section2_prefix: "02",
-                section2_title: "KEY FEATURES",
-                section3_prefix: "03",
-                section3_title: "VALUE",
-                section4_prefix: "04",
-                section4_title: "PRIVACY & SECURITY",
-                section5_prefix: "05",
-                section5_title: "PROTOCOL & INTEGRATION",
-                step1_title: "Record",
-                step1_desc: "Log who, what, when, context via API.",
-                step2_title: "Anchor (optional)",
-                step2_desc: "Anchor to Bitcoin blockchain for immutable proof.",
-                step3_title: "Verify",
-                step3_desc: "Independently verify record integrity.",
-                feature1_title: "🔍 Public lookup",
-                feature1_desc: "Anyone can retrieve anchored events by ID.",
-                feature2_title: "📊 Console management",
-                feature2_desc: "Manage all records after login.",
-                feature3_title: "📄 Export formats",
-                feature3_desc: "JSON, PDF (QR code), OTS proof.",
-                feature4_title: "🔐 Independent verification",
-                feature4_desc: "OTS client or verification page.",
-                value1_title: "⚖️ Clarify responsibility",
-                value1_desc: "Irrefutable evidence in disputes.",
-                value2_title: "✅ Compliance evidence",
-                value2_desc: "Auditable for AI regulation.",
-                value3_title: "⚖️ Legal evidence",
-                value3_desc: "Recognized in multiple jurisdictions.",
-                value4_title: "🔐 Build trust",
-                value4_desc: "Transparent, verifiable decisions.",
-                privacy_title: "Privacy by design",
-                privacy1_title: "Minimal data",
-                privacy1_desc: "Only essential fields",
-                privacy2_title: "You're in control",
-                privacy2_desc: "Delete, export, choose anchoring",
-                privacy3_title: "No secondary use",
-                privacy3_desc: "Never sold or analyzed",
-                privacy_footnote: "TLS 1.3 · AES-256 · Audit logs · Configurable retention",
-                neutral1_title: "Open source",
-                neutral1_desc: "CC0/MIT, auditable",
-                neutral2_title: "Foundation-governed",
-                neutral2_desc: "Owned by Singapore CLG",
-                neutral3_title: "Optional anchoring",
-                neutral3_desc: "You decide",
-                integrate_api_title: "🔧 Direct API",
-                integrate_api_desc: "Any language, HTTP requests",
-                integrate_sdk_title: "📦 SDK",
-                integrate_sdk_desc: "Python/Node.js, one-line install",
-                quick_start_title: "Quick start",
-                quick_start1: "Generate API key in Console",
-                quick_start2: "Choose integration method",
-                quick_start3: "Create first record in minutes",
-                footer_github: "GitHub",
-                footer_spec: "Spec",
-                footer_cases: "Cases"
+                prod_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
+                prod_title: "Hosted Protocol Execution",
+                prod_subtitle: "This service executes the HJS Responsibility Protocol.",
+                prod_ep1_title: "Record Judgment",
+                prod_ep1_desc: "A Judgment binds:",
+                prod_ep1_bind1: "actor identifier",
+                prod_ep1_bind2: "decision content",
+                prod_ep1_bind3: "contextual metadata",
+                prod_ep1_bind4: "timestamp",
+                prod_ep1_rule: "A Judgment MUST include actor and timestamp.",
+                prod_ep2_title: "Bind Delegation",
+                prod_ep2_desc: "Delegation defines authority transfer.",
+                prod_ep2_rule: "A Delegation MUST reference a prior Judgment.",
+                prod_ep2_rule2: "Delegation MAY define scope and expiry.",
+                prod_ep3_title: "Terminate Responsibility",
+                prod_ep3_desc: "Termination defines the end of responsibility.",
+                prod_ep3_rule: "Termination MUST reference a valid Judgment or Delegation.",
+                prod_ep4_title: "Verify Record",
+                prod_ep4_desc: "Verification is deterministic.",
+                prod_ep4_rule: "Integrity proof MAY be anchored to a public network.",
+                prod_ep4_rule2: "Verification does not require trust in this service.",
+                prod_try_it: "View Example",
+                prod_sla_heading: "PERFORMANCE & SLA",
+                prod_sla_uptime: "uptime for judgment recording",
+                prod_sla_latency: "response time (p95)",
+                prod_pricing_heading: "PRICING",
+                prod_pricing_free: "1,000 judgments/month",
+                prod_pricing_paygo: "per additional judgment",
+                prod_pricing_enterprise: "custom (contact)"
             },
             zh: {
-                title: "HJS · AI 可追溯层",
-                nav_home: "首页",
-                nav_product: "产品",
-                nav_developers: "开发者",
-                nav_console: "控制台",
-                nav_lookup: "查询",
-                product_tagline: "为AI决策提供可验证的追溯层 · 修复责任链条，保护隐私",
-                section1_prefix: "01",
-                section1_title: "核心流程",
-                section2_prefix: "02",
-                section2_title: "核心功能",
-                section3_prefix: "03",
-                section3_title: "价值主张",
-                section4_prefix: "04",
-                section4_title: "隐私与安全",
-                section5_prefix: "05",
-                section5_title: "协议与集成",
-                step1_title: "记录",
-                step1_desc: "通过API记录谁、什么、何时、上下文。",
-                step2_title: "锚定（可选）",
-                step2_desc: "锚定到比特币区块链，生成不可篡改证明。",
-                step3_title: "验证",
-                step3_desc: "独立验证记录的完整性。",
-                feature1_title: "🔍 公开查询",
-                feature1_desc: "任何人都可通过ID检索已锚定的事件。",
-                feature2_title: "📊 控制台管理",
-                feature2_desc: "登录后统一管理所有记录。",
-                feature3_title: "📄 导出格式",
-                feature3_desc: "JSON、PDF（含二维码）、OTS证明。",
-                feature4_title: "🔐 独立验证",
-                feature4_desc: "使用OTS客户端或验证页面。",
-                value1_title: "⚖️ 厘清责任",
-                value1_desc: "争议中的无可辩驳证据。",
-                value2_title: "✅ 合规证据",
-                value2_desc: "AI监管的审计材料。",
-                value3_title: "⚖️ 法律证据",
-                value3_desc: "多司法管辖区认可。",
-                value4_title: "🔐 建立信任",
-                value4_desc: "透明可验证的决策。",
-                privacy_title: "隐私优先设计",
-                privacy1_title: "最小化数据",
-                privacy1_desc: "仅收集必要字段",
-                privacy2_title: "你始终掌控",
-                privacy2_desc: "可删除、导出、选择锚定",
-                privacy3_title: "无二次利用",
-                privacy3_desc: "绝不售卖或分析",
-                privacy_footnote: "TLS 1.3 · AES-256 · 审计日志 · 可配置保留期",
-                neutral1_title: "开源",
-                neutral1_desc: "CC0/MIT，可审查可构建",
-                neutral2_title: "基金会治理",
-                neutral2_desc: "新加坡CLG基金会持有",
-                neutral3_title: "可选锚定",
-                neutral3_desc: "你决定是否上链",
-                integrate_api_title: "🔧 直接API",
-                integrate_api_desc: "任何语言，HTTP请求",
-                integrate_sdk_title: "📦 SDK",
-                integrate_sdk_desc: "Python/Node.js，一行安装",
-                quick_start_title: "快速开始",
-                quick_start1: "控制台生成API密钥",
-                quick_start2: "选择接入方式",
-                quick_start3: "几分钟创建第一条记录",
-                footer_github: "GitHub",
-                footer_spec: "协议",
-                footer_cases: "案例"
+                prod_version_tag: "HJS 责任协议 · 草案 0.1 版",
+                prod_title: "托管协议执行",
+                prod_subtitle: "此服务执行 HJS 责任协议。",
+                prod_ep1_title: "记录判断",
+                prod_ep1_desc: "判断绑定：",
+                prod_ep1_bind1: "行为者标识",
+                prod_ep1_bind2: "决策内容",
+                prod_ep1_bind3: "上下文元数据",
+                prod_ep1_bind4: "时间戳",
+                prod_ep1_rule: "判断必须包含行为者和时间戳。",
+                prod_ep2_title: "绑定授权",
+                prod_ep2_desc: "授权定义权限转移。",
+                prod_ep2_rule: "授权必须引用一个先前的判断。",
+                prod_ep2_rule2: "授权可定义范围和有效期。",
+                prod_ep3_title: "终止责任",
+                prod_ep3_desc: "终止定义责任的结束。",
+                prod_ep3_rule: "终止必须引用一个有效的判断或授权。",
+                prod_ep4_title: "验证记录",
+                prod_ep4_desc: "验证是确定性的。",
+                prod_ep4_rule: "完整性证明可锚定到公共网络。",
+                prod_ep4_rule2: "验证不依赖对此服务的信任。",
+                prod_try_it: "查看示例",
+                prod_sla_heading: "性能与服务等级",
+                prod_sla_uptime: "记录判断可用性",
+                prod_sla_latency: "响应时间 (p95)",
+                prod_pricing_heading: "定价",
+                prod_pricing_free: "每月 1000 条免费",
+                prod_pricing_paygo: "每额外条 $0.001",
+                prod_pricing_enterprise: "企业版（联系）"
             }
         };
 
         function switchLang(lang) {
-    localStorage.setItem('hjs_lang', lang);
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[lang] && translations[lang][key]) {
-                    if (el.tagName === 'TITLE') {
-                        el.textContent = translations[lang][key];
-                    } else {
-                        el.innerHTML = translations[lang][key];
-                    }
+                    el.innerHTML = translations[lang][key];
                 }
             });
-            const url = new URL(window.location);
-            url.searchParams.set('lang', lang);
-            window.history.replaceState({}, '', url);
             const select = document.querySelector('select');
             if (select) select.value = lang;
         }
 
         (function() {
+            const savedLang = localStorage.getItem('hjs_lang');
             const urlParams = new URLSearchParams(window.location.search);
-            const lang = urlParams.get('lang') || 'zh';
+            const urlLang = urlParams.get('lang');
+            const lang = savedLang || urlLang || 'en';
             switchLang(lang);
         })();
     </script>

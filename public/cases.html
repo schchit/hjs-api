@@ -243,5 +243,27 @@
 
         updateLanguage(currentLang);
     </script>
+<script src="/js/lang.js"></script>
 </body>
 </html>
+<script>
+// 标准语言切换函数
+function switchLang(lang) {
+    // 这里应该由每个页面自己的 translations 对象驱动
+    // 如果页面有自己的 translations，会覆盖这个函数
+    console.log('Language switched to:', lang);
+    
+    // 更新下拉菜单
+    const selects = document.querySelectorAll('select[onchange*="switchLang"]');
+    selects.forEach(select => select.value = lang);
+    
+    // 更新 HTML lang 属性
+    document.documentElement.lang = lang;
+}
+
+// 确保 translations 对象存在
+window.translations = window.translations || {
+    en: {},
+    zh: {}
+};
+</script>

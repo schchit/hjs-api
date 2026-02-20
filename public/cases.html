@@ -3,265 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HJS · 如果没有追溯</title>
+    <title>HJS · 案例</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
-        body { background: #0a0a0a; }
-        .glow { text-shadow: 0 0 20px rgba(94, 224, 192, 0.5); }
-        .case-card { transition: all 0.2s; }
-        .case-card:hover { border-color: #5ee0c0; }
+        .font-mono, code, pre { font-family: 'JetBrains Mono', monospace !important; }
+        body { background: #0a0a0a; color: #e5e5e5; }
         .text-steel { color: #3B4B5C; }
+        .border-steel { border-color: #3B4B5C; }
+        .bg-steel\/10 { background-color: rgba(59, 75, 92, 0.1); }
+        .hover\:bg-steel\/20:hover { background-color: rgba(59, 75, 92, 0.2); }
+        .bg-card { background: rgba(26, 26, 26, 0.5); }
+        .border-border { border-color: #1f1f1f; }
+        .text-muted-foreground { color: #9ca3af; }
+        .text-foreground { color: #e5e5e5; }
+        .bg-background { background: #0a0a0a; }
+        .hover\:border-steel:hover { border-color: #3B4B5C; }
+        .hover\:text-foreground:hover { color: #e5e5e5; }
+        
+        /* 卡片样式 */
+        .case-card {
+            transition: all 0.2s;
+            border: 1px solid #1f1f1f;
+            background: rgba(26, 26, 26, 0.3);
+            border-radius: 0.5rem;
+        }
+        .case-card:hover {
+            border-color: #3B4B5C;
+            background: rgba(26, 26, 26, 0.5);
+        }
     </style>
 </head>
-<body class="bg-[#0a0a0a] text-[#e5e5e5] antialiased">
-    <div class="max-w-4xl mx-auto px-4 py-12">
-        <!-- 语言切换和返回链接 -->
-        <div class="flex justify-between items-center mb-8">
-            <a href="/" class="text-sm text-teal-400 hover:text-teal-300" data-i18n="back">← 返回首页</a>
-            <div class="flex gap-2">
-                <a href="?lang=zh" class="lang-btn text-sm px-2 py-1 rounded bg-teal-600 text-white">中文</a>
-                <a href="?lang=en" class="lang-btn text-sm px-2 py-1 rounded bg-gray-800 text-gray-300">English</a>
+<body>
+    <div class="max-w-5xl mx-auto px-6 py-12">
+        <!-- ===== 导航栏 ===== -->
+        <div class="flex justify-between items-center py-6 text-base">
+            <div class="text-white font-semibold text-lg">HJS</div>
+            <div class="flex gap-8 md:gap-10 text-gray-400">
+                <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
+                <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
+                <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
+                <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
+                <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
+                <a href="/billing.html" class="hover:text-teal-400 transition" data-i18n="nav_billing">Billing</a>
+                <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
             </div>
+            <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
+                <option value="en">EN</option>
+                <option value="zh">中文</option>
+            </select>
         </div>
 
-        <!-- 标题 -->
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-white mb-3" data-i18n="title">当技术向前，责任不能落后</h1>
-            <p class="text-gray-400 max-w-2xl mx-auto" data-i18n="subtitle">
-                每一次创新都伴随着责任的拷问。可追溯的记录让技术进步更值得信任。
+        <!-- 页面标题 -->
+        <section class="py-16">
+            <p class="font-mono text-xs text-gray-500 mb-4" data-i18n="cases_version_tag">
+                HJS Responsibility Protocol · Version 0.1 Draft
             </p>
-        </div>
+            <h1 class="text-3xl font-light leading-tight tracking-tight text-white md:text-4xl max-w-3xl" data-i18n="cases_title">
+                When Technology Advances, Accountability Can't Lag Behind
+            </h1>
+            <p class="mt-4 max-w-2xl text-sm leading-relaxed text-gray-400" data-i18n="cases_subtitle">
+                Every innovation brings accountability questions. Traceable records make progress trustworthy.
+            </p>
+        </section>
 
-        <!-- 案例网格 -->
-        <div class="grid md:grid-cols-2 gap-6 mb-12">
-            
-            <!-- 案例 1：医疗AI辅助诊断（德国） -->
-            <div class="case-card p-6 rounded-xl border border-gray-800 bg-gray-900/50">
-                <div class="flex items-start gap-3 mb-4">
-                    <span class="text-2xl">🇪🇺</span>
-                    <h2 class="text-xl font-semibold text-white" data-i18n="case1_title">医疗AI辅助诊断</h2>
+        <hr class="border-gray-800">
+
+        <!-- 案例网格 (2x2) -->
+        <section class="py-16">
+            <div class="grid md:grid-cols-2 gap-6">
+                
+                <!-- 案例 1：医疗AI辅助诊断 -->
+                <div class="case-card p-6">
+                    <h2 class="text-lg font-light text-white mb-3" data-i18n="case1_title">Medical AI Assistance</h2>
+                    <p class="text-sm text-gray-400 mb-4 leading-relaxed" data-i18n="case1_desc">
+                        A German hospital uses AI to screen thousands of medical images annually, increasing early cancer detection by 30%.
+                    </p>
+                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-gray-700 mb-3">
+                        <p class="text-xs text-gray-500 mb-1" data-i18n="without_label">❌ Without records</p>
+                        <p class="text-sm text-gray-400" data-i18n="case1_without">When misdiagnosis occurs, there's no trace of what the AI saw or why. Hospitals face trust crises, doctors hesitate to use AI.</p>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-steel">
+                        <p class="text-xs text-steel mb-1" data-i18n="with_label">✅ With HJS</p>
+                        <p class="text-sm text-gray-400" data-i18n="case1_with">Every diagnosis forms a complete responsibility chain: Judgment (AI output with confidence), Delegation (hospital authorization), Verification (any party can verify records).</p>
+                    </div>
                 </div>
-                <p class="text-gray-300 text-sm mb-3 leading-relaxed" data-i18n="case1_desc">
-                    德国一家医院使用AI辅助诊断系统，每年帮助医生筛查数万份医学影像，早期发现癌症率提升30%。
-                </p>
-                <div class="bg-gray-800/50 p-3 rounded-lg mb-3">
-                    <p class="text-xs text-gray-400 mb-1" data-i18n="without_label">❌ 如果没有记录</p>
-                    <p class="text-sm text-gray-300" data-i18n="case1_without">当出现漏诊时，无法追溯AI当时看到了什么、为什么给出那个判断。医院面临信任危机，医生不敢采纳AI建议。</p>
+
+                <!-- 案例 2：护理机器人决策 -->
+                <div class="case-card p-6">
+                    <h2 class="text-lg font-light text-white mb-3" data-i18n="case2_title">Care Robot Decisions</h2>
+                    <p class="text-sm text-gray-400 mb-4 leading-relaxed" data-i18n="case2_desc">
+                        A Japanese nursing home uses AI robots to assist elderly with waking, medication reminders, and fall detection. Thousands of decisions daily.
+                    </p>
+                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-gray-700 mb-3">
+                        <p class="text-xs text-gray-500 mb-1" data-i18n="without_label">❌ Without records</p>
+                        <p class="text-sm text-gray-400" data-i18n="case2_without">When robots misjudge, no trace of decision logic exists. Families worry, facilities face lawsuits.</p>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-steel">
+                        <p class="text-xs text-steel mb-1" data-i18n="with_label">✅ With HJS</p>
+                        <p class="text-sm text-gray-400" data-i18n="case2_with">Every decision becomes auditable: Judgment (triggers and logic), Termination (when human overrides), Verification (families verify anytime).</p>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-3" data-i18n="case2_source">— Japan MHLW Pilot Project, 2025</p>
                 </div>
-                <div class="bg-gray-800/50 p-3 rounded-lg">
-                    <p class="text-xs text-teal-400 mb-1" data-i18n="with_label">✅ 如果有 HJS</p>
-                    <p class="text-sm text-gray-300" data-i18n="case1_with">每一次诊断都形成一个完整的责任链：<br>
-                    • <span class="text-steel">判断 (Judgment)</span>: AI输出诊断结果与置信度<br>
-                    • <span class="text-steel">授权 (Delegation)</span>: 医院授权医生使用该AI辅助<br>
-                    • <span class="text-steel">验证 (Verification)</span>: 任何一方可独立验证诊断记录的完整性和时间戳<br>
-                    既可追溯争议，又能持续改进模型。</p>
+
+                <!-- 案例 3：能源AI调度 -->
+                <div class="case-card p-6">
+                    <h2 class="text-lg font-light text-white mb-3" data-i18n="case3_title">Energy AI Dispatch</h2>
+                    <p class="text-sm text-gray-400 mb-4 leading-relaxed" data-i18n="case3_desc">
+                        UK National Grid uses AI to optimize renewable energy, balancing wind, solar and traditional power, reducing carbon emissions by 1.2M tons annually.
+                    </p>
+                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-gray-700 mb-3">
+                        <p class="text-xs text-gray-500 mb-1" data-i18n="without_label">❌ Without records</p>
+                        <p class="text-sm text-gray-400" data-i18n="case3_without">When grid anomalies occur, no trace of AI decisions exists. Regulators can't assign responsibility.</p>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-steel">
+                        <p class="text-xs text-steel mb-1" data-i18n="with_label">✅ With HJS</p>
+                        <p class="text-sm text-gray-400" data-i18n="case3_with">Every dispatch is recorded: Judgment (real-time data, AI logic), Delegation (operator confirmation), Verification (any party can verify).</p>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-3" data-i18n="case3_source">— UK National Grid 'Zero Carbon Dispatch' Project, 2025</p>
+                </div>
+
+                <!-- 案例 4：沃尔沃透明责任 -->
+                <div class="case-card p-6">
+                    <h2 class="text-lg font-light text-white mb-3" data-i18n="case4_title">Volvo Transparent Responsibility</h2>
+                    <p class="text-sm text-gray-400 mb-4 leading-relaxed" data-i18n="case4_desc">
+                        Volvo's Swedish autonomous driving test program equips all vehicles with complete decision records, showing responsibility transparently.
+                    </p>
+                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-gray-700 mb-3">
+                        <p class="text-xs text-gray-500 mb-1" data-i18n="without_label">❌ Without records</p>
+                        <p class="text-sm text-gray-400" data-i18n="case4_without">Public lacks trust in autonomous driving: when accidents happen, who's responsible? Blurred liability hinders adoption.</p>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-steel">
+                        <p class="text-xs text-steel mb-1" data-i18n="with_label">✅ With HJS</p>
+                        <p class="text-sm text-gray-400" data-i18n="case4_with">Every moment is recorded: Judgment (sensor data, commands), Termination (when driver takes over), Verification (any party can verify data).</p>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-3" data-i18n="case4_source">— Volvo 'Transparent Drive' Project, 2024</p>
                 </div>
             </div>
+        </section>
 
-            <!-- 案例 2：护理机器人决策（日本） -->
-            <div class="case-card p-6 rounded-xl border border-gray-800 bg-gray-900/50">
-                <div class="flex items-start gap-3 mb-4">
-                    <span class="text-2xl">🇯🇵</span>
-                    <h2 class="text-xl font-semibold text-white" data-i18n="case2_title">护理机器人决策</h2>
-                </div>
-                <p class="text-gray-300 text-sm mb-3 leading-relaxed" data-i18n="case2_desc">
-                    日本某养老院引入AI护理机器人，协助老人起床、服药提醒、跌倒检测。机器人每天执行数千次决策。
-                </p>
-                <div class="bg-gray-800/50 p-3 rounded-lg mb-3">
-                    <p class="text-xs text-gray-400 mb-1" data-i18n="without_label">❌ 如果没有记录</p>
-                    <p class="text-sm text-gray-300" data-i18n="case2_without">当机器人误判（如老人只是弯腰却被判定为跌倒），无法追溯决策依据。家属担忧安全，养老院面临诉讼风险。</p>
-                </div>
-                <div class="bg-gray-800/50 p-3 rounded-lg">
-                    <p class="text-xs text-teal-400 mb-1" data-i18n="with_label">✅ 如果有 HJS</p>
-                    <p class="text-sm text-gray-300" data-i18n="case2_with">机器人的每次决策都成为可审计的责任记录：<br>
-                    • <span class="text-steel">判断 (Judgment)</span>: 记录触发条件与AI决策逻辑<br>
-                    • <span class="text-steel">终止 (Termination)</span>: 明确记录责任人何时结束或覆盖了机器人的决策<br>
-                    • <span class="text-steel">验证 (Verification)</span>: 家属和监管方可随时验证事件的真伪<br>
-                    透明带来信任，也让算法优化有据可依。</p>
-                </div>
-                <p class="text-xs text-gray-500 mt-2" data-i18n="case2_source">—— 日本厚生劳动省试点项目，2025</p>
-            </div>
-
-            <!-- 案例 3：能源AI调度（英国） - 替换智能合约 -->
-            <div class="case-card p-6 rounded-xl border border-gray-800 bg-gray-900/50">
-                <div class="flex items-start gap-3 mb-4">
-                    <span class="text-2xl">🇬🇧</span>
-                    <h2 class="text-xl font-semibold text-white" data-i18n="case5_title">能源AI调度</h2>
-                </div>
-                <p class="text-gray-300 text-sm mb-3 leading-relaxed" data-i18n="case5_desc">
-                    英国国家电网引入AI优化可再生能源调度，实时平衡风能、太阳能与传统发电，每年减少碳排放120万吨。
-                </p>
-                <div class="bg-gray-800/50 p-3 rounded-lg mb-3">
-                    <p class="text-xs text-gray-400 mb-1" data-i18n="without_label">❌ 如果没有记录</p>
-                    <p class="text-sm text-gray-300" data-i18n="case5_without">当电网调度出现异常时，无法追溯AI决策依据：是算法误判还是数据错误？监管机构难以定责，公众对能源转型失去信心。</p>
-                </div>
-                <div class="bg-gray-800/50 p-3 rounded-lg">
-                    <p class="text-xs text-teal-400 mb-1" data-i18n="with_label">✅ 如果有 HJS</p>
-                    <p class="text-sm text-gray-300" data-i18n="case5_with">每一次调度指令都被完整记录：<br>
-                    • <span class="text-steel">判断 (Judgment)</span>: 实时电价、供需数据、AI决策逻辑<br>
-                    • <span class="text-steel">授权 (Delegation)</span>: 调度员何时确认AI建议<br>
-                    • <span class="text-steel">验证 (Verification)</span>: 任何一方可验证记录的完整性和时间戳<br>
-                    电网运行透明可追溯，加速能源转型进程。</p>
-                </div>
-                <p class="text-xs text-gray-500 mt-2" data-i18n="case5_source">—— 英国国家电网「零碳调度」项目，2025</p>
-            </div>
-
-            <!-- 案例 4：沃尔沃透明责任（瑞典） -->
-            <div class="case-card p-6 rounded-xl border border-gray-800 bg-gray-900/50">
-                <div class="flex items-start gap-3 mb-4">
-                    <span class="text-2xl">🇸🇪</span>
-                    <h2 class="text-xl font-semibold text-white" data-i18n="case4_title">沃尔沃透明责任</h2>
-                </div>
-                <p class="text-gray-300 text-sm mb-3 leading-relaxed" data-i18n="case4_desc">
-                    沃尔沃在瑞典推出自动驾驶测试项目，所有测试车辆都配备完整决策记录系统，向公众透明展示责任归属。
-                </p>
-                <div class="bg-gray-800/50 p-3 rounded-lg mb-3">
-                    <p class="text-xs text-gray-400 mb-1" data-i18n="without_label">❌ 如果没有记录</p>
-                    <p class="text-sm text-gray-300" data-i18n="case4_without">公众对自动驾驶缺乏信任：一旦出事，是车主、车企还是算法负责？责任模糊阻碍技术推广。</p>
-                </div>
-                <div class="bg-gray-800/50 p-3 rounded-lg">
-                    <p class="text-xs text-teal-400 mb-1" data-i18n="with_label">✅ 如果有 HJS</p>
-                    <p class="text-sm text-gray-300" data-i18n="case4_with">车辆行驶的每一刻，责任归属都清晰无误：<br>
-                    • <span class="text-steel">判断 (Judgment)</span>: 记录系统感知数据与车辆控制指令<br>
-                    • <span class="text-steel">终止 (Termination)</span>: 精确记录驾驶员何时、以何种方式接管了车辆控制权<br>
-                    • <span class="text-steel">验证 (Verification)</span>: 事故发生后，中立方可立即验证所有数据的真实性，厘清责任<br>
-                    透明，是自动驾驶获得公众信任的唯一途径。</p>
-                </div>
-                <p class="text-xs text-gray-500 mt-2" data-i18n="case4_source">—— 沃尔沃「透明驾驶」项目，2024</p>
-            </div>
-        </div>
-
-        <!-- 一句话总结 -->
-        <div class="text-center border-t border-gray-800 pt-8 mt-8">
-            <p class="text-gray-500 text-sm" data-i18n="footer">可追溯不是限制，而是让技术走得更远的基石。</p>
-            <div class="flex justify-center gap-4 mt-4">
-                <a href="/product.html" class="px-4 py-2 bg-teal-600 text-white text-sm rounded hover:bg-teal-700" data-i18n="cta">了解产品</a>
-                <a href="/developers.html" class="px-4 py-2 bg-gray-800 text-gray-300 text-sm rounded hover:bg-gray-700" data-i18n="docs">开发者文档</a>
-            </div>
-        </div>
-
-        <!-- 底部链接 -->
-        <div class="mt-12 text-center text-xs text-gray-600">
-            <a href="/" class="hover:text-gray-400 mx-2">首页</a>
-            <span class="text-gray-700">|</span>
-            <a href="/product.html" class="hover:text-gray-400 mx-2">产品</a>
-            <span class="text-gray-700">|</span>
-            <a href="/developers.html" class="hover:text-gray-400 mx-2">开发者</a>
-            <span class="text-gray-700">|</span>
-            <a href="/docs.html" class="hover:text-gray-400 mx-2">文档</a>
+        <!-- ===== 底部 ===== -->
+        <div class="text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-12">
+            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
+            <span class="text-gray-700">·</span>
+            <a href="/spec/README.md" class="hover:text-gray-400 mx-2">Spec</a>
+            <span class="text-gray-700">·</span>
+            <a href="/cases.html" class="hover:text-gray-400 mx-2">Cases</a>
         </div>
     </div>
 
+    <!-- ===== 全局语言层 ===== -->
+    <script src="/js/lang.js"></script>
     <script>
-        // 翻译字典
         const translations = {
-            zh: {
-                back: "← 返回首页",
-                title: "当技术向前，责任不能落后",
-                subtitle: "每一次创新都伴随着责任的拷问。可追溯的记录让技术进步更值得信任。",
-                case1_title: "医疗AI辅助诊断",
-                case1_desc: "德国一家医院使用AI辅助诊断系统，每年帮助医生筛查数万份医学影像，早期发现癌症率提升30%。",
-                case1_without: "当出现漏诊时，无法追溯AI当时看到了什么、为什么给出那个判断。医院面临信任危机，医生不敢采纳AI建议。",
-                case1_with: "每一次诊断都形成一个完整的责任链：<br>• <span class=\"text-steel\">判断 (Judgment)</span>: AI输出诊断结果与置信度<br>• <span class=\"text-steel\">授权 (Delegation)</span>: 医院授权医生使用该AI辅助<br>• <span class=\"text-steel\">验证 (Verification)</span>: 任何一方可独立验证诊断记录的完整性和时间戳<br>既可追溯争议，又能持续改进模型。",
-                case2_title: "护理机器人决策",
-                case2_desc: "日本某养老院引入AI护理机器人，协助老人起床、服药提醒、跌倒检测。机器人每天执行数千次决策。",
-                case2_without: "当机器人误判（如老人只是弯腰却被判定为跌倒），无法追溯决策依据。家属担忧安全，养老院面临诉讼风险。",
-                case2_with: "机器人的每次决策都成为可审计的责任记录：<br>• <span class=\"text-steel\">判断 (Judgment)</span>: 记录触发条件与AI决策逻辑<br>• <span class=\"text-steel\">终止 (Termination)</span>: 明确记录责任人何时结束或覆盖了机器人的决策<br>• <span class=\"text-steel\">验证 (Verification)</span>: 家属和监管方可随时验证事件的真伪<br>透明带来信任，也让算法优化有据可依。",
-                case2_source: "—— 日本厚生劳动省试点项目，2025",
-                case5_title: "能源AI调度",
-                case5_desc: "英国国家电网引入AI优化可再生能源调度，实时平衡风能、太阳能与传统发电，每年减少碳排放120万吨。",
-                case5_without: "当电网调度出现异常时，无法追溯AI决策依据：是算法误判还是数据错误？监管机构难以定责，公众对能源转型失去信心。",
-                case5_with: "每一次调度指令都被完整记录：<br>• <span class=\"text-steel\">判断 (Judgment)</span>: 实时电价、供需数据、AI决策逻辑<br>• <span class=\"text-steel\">授权 (Delegation)</span>: 调度员何时确认AI建议<br>• <span class=\"text-steel\">验证 (Verification)</span>: 任何一方可验证记录的完整性和时间戳<br>电网运行透明可追溯，加速能源转型进程。",
-                case5_source: "—— 英国国家电网「零碳调度」项目，2025",
-                case4_title: "沃尔沃透明责任",
-                case4_desc: "沃尔沃在瑞典推出自动驾驶测试项目，所有测试车辆都配备完整决策记录系统，向公众透明展示责任归属。",
-                case4_without: "公众对自动驾驶缺乏信任：一旦出事，是车主、车企还是算法负责？责任模糊阻碍技术推广。",
-                case4_with: "车辆行驶的每一刻，责任归属都清晰无误：<br>• <span class=\"text-steel\">判断 (Judgment)</span>: 记录系统感知数据与车辆控制指令<br>• <span class=\"text-steel\">终止 (Termination)</span>: 精确记录驾驶员何时、以何种方式接管了车辆控制权<br>• <span class=\"text-steel\">验证 (Verification)</span>: 事故发生后，中立方可立即验证所有数据的真实性，厘清责任<br>透明，是自动驾驶获得公众信任的唯一途径。",
-                case4_source: "—— 沃尔沃「透明驾驶」项目，2024",
-                without_label: "❌ 如果没有记录",
-                with_label: "✅ 如果有 HJS",
-                footer: "可追溯不是限制，而是让技术走得更远的基石。",
-                cta: "了解产品",
-                docs: "开发者文档"
-            },
             en: {
-                back: "← Back to Home",
-                title: "When Technology Advances, Accountability Can't Lag Behind",
-                subtitle: "Every innovation brings accountability questions. Traceable records make progress trustworthy.",
+                nav_home: "Home",
+                nav_product: "Product",
+                nav_developers: "Developers",
+                nav_console: "Console",
+                nav_lookup: "Lookup",
+                nav_billing: "Billing",
+                nav_governance: "Governance",
+                cases_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
+                cases_title: "When Technology Advances, Accountability Can't Lag Behind",
+                cases_subtitle: "Every innovation brings accountability questions. Traceable records make progress trustworthy.",
                 case1_title: "Medical AI Assistance",
                 case1_desc: "A German hospital uses AI to screen thousands of medical images annually, increasing early cancer detection by 30%.",
                 case1_without: "When misdiagnosis occurs, there's no trace of what the AI saw or why. Hospitals face trust crises, doctors hesitate to use AI.",
-                case1_with: "Every diagnosis forms a complete responsibility chain:<br>• <span class=\"text-steel\">Judgment</span>: AI output with confidence scores<br>• <span class=\"text-steel\">Delegation</span>: Hospital authorizes doctors to use AI<br>• <span class=\"text-steel\">Verification</span>: Any party can independently verify records<br>Resolve disputes and improve models.",
+                case1_with: "Every diagnosis forms a complete responsibility chain: Judgment (AI output with confidence), Delegation (hospital authorization), Verification (any party can verify records).",
                 case2_title: "Care Robot Decisions",
                 case2_desc: "A Japanese nursing home uses AI robots to assist elderly with waking, medication reminders, and fall detection. Thousands of decisions daily.",
-                case2_without: "When robots misjudge (e.g., a bend mistaken for a fall), no trace of decision logic exists. Families worry, facilities face lawsuits.",
-                case2_with: "Every decision becomes an auditable record:<br>• <span class=\"text-steel\">Judgment</span>: Triggers and AI logic<br>• <span class=\"text-steel\">Termination</span>: When human overrides robot<br>• <span class=\"text-steel\">Verification</span>: Families verify events anytime<br>Transparency builds trust, data improves algorithms.",
+                case2_without: "When robots misjudge, no trace of decision logic exists. Families worry, facilities face lawsuits.",
+                case2_with: "Every decision becomes auditable: Judgment (triggers and logic), Termination (when human overrides), Verification (families verify anytime).",
                 case2_source: "— Japan MHLW Pilot Project, 2025",
-                case5_title: "Energy AI Dispatch",
-                case5_desc: "UK National Grid uses AI to optimize renewable energy, balancing wind, solar and traditional power, reducing carbon emissions by 1.2M tons annually.",
-                case5_without: "When grid anomalies occur, no trace of AI decisions exists. Regulators can't assign responsibility, public loses trust in energy transition.",
-                case5_with: "Every dispatch is recorded:<br>• <span class=\"text-steel\">Judgment</span>: Real-time pricing, supply/demand, AI logic<br>• <span class=\"text-steel\">Delegation</span>: When operators confirm AI suggestions<br>• <span class=\"text-steel\">Verification</span>: Any party can verify record integrity<br>Transparent grid accelerates energy transition.",
-                case5_source: "— UK National Grid 'Zero Carbon Dispatch' Project, 2025",
+                case3_title: "Energy AI Dispatch",
+                case3_desc: "UK National Grid uses AI to optimize renewable energy, balancing wind, solar and traditional power, reducing carbon emissions by 1.2M tons annually.",
+                case3_without: "When grid anomalies occur, no trace of AI decisions exists. Regulators can't assign responsibility.",
+                case3_with: "Every dispatch is recorded: Judgment (real-time data, AI logic), Delegation (operator confirmation), Verification (any party can verify).",
+                case3_source: "— UK National Grid 'Zero Carbon Dispatch' Project, 2025",
                 case4_title: "Volvo Transparent Responsibility",
                 case4_desc: "Volvo's Swedish autonomous driving test program equips all vehicles with complete decision records, showing responsibility transparently.",
                 case4_without: "Public lacks trust in autonomous driving: when accidents happen, who's responsible? Blurred liability hinders adoption.",
-                case4_with: "Every moment on the road is recorded:<br>• <span class=\"text-steel\">Judgment</span>: Sensor data and control commands<br>• <span class=\"text-steel\">Termination</span>: When and how driver takes over<br>• <span class=\"text-steel\">Verification</span>: Any party can verify data authenticity<br>Transparency is the only path to public trust.",
+                case4_with: "Every moment is recorded: Judgment (sensor data, commands), Termination (when driver takes over), Verification (any party can verify data).",
                 case4_source: "— Volvo 'Transparent Drive' Project, 2024",
                 without_label: "❌ Without records",
-                with_label: "✅ With HJS",
-                footer: "Traceability isn't a limitation — it's the foundation for technology to go further.",
-                cta: "Learn More",
-                docs: "Developer Docs"
+                with_label: "✅ With HJS"
+            },
+            zh: {
+                nav_home: "首页",
+                nav_product: "产品",
+                nav_developers: "开发者",
+                nav_console: "控制台",
+                nav_lookup: "查询",
+                nav_billing: "计费",
+                nav_governance: "治理",
+                cases_version_tag: "HJS 责任协议 · 草案 0.1 版",
+                cases_title: "当技术向前，责任不能落后",
+                cases_subtitle: "每一次创新都伴随着责任的拷问。可追溯的记录让技术进步更值得信任。",
+                case1_title: "医疗AI辅助诊断",
+                case1_desc: "德国一家医院使用AI辅助诊断系统，每年帮助医生筛查数万份医学影像，早期发现癌症率提升30%。",
+                case1_without: "当出现漏诊时，无法追溯AI当时看到了什么、为什么给出那个判断。医院面临信任危机，医生不敢采纳AI建议。",
+                case1_with: "每一次诊断都形成完整的责任链：判断（AI输出与置信度）、授权（医院授权）、验证（任何方可独立验证）。",
+                case2_title: "护理机器人决策",
+                case2_desc: "日本某养老院引入AI护理机器人，协助老人起床、服药提醒、跌倒检测。机器人每天执行数千次决策。",
+                case2_without: "当机器人误判时，无法追溯决策依据。家属担忧安全，养老院面临诉讼风险。",
+                case2_with: "每次决策都成为可审计的记录：判断（触发条件与逻辑）、终止（人工接管）、验证（家属随时验证）。",
+                case2_source: "—— 日本厚生劳动省试点项目，2025",
+                case3_title: "能源AI调度",
+                case3_desc: "英国国家电网引入AI优化可再生能源调度，实时平衡风能、太阳能与传统发电，每年减少碳排放120万吨。",
+                case3_without: "当电网调度出现异常时，无法追溯AI决策依据。监管机构难以定责。",
+                case3_with: "每一次调度都被记录：判断（实时数据、AI逻辑）、授权（调度员确认）、验证（任何方可验证）。",
+                case3_source: "—— 英国国家电网「零碳调度」项目，2025",
+                case4_title: "沃尔沃透明责任",
+                case4_desc: "沃尔沃在瑞典推出自动驾驶测试项目，所有测试车辆都配备完整决策记录系统，向公众透明展示责任归属。",
+                case4_without: "公众对自动驾驶缺乏信任：一旦出事，是车主、车企还是算法负责？责任模糊阻碍技术推广。",
+                case4_with: "每一刻都被记录：判断（传感器数据、指令）、终止（驾驶员接管）、验证（任何方可验证数据）。",
+                case4_source: "—— 沃尔沃「透明驾驶」项目，2024",
+                without_label: "❌ 如果没有记录",
+                with_label: "✅ 如果有 HJS"
             }
         };
 
-        // ===== 全局语言切换 =====
+        function switchLang(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+            const select = document.querySelector('select');
+            if (select) select.value = lang;
+        }
+
         (function() {
             const savedLang = localStorage.getItem('hjs_lang');
             const urlParams = new URLSearchParams(window.location.search);
             const urlLang = urlParams.get('lang');
-            const currentLang = savedLang || urlLang || 'zh';
-
-            if (savedLang !== currentLang) {
-                localStorage.setItem('hjs_lang', currentLang);
-            }
-
-            if (savedLang && !urlLang) {
-                const url = new URL(window.location);
-                url.searchParams.set('lang', savedLang);
-                window.history.replaceState({}, '', url);
-            }
-
-            function updateLanguage(lang) {
-                const t = translations[lang];
-                document.querySelectorAll('[data-i18n]').forEach(el => {
-                    const key = el.getAttribute('data-i18n');
-                    if (t && t[key]) {
-                        el.innerHTML = t[key];
-                    }
-                });
-                
-                document.querySelectorAll('.lang-btn').forEach(btn => {
-                    if (btn.href.includes(lang)) {
-                        btn.className = 'lang-btn text-sm px-2 py-1 rounded bg-teal-600 text-white';
-                    } else {
-                        btn.className = 'lang-btn text-sm px-2 py-1 rounded bg-gray-800 text-gray-300';
-                    }
-                });
-            }
-
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const newLang = btn.href.includes('zh') ? 'zh' : 'en';
-                    localStorage.setItem('hjs_lang', newLang);
-                    window.location.search = `?lang=${newLang}`;
-                });
-            });
-
-            updateLanguage(currentLang);
+            const lang = savedLang || urlLang || 'en';
+            switchLang(lang);
         })();
     </script>
 </body>

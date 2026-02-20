@@ -22,12 +22,12 @@
             <div class="text-white font-semibold text-lg">HJS</div>
             <div class="flex gap-8 md:gap-10 text-gray-400">
                 <a href="/" class="text-white">Home</a>
-                <a href="/product.html" class="hover:text-teal-400 transition">Product</a>
-                <a href="/developers.html" class="hover:text-teal-400 transition">Developers</a>
-                <a href="/console.html" class="hover:text-teal-400 transition">Console</a>
-                <a href="/lookup.html" class="hover:text-teal-400 transition">Lookup</a>
-                <a href="/billing.html" class="hover:text-teal-400 transition">Billing</a>
-                <a href="/governance.html" class="hover:text-teal-400 transition">Governance</a>
+                <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
+                <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
+                <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
+                <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
+                <a href="/billing.html" class="hover:text-teal-400 transition" data-i18n="nav_billing">Billing</a>
+                <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
             </div>
             <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
                 <option value="en">EN</option>
@@ -157,6 +157,13 @@
         // 翻译字典
         const translations = {
             en: {
+        nav_home: "Home",
+        nav_product: "Product",
+        nav_developers: "Developers",
+        nav_console: "Console",
+        nav_lookup: "Lookup",
+        nav_billing: "Billing",
+        nav_governance: "Governance",
                 home_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
                 home_headline: "A minimal deterministic structure<br>for binding responsibility in AI systems",
                 diagram_actor: "Actor",
@@ -189,6 +196,13 @@
                 home_btn_verify: "Verify Record"
             },
             zh: {
+        nav_home: "首页",
+        nav_product: "产品",
+        nav_developers: "开发者",
+        nav_console: "控制台",
+        nav_lookup: "查询",
+        nav_billing: "计费",
+        nav_governance: "治理",
                 home_version_tag: "HJS 责任协议 · 草案 0.1 版",
                 home_headline: "为 AI 系统绑定责任的<br>最小确定性结构",
                 diagram_actor: "行为者",

@@ -89,7 +89,7 @@
                 <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
                 <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
                 <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
-                <a href="/console.html" class="text-white">Console</a>
+                <a href="/console.html" class="text-white" data-i18n="nav_console">Console</a>
                 <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
                 <a href="/billing.html" class="hover:text-teal-400 transition" data-i18n="nav_billing">Billing</a>
                 <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
@@ -109,7 +109,7 @@
                 Developer Console
             </h1>
             <p class="mt-4 max-w-xl text-sm leading-relaxed text-gray-400" data-i18n="con_subtitle">
-                Manage API keys, inspect records, and monitor protocol usage.
+                Manage API keys, inspect records (Judgment, Delegation, Termination, Verification), and monitor usage.
             </p>
         </section>
 
@@ -194,7 +194,7 @@
                     </div>
                 </div>
 
-                <!-- Middle: Record Lookup -->
+                <!-- Middle: Record Lookup (四项原语版) -->
                 <div class="border border-gray-800 bg-card/50 p-5" id="record-lookup-panel">
                     <h3 class="font-mono text-xs uppercase tracking-widest text-gray-400 mb-4" data-i18n="con_lookup_heading">
                         RECORD LOOKUP
@@ -248,15 +248,36 @@
                             </div>
                         </div>
                         
-                        <!-- Success -->
+                        <!-- Success (四项原语简洁版) -->
                         <div id="lookup-success" class="hidden">
+                            <!-- 四项原语快速预览 -->
+                            <div class="grid grid-cols-2 gap-2 mb-3">
+                                <div class="border border-gray-800 p-2">
+                                    <p class="text-xs text-steel mb-1">Judgment</p>
+                                    <p class="text-xs text-white font-mono truncate" id="lookup-actor">-</p>
+                                </div>
+                                <div class="border border-gray-800 p-2">
+                                    <p class="text-xs text-steel mb-1">Delegation</p>
+                                    <p class="text-xs text-white font-mono" id="lookup-delegation">-</p>
+                                </div>
+                                <div class="border border-gray-800 p-2">
+                                    <p class="text-xs text-steel mb-1">Termination</p>
+                                    <p class="text-xs text-white font-mono" id="lookup-termination">-</p>
+                                </div>
+                                <div class="border border-gray-800 p-2">
+                                    <p class="text-xs text-steel mb-1">Anchor</p>
+                                    <p class="text-xs text-white font-mono" id="lookup-anchor">-</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Full JSON -->
                             <pre class="mt-2 border border-gray-800 bg-background p-3 font-mono text-xs overflow-x-auto" id="lookup-json"></pre>
                             
                             <!-- Download Buttons -->
                             <div class="mt-3 flex gap-2">
-                                <button class="download-btn border border-gray-700 px-3 py-1 text-xs text-gray-400 hover:border-steel hover:text-white rounded disabled:opacity-40 disabled:cursor-not-allowed" data-format="json" disabled>JSON</button>
-                                <button class="download-btn border border-gray-700 px-3 py-1 text-xs text-gray-400 hover:border-steel hover:text-white rounded disabled:opacity-40 disabled:cursor-not-allowed" data-format="pdf" disabled>PDF</button>
-                                <button class="download-btn border border-gray-700 px-3 py-1 text-xs text-gray-400 hover:border-steel hover:text-white rounded disabled:opacity-40 disabled:cursor-not-allowed" data-format="ots" disabled>OTS</button>
+                                <button class="download-btn border border-gray-700 px-3 py-1 text-xs text-gray-400 hover:border-steel hover:text-white rounded disabled:opacity-40 disabled:cursor-not-allowed" data-format="json">JSON</button>
+                                <button class="download-btn border border-gray-700 px-3 py-1 text-xs text-gray-400 hover:border-steel hover:text-white rounded disabled:opacity-40 disabled:cursor-not-allowed" data-format="pdf">PDF</button>
+                                <button class="download-btn border border-gray-700 px-3 py-1 text-xs text-gray-400 hover:border-steel hover:text-white rounded disabled:opacity-40 disabled:cursor-not-allowed" data-format="ots">OTS</button>
                             </div>
                         </div>
                     </div>
@@ -288,7 +309,7 @@
             </section>
         </div>
 
-        <!-- ===== Usage & Billing 面板（包含方案2入口）===== -->
+        <!-- ===== Usage & Billing 面板 ===== -->
         <div id="panel-usage" class="panel hidden">
             <section class="pb-24">
                 <!-- 用量概览卡片 -->
@@ -369,7 +390,7 @@
                         </div>
                     </div>
 
-                    <!-- 计费信息 + 方案2入口 -->
+                    <!-- 计费信息 -->
                     <div class="border-t border-gray-800 pt-4 mt-4">
                         <div class="flex justify-between items-center">
                             <div>
@@ -381,7 +402,6 @@
                             </a>
                         </div>
                         
-                        <!-- 方案2：详细账单入口 -->
                         <div class="mt-4 pt-4 border-t border-gray-800">
                             <a href="/billing.html" class="text-steel text-xs hover:underline flex items-center justify-between">
                                 <span>View detailed billing →</span>
@@ -408,6 +428,7 @@
     <script>
         // API 基础地址
         const API_BASE = 'https://hjs-api.onrender.com';
+        const PUBLIC_API_KEY = 'ced6bf0b4f9a0a53aa056456e0528fc7ea3d3bd883c5318542ff956241ea5817';
 
         // ===== 状态管理 =====
         let currentEmail = localStorage.getItem('hjs_console_email') || '';
@@ -615,22 +636,6 @@
             renderLogs();
         }
 
-        async function lookupRecord(id) {
-            if (!id) return null;
-            
-            try {
-                const res = await fetch(`${API_BASE}/judgments/${id}`);
-                addLog('GET', `/judgments/${id}`, res.status);
-                
-                if (res.ok) {
-                    return await res.json();
-                }
-            } catch (err) {
-                console.error('Lookup error:', err);
-            }
-            return null;
-        }
-
         function addLog(method, path, status) {
             const logEntry = {
                 time: new Date().toLocaleTimeString(),
@@ -777,6 +782,7 @@
             container.innerHTML = html;
         }
 
+        // ===== 事件绑定 =====
         document.getElementById('generate-key-btn').addEventListener('click', () => {
             const nameInput = document.getElementById('key-name-input');
             const name = nameInput.value.trim();
@@ -786,6 +792,7 @@
             }
         });
 
+        // 查找记录功能（四项原语版）
         document.getElementById('lookup-btn').addEventListener('click', async () => {
             const idInput = document.getElementById('record-id-input');
             const id = idInput.value.trim();
@@ -798,29 +805,40 @@
             const jsonPre = document.getElementById('lookup-json');
             const errorMsg = document.getElementById('lookup-error-message');
             
+            // 四项原语显示元素
+            const actorEl = document.getElementById('lookup-actor');
+            const delegationEl = document.getElementById('lookup-delegation');
+            const terminationEl = document.getElementById('lookup-termination');
+            const anchorEl = document.getElementById('lookup-anchor');
+            
             resultDiv.classList.remove('hidden');
             loadingDiv.classList.remove('hidden');
             errorDiv.classList.add('hidden');
             successDiv.classList.add('hidden');
             
-            document.querySelectorAll('.download-btn').forEach(btn => {
-                btn.disabled = true;
-            });
-            
-            const data = await lookupRecord(id);
-            
-            loadingDiv.classList.add('hidden');
-            
-            if (data) {
+            try {
+                const res = await fetch(`${API_BASE}/judgments/${id}`, {
+                    headers: { 'X-API-Key': PUBLIC_API_KEY }
+                });
+                
+                if (!res.ok) throw new Error(`Record not found: ${id}`);
+                
+                const data = await res.json();
+                
+                // 更新四项原语显示
+                actorEl.textContent = data.entity || '-';
+                delegationEl.textContent = data.delegation ? '✓' : '-';
+                terminationEl.textContent = data.termination ? '✓' : '-';
+                anchorEl.textContent = data.immutability_anchor?.type || 'none';
+                
                 jsonPre.textContent = JSON.stringify(data, null, 2);
                 successDiv.classList.remove('hidden');
                 
-                document.querySelectorAll('.download-btn').forEach(btn => {
-                    btn.disabled = false;
-                });
-            } else {
-                errorMsg.textContent = `Record not found: ${id}`;
+            } catch (err) {
+                errorMsg.textContent = err.message;
                 errorDiv.classList.remove('hidden');
+            } finally {
+                loadingDiv.classList.add('hidden');
             }
         });
 
@@ -839,9 +857,23 @@
                 let url = `${API_BASE}/judgments/${id}`;
                 
                 if (format === 'pdf') {
-                    url += '?format=pdf';
+                    url += `?format=pdf&key=${PUBLIC_API_KEY}`;
                 } else if (format === 'ots') {
-                    url = `${API_BASE}/judgments/${id}/immutability-proof`;
+                    url = `${API_BASE}/judgments/${id}/immutability-proof?key=${PUBLIC_API_KEY}`;
+                } else {
+                    // JSON 直接用 fetch 下载
+                    const res = await fetch(`${API_BASE}/judgments/${id}`, {
+                        headers: { 'X-API-Key': PUBLIC_API_KEY }
+                    });
+                    const data = await res.json();
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${id}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    return;
                 }
                 
                 window.open(url, '_blank');
@@ -884,16 +916,16 @@
         // ===== 翻译字典 =====
         const translations = {
             en: {
-        nav_home: "Home",
-        nav_product: "Product",
-        nav_developers: "Developers",
-        nav_console: "Console",
-        nav_lookup: "Lookup",
-        nav_billing: "Billing",
-        nav_governance: "Governance",
+                nav_home: "Home",
+                nav_product: "Product",
+                nav_developers: "Developers",
+                nav_console: "Console",
+                nav_lookup: "Lookup",
+                nav_billing: "Billing",
+                nav_governance: "Governance",
                 con_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
                 con_title: "Developer Console",
-                con_subtitle: "Manage API keys, inspect records, and monitor protocol usage.",
+                con_subtitle: "Manage API keys, inspect records (Judgment, Delegation, Termination, Verification), and monitor usage.",
                 con_auth_heading: "EMAIL AUTHENTICATION",
                 con_auth_verify: "Verify",
                 con_auth_logout: "Logout",
@@ -921,16 +953,16 @@
                 con_metrics_depth: "Avg Depth"
             },
             zh: {
-        nav_home: "首页",
-        nav_product: "产品",
-        nav_developers: "开发者",
-        nav_console: "控制台",
-        nav_lookup: "查询",
-        nav_billing: "计费",
-        nav_governance: "治理",
+                nav_home: "首页",
+                nav_product: "产品",
+                nav_developers: "开发者",
+                nav_console: "控制台",
+                nav_lookup: "查询",
+                nav_billing: "计费",
+                nav_governance: "治理",
                 con_version_tag: "HJS 责任协议 · 草案 0.1 版",
                 con_title: "开发者控制台",
-                con_subtitle: "管理 API 密钥、查询记录、监控协议使用情况。",
+                con_subtitle: "管理 API 密钥、查询记录（判断、授权、终止、验证）、监控使用情况。",
                 con_auth_heading: "邮箱验证",
                 con_auth_verify: "验证",
                 con_auth_logout: "退出",

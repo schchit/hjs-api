@@ -8,20 +8,37 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
-        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
+        .font-mono, code, pre { font-family: 'JetBrains Mono', monospace !important; }
         body { background: #0a0a0a; color: #e5e5e5; }
         .text-steel { color: #3B4B5C; }
         .border-steel { border-color: #3B4B5C; }
-        .hover\:bg-steel\/10:hover { background-color: rgba(59, 75, 92, 0.1); }
+        .bg-steel\/10 { background-color: rgba(59, 75, 92, 0.1); }
+        .bg-steel\/20 { background-color: rgba(59, 75, 92, 0.2); }
+        .hover\:bg-steel\/20:hover { background-color: rgba(59, 75, 92, 0.2); }
+        .bg-card { background: rgba(26, 26, 26, 0.5); }
+        .border-border { border-color: #1f1f1f; }
+        .text-muted-foreground { color: #9ca3af; }
+        .text-foreground { color: #e5e5e5; }
+        .bg-background { background: #0a0a0a; }
+        .hover\:border-steel:hover { border-color: #3B4B5C; }
+        .hover\:text-foreground:hover { color: #e5e5e5; }
+        
+        /* 动画 */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
     </style>
 </head>
 <body>
-    <div class="mx-auto max-w-5xl px-6">
+    <div class="mx-auto max-w-4xl px-6">
         <!-- ===== 导航栏 ===== -->
         <div class="flex justify-between items-center py-6 text-base">
             <div class="text-white font-semibold text-lg">HJS</div>
             <div class="flex gap-8 md:gap-10 text-gray-400">
-                <a href="/" class="text-white">Home</a>
+                <a href="/" class="text-white" data-i18n="nav_home">Home</a>
                 <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
                 <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
                 <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
@@ -35,18 +52,19 @@
             </select>
         </div>
 
-        <!-- ===== 首页内容 ===== -->
-        <!-- Screen 1: Protocol Identifier -->
-        <section class="flex min-h-[calc(100vh-3.5rem)] flex-col justify-center py-24">
-            <p class="font-mono text-xs text-gray-500" data-i18n="home_version_tag">
+        <!-- ===== 第一屏：协议标识 ===== -->
+        <section class="py-24">
+            <p class="mb-4 font-mono text-xs text-gray-500" data-i18n="home_version_tag">
                 HJS Responsibility Protocol · Version 0.1 Draft
             </p>
-            <h1 class="mt-6 max-w-3xl text-4xl font-light leading-tight tracking-tight text-white md:text-5xl" data-i18n="home_headline">
+            <h1 class="text-3xl font-light leading-tight tracking-tight text-white md:text-4xl max-w-3xl" data-i18n="home_headline">
                 A minimal deterministic structure<br>for binding responsibility in AI systems
             </h1>
         </section>
 
-        <!-- Screen 2: Core Model Diagram -->
+        <hr class="border-gray-800">
+
+        <!-- ===== 第二屏：四项原语模型图 ===== -->
         <section class="py-24">
             <div class="font-mono text-sm leading-loose text-gray-400">
                 <div class="flex flex-col items-start">
@@ -56,13 +74,18 @@
                     <span class="text-white" data-i18n="diagram_judgment">Judgment</span>
                     <span class="ml-2 text-steel" aria-hidden="true">│</span>
                     <span class="ml-2 text-steel" aria-hidden="true">▼</span>
-                    <span class="text-gray-500" data-i18n="diagram_delegation">Delegation (OPTIONAL)</span>
-                    <span class="ml-2 text-steel" aria-hidden="true">│</span>
-                    <span class="ml-2 text-steel" aria-hidden="true">▼</span>
-                    <span class="text-gray-500" data-i18n="diagram_termination">Termination (OPTIONAL)</span>
-                    <span class="ml-2 text-steel" aria-hidden="true">│</span>
-                    <span class="ml-2 text-steel" aria-hidden="true">▼</span>
-                    <span class="text-white" data-i18n="diagram_verification">Verification</span>
+                    <div class="flex items-start gap-8">
+                        <div class="flex flex-col items-start">
+                            <span class="text-gray-500" data-i18n="diagram_delegation">Delegation (OPTIONAL)</span>
+                            <span class="ml-2 text-steel" aria-hidden="true">│</span>
+                        </div>
+                        <div class="flex flex-col items-start">
+                            <span class="text-gray-500" data-i18n="diagram_termination">Termination (OPTIONAL)</span>
+                            <span class="ml-2 text-steel" aria-hidden="true">│</span>
+                        </div>
+                    </div>
+                    <span class="ml-2 text-steel" aria-hidden="true">▼    ▼</span>
+                    <span class="text-white mt-1" data-i18n="diagram_verification">Verification</span>
                     <span class="ml-2 text-steel" aria-hidden="true">│</span>
                     <span class="ml-2 text-steel" aria-hidden="true">▼</span>
                     <span class="text-gray-500" data-i18n="diagram_integrity">Integrity Proof (OPTIONAL)</span>
@@ -71,13 +94,14 @@
                 <div class="mt-8 max-w-lg space-y-1 text-xs text-gray-500">
                     <p data-i18n="home_diagram_note1">Each arrow defines a structural invariant.</p>
                     <p data-i18n="home_diagram_note2">All primitives are deterministic and verifiable.</p>
+                    <p class="text-steel mt-3 font-mono text-xs">Judgment · Delegation · Termination · Verification</p>
                 </div>
             </div>
         </section>
 
         <hr class="border-gray-800">
 
-        <!-- Screen 3: Definition Summary -->
+        <!-- ===== 第三屏：定义摘要 ===== -->
         <section class="py-24">
             <p class="text-sm text-gray-500" data-i18n="home_def_intro">
                 The protocol defines four primitives:
@@ -124,7 +148,7 @@
 
         <hr class="border-gray-800">
 
-        <!-- Screen 4: Implementation Entry -->
+        <!-- ===== 第四屏：实现入口 ===== -->
         <section class="py-24">
             <div class="max-w-2xl space-y-4 text-sm leading-relaxed text-gray-400">
                 <p data-i18n="home_impl_p1">HJS provides a hosted reference implementation.</p>
@@ -133,11 +157,17 @@
                 <p data-i18n="home_impl_p4">The specification is open and publicly available.</p>
             </div>
 
-            <!-- Action Buttons -->
+            <!-- 按钮 -->
             <div class="mt-12 flex flex-wrap gap-3">
-                <a href="/spec/README.md" class="inline-flex items-center justify-center border border-steel px-5 py-2.5 text-sm text-white transition-colors hover:bg-steel/10" data-i18n="home_btn_spec">View Specification</a>
-                <a href="/console.html" class="inline-flex items-center justify-center border border-gray-700 px-5 py-2.5 text-sm text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="home_btn_record">Start Recording</a>
-                <a href="/lookup.html" class="inline-flex items-center justify-center border border-gray-700 px-5 py-2.5 text-sm text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="home_btn_verify">Verify Record</a>
+                <a href="/spec/README.md" class="inline-flex items-center justify-center border border-steel px-5 py-2.5 text-sm text-white transition-colors hover:bg-steel/10" data-i18n="home_btn_spec">
+                    View Specification
+                </a>
+                <a href="/console.html" class="inline-flex items-center justify-center border border-gray-700 px-5 py-2.5 text-sm text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="home_btn_record">
+                    Start Recording
+                </a>
+                <a href="/lookup.html" class="inline-flex items-center justify-center border border-gray-700 px-5 py-2.5 text-sm text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="home_btn_verify">
+                    Verify Record
+                </a>
             </div>
         </section>
 
@@ -154,23 +184,15 @@
     <!-- ===== 全局语言层 ===== -->
     <script src="/js/lang.js"></script>
     <script>
-        // 翻译字典
         const translations = {
             en: {
-        nav_home: "Home",
-        nav_product: "Product",
-        nav_developers: "Developers",
-        nav_console: "Console",
-        nav_lookup: "Lookup",
-        nav_billing: "Billing",
-        nav_governance: "Governance",
-        nav_home: "Home",
-        nav_product: "Product",
-        nav_developers: "Developers",
-        nav_console: "Console",
-        nav_lookup: "Lookup",
-        nav_billing: "Billing",
-        nav_governance: "Governance",
+                nav_home: "Home",
+                nav_product: "Product",
+                nav_developers: "Developers",
+                nav_console: "Console",
+                nav_lookup: "Lookup",
+                nav_billing: "Billing",
+                nav_governance: "Governance",
                 home_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
                 home_headline: "A minimal deterministic structure<br>for binding responsibility in AI systems",
                 diagram_actor: "Actor",
@@ -203,20 +225,13 @@
                 home_btn_verify: "Verify Record"
             },
             zh: {
-        nav_home: "首页",
-        nav_product: "产品",
-        nav_developers: "开发者",
-        nav_console: "控制台",
-        nav_lookup: "查询",
-        nav_billing: "计费",
-        nav_governance: "治理",
-        nav_home: "首页",
-        nav_product: "产品",
-        nav_developers: "开发者",
-        nav_console: "控制台",
-        nav_lookup: "查询",
-        nav_billing: "计费",
-        nav_governance: "治理",
+                nav_home: "首页",
+                nav_product: "产品",
+                nav_developers: "开发者",
+                nav_console: "控制台",
+                nav_lookup: "查询",
+                nav_billing: "计费",
+                nav_governance: "治理",
                 home_version_tag: "HJS 责任协议 · 草案 0.1 版",
                 home_headline: "为 AI 系统绑定责任的<br>最小确定性结构",
                 diagram_actor: "行为者",
@@ -257,12 +272,10 @@
                     el.innerHTML = translations[lang][key];
                 }
             });
-            // 更新下拉菜单选中状态
             const select = document.querySelector('select');
             if (select) select.value = lang;
         }
 
-        // 初始化语言
         (function() {
             const savedLang = localStorage.getItem('hjs_lang');
             const urlParams = new URLSearchParams(window.location.search);

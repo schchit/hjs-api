@@ -3,6 +3,8 @@
 
 const { Pool } = require('pg');
 const express = require('express');
+const { Pool } = require('pg');
+require('dotenv').config();
 const { generateRecordHash } = require('./lib/canonical');
 const { submitToOTS } = require('./lib/ots-utils');
 const { anchorRecord, upgradeAnchor } = require('./lib/anchor');
@@ -36,6 +38,42 @@ app.use(cors({
   methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'X-API-Key']
 }));
+
+// ==================== 添加日志函数 ====================
+async function addLog(email, method, path, status) {
+    if (!email) return;
+    
+    try {
+        await pool.query(
+            'INSERT INTO audit_logs (email, method, path, status) VALUES ($1, $2, $3, $4)',
+            [email, method, path, status]
+        );
+    } catch (err) {
+        console.error('Error adding log:', err);
+    }
+}
+
+// ==================== 获取日志接口 ====================
+app.get('/logs', async (req, res) => {
+    const { email, limit = 10 } = req.query;
+    
+    if (!email) {
+        return res.status(400).json({ error: 'Email required' });
+    }
+    
+    try {
+        const result = await pool.query(
+            'SELECT method, path, status, created_at as time FROM audit_logs WHERE email = $1 ORDER BY created_at DESC LIMIT $2',
+            [email, parseInt(limit)]
+        );
+        
+        res.json({ logs: result.rows });
+    } catch (err) {
+        console.error('Error fetching logs:', err);
+        res.status(500).json({ error: 'Failed to fetch logs' });
+    }
+});
+
 // ==================== 根路径处理 ====================
 app.get('/', (req, res) => {
   // 默认英文，可通过 lang 参数切换
@@ -682,6 +720,9 @@ app.post('/developer/keys', express.json(), async (req, res) => {
       [apiKey, email, name || 'default']
     );
     
+    // 添加日志
+    await addLog(email, 'POST', '/developer/keys', 201);
+    
     res.json({
       success: true,
       key: apiKey,
@@ -708,6 +749,10 @@ app.get('/developer/keys', async (req, res) => {
       'SELECT key, name, created_at, last_used FROM api_keys WHERE user_id = $1 ORDER BY created_at DESC',
       [email]
     );
+    
+    // 添加日志
+    await addLog(email, 'GET', '/developer/keys', 200);
+    
     res.json(rows);
   } catch (err) {
     console.error('Query error:', err);
@@ -733,6 +778,9 @@ app.delete('/developer/keys/:key', async (req, res) => {
     if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Key not found or not owned by you' });
     }
+    
+    // 添加日志
+    await addLog(email, 'DELETE', `/developer/keys/${key}`, 200);
     
     res.json({ success: true });
   } catch (err) {
@@ -816,6 +864,15 @@ app.get('/judgments/:id', limiter, authenticateApiKey, auditLog, async (req, res
     
     const record = rows[0];
     
+    // 添加日志（如果有email）
+    const apiKey = req.headers['x-api-key'];
+    if (apiKey) {
+      const keyResult = await pool.query('SELECT user_id FROM api_keys WHERE key = $1', [apiKey]);
+      if (keyResult.rows.length > 0) {
+        await addLog(keyResult.rows[0].user_id, 'GET', `/judgments/${req.params.id}`, 200);
+      }
+    }
+    
     const anchorInfo = {
       type: record.anchor_type || 'none'
     };
@@ -857,6 +914,15 @@ app.get('/judgments/:id/immutability-proof', limiter, authenticateApiKey, async 
       return res.status(404).json({ error: 'Proof not available for this record' });
     }
     const { anchor_type, anchor_proof } = rows[0];
+    
+    // 添加日志
+    const apiKey = req.headers['x-api-key'];
+    if (apiKey) {
+      const keyResult = await pool.query('SELECT user_id FROM api_keys WHERE key = $1', [apiKey]);
+      if (keyResult.rows.length > 0) {
+        await addLog(keyResult.rows[0].user_id, 'GET', `/judgments/${req.params.id}/immutability-proof`, 200);
+      }
+    }
     
     let contentType = 'application/octet-stream';
     if (anchor_type === 'ots') {
@@ -905,6 +971,15 @@ app.get('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =>
   query += ` ORDER BY recorded_at DESC LIMIT $${paramIdx++} OFFSET $${paramIdx++}`;
   params.push(limit, offset);
   const { rows } = await pool.query(query, params);
+  
+  // 添加日志
+  const apiKey = req.headers['x-api-key'];
+  if (apiKey) {
+    const keyResult = await pool.query('SELECT user_id FROM api_keys WHERE key = $1', [apiKey]);
+    if (keyResult.rows.length > 0) {
+      await addLog(keyResult.rows[0].user_id, 'GET', '/judgments', 200);
+    }
+  }
   
   const data = rows.map(record => {
     const anchorInfo = {

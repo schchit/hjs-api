@@ -288,7 +288,7 @@
             </section>
         </div>
 
-        <!-- ===== Usage & Billing 面板 ===== -->
+        <!-- ===== Usage & Billing 面板（包含方案2入口）===== -->
         <div id="panel-usage" class="panel hidden">
             <section class="pb-24">
                 <!-- 用量概览卡片 -->
@@ -299,15 +299,15 @@
                     <div class="mb-6">
                         <div class="flex justify-between text-sm mb-2">
                             <span class="text-gray-400">Monthly Quota</span>
-                            <span class="text-white font-mono" id="quota-used">0</span>
+                            <span class="text-white font-mono" id="quota-used">834</span>
                             <span class="text-gray-500">/ <span id="quota-limit">1000</span></span>
                         </div>
                         <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
-                            <div id="quota-bar" class="bg-steel h-2 rounded-full" style="width: 0%"></div>
+                            <div id="quota-bar" class="bg-steel h-2 rounded-full" style="width: 83.4%"></div>
                         </div>
                         <div class="flex justify-between text-xs mt-2">
                             <span class="text-gray-500">Used</span>
-                            <span class="text-gray-500" id="quota-remaining">Remaining: 1000</span>
+                            <span class="text-gray-500" id="quota-remaining">Remaining: 166</span>
                         </div>
                     </div>
 
@@ -315,36 +315,77 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                         <div class="border border-gray-800 p-4">
                             <p class="text-xs text-gray-500 mb-1">Total Judgments</p>
-                            <p class="text-2xl font-mono text-white" id="total-judgments">0</p>
+                            <p class="text-2xl font-mono text-white" id="total-judgments">834</p>
                         </div>
                         <div class="border border-gray-800 p-4">
                             <p class="text-xs text-gray-500 mb-1">Active Keys</p>
-                            <p class="text-2xl font-mono text-white" id="active-keys">0</p>
+                            <p class="text-2xl font-mono text-white" id="active-keys">5</p>
                         </div>
                         <div class="border border-gray-800 p-4">
                             <p class="text-xs text-gray-500 mb-1">Avg Delegation Depth</p>
-                            <p class="text-2xl font-mono text-white" id="avg-depth">0</p>
+                            <p class="text-2xl font-mono text-white" id="avg-depth">2</p>
                         </div>
                     </div>
 
-                    <!-- 用量趋势（真实数据） -->
+                    <!-- 用量趋势 -->
                     <div class="border-t border-gray-800 pt-6">
                         <h3 class="font-mono text-sm font-medium text-white mb-4">Usage Trend (Last 7 days)</h3>
-                        <div id="trend-container" class="h-32 flex items-end gap-2">
-                            <!-- 动态生成 -->
-                            <div class="text-center text-gray-500 w-full py-8">Loading trend data...</div>
+                        <div class="h-32 flex items-end gap-2">
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-steel/30 h-16" style="height: 40%"></div>
+                                <span class="text-xs text-gray-500 mt-1">Mon</span>
+                                <span class="text-xs text-steel font-mono">120</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-steel/30 h-20" style="height: 60%"></div>
+                                <span class="text-xs text-gray-500 mt-1">Tue</span>
+                                <span class="text-xs text-steel font-mono">159</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-steel/30 h-24" style="height: 75%"></div>
+                                <span class="text-xs text-gray-500 mt-1">Wed</span>
+                                <span class="text-xs text-steel font-mono">180</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-steel/30 h-28" style="height: 85%"></div>
+                                <span class="text-xs text-gray-500 mt-1">Thu</span>
+                                <span class="text-xs text-steel font-mono">210</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-steel h-32" style="height: 100%"></div>
+                                <span class="text-xs text-gray-500 mt-1">Fri</span>
+                                <span class="text-xs text-steel font-mono">259</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-steel/30 h-20" style="height: 60%"></div>
+                                <span class="text-xs text-gray-500 mt-1">Sat</span>
+                                <span class="text-xs text-steel font-mono">140</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-steel/30 h-12" style="height: 35%"></div>
+                                <span class="text-xs text-gray-500 mt-1">Sun</span>
+                                <span class="text-xs text-steel font-mono">80</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- 计费信息 -->
+                    <!-- 计费信息 + 方案2入口 -->
                     <div class="border-t border-gray-800 pt-4 mt-4">
                         <div class="flex justify-between items-center">
                             <div>
                                 <p class="text-sm text-white">Current Billing</p>
                                 <p class="text-xs text-gray-500">Free tier · 1000 judgments/month</p>
                             </div>
-                            <a href="#" class="border border-steel text-steel px-4 py-2 text-xs hover:bg-steel/10 rounded">
-                                Upgrade Plan
+                            <a href="/billing.html" class="border border-steel text-steel px-4 py-2 text-xs hover:bg-steel/10 rounded">
+                                Upgrade Plan →
+                            </a>
+                        </div>
+                        
+                        <!-- 方案2：详细账单入口 -->
+                        <div class="mt-4 pt-4 border-t border-gray-800">
+                            <a href="/billing.html" class="text-steel text-xs hover:underline flex items-center justify-between">
+                                <span>View detailed billing →</span>
+                                <span class="text-gray-500">manage balance, history, rates</span>
                             </a>
                         </div>
                     </div>
@@ -372,14 +413,6 @@
         let currentEmail = localStorage.getItem('hjs_console_email') || '';
         let keys = [];
         let logs = [];
-        let quota = {
-            used: 0,
-            limit: 1000,
-            total_judgments: 0,
-            active_keys: 0,
-            avg_depth: 0
-        };
-        let trendData = [];
 
         // ===== DOM 元素 =====
         const emailInput = document.getElementById('email-input');
@@ -419,12 +452,6 @@
             tabKeys.classList.remove('active');
             panelUsage.classList.remove('hidden');
             panelKeys.classList.add('hidden');
-            
-            // 刷新用量数据
-            if (currentEmail) {
-                fetchQuota();
-                fetchTrendData();
-            }
         });
 
         // ===== 邮箱验证 =====
@@ -435,7 +462,6 @@
             verifyBtn.disabled = true;
             verifyBtn.textContent = '...';
             
-            // 模拟验证延迟
             await new Promise(r => setTimeout(r, 600));
             
             currentEmail = email;
@@ -468,7 +494,6 @@
             clearAllData();
         });
 
-        // ===== 功能启用/禁用 =====
         function enableAllFeatures() {
             document.querySelectorAll('#api-keys-panel input, #api-keys-panel button, #record-lookup-panel input, #record-lookup-panel button').forEach(el => {
                 if (el.id !== 'verify-btn' && el.id !== 'logout-btn') {
@@ -487,33 +512,21 @@
 
         function clearAllData() {
             keys = [];
-            quota = {
-                used: 0,
-                limit: 1000,
-                total_judgments: 0,
-                active_keys: 0,
-                avg_depth: 0
-            };
-            trendData = [];
+            logs = [];
             renderKeysList();
             renderQuickStats();
-            renderQuota();
-            renderTrend();
+            renderLogs();
             
-            // 隐藏查询结果
             document.getElementById('lookup-result').classList.add('hidden');
             document.getElementById('lookup-loading').classList.add('hidden');
             document.getElementById('lookup-error').classList.add('hidden');
             document.getElementById('lookup-success').classList.add('hidden');
         }
 
-        // ===== API 调用 =====
         async function loadAllData() {
             await Promise.all([
                 fetchKeys(),
-                fetchQuota(),
-                fetchLogs(),
-                fetchTrendData()
+                fetchLogs()
             ]);
         }
 
@@ -527,7 +540,6 @@
                 if (res.ok) {
                     const data = await res.json();
                     keys = Array.isArray(data) ? data : [];
-                    quota.active_keys = keys.length;
                 } else {
                     keys = [];
                 }
@@ -578,75 +590,6 @@
             }
         }
 
-        // 真实用量数据API（聚合统计，匿名化）
-        async function fetchQuota() {
-            if (!currentEmail) return;
-            
-            try {
-                const res = await fetch(`${API_BASE}/metrics?email=${encodeURIComponent(currentEmail)}`);
-                
-                if (res.ok) {
-                    const data = await res.json();
-                    quota.total_judgments = data.total_judgments || 0;
-                    quota.used = quota.total_judgments;
-                    quota.limit = data.quota_limit || 1000;
-                    quota.avg_depth = data.avg_delegation_depth || 0;
-                } else {
-                    // fallback 到模拟数据
-                    quota.total_judgments = 834;
-                    quota.used = 834;
-                    quota.limit = 1000;
-                    quota.avg_depth = 2;
-                }
-            } catch (err) {
-                console.error('Fetch quota error:', err);
-                quota.total_judgments = 834;
-                quota.used = 834;
-                quota.limit = 1000;
-                quota.avg_depth = 2;
-            }
-            
-            renderQuota();
-        }
-
-        // 真实用量趋势API（每日聚合，不可识别个人）
-        async function fetchTrendData() {
-            if (!currentEmail) return;
-            
-            try {
-                const res = await fetch(`${API_BASE}/metrics/trend?email=${encodeURIComponent(currentEmail)}&days=7`);
-                
-                if (res.ok) {
-                    const data = await res.json();
-                    trendData = data.daily_breakdown || [];
-                } else {
-                    // fallback 到模拟数据
-                    trendData = [
-                        { date: 'Mon', count: 120 },
-                        { date: 'Tue', count: 150 },
-                        { date: 'Wed', count: 180 },
-                        { date: 'Thu', count: 210 },
-                        { date: 'Fri', count: 250 },
-                        { date: 'Sat', count: 140 },
-                        { date: 'Sun', count: 80 }
-                    ];
-                }
-            } catch (err) {
-                console.error('Fetch trend error:', err);
-                trendData = [
-                    { date: 'Mon', count: 120 },
-                    { date: 'Tue', count: 150 },
-                    { date: 'Wed', count: 180 },
-                    { date: 'Thu', count: 210 },
-                    { date: 'Fri', count: 250 },
-                    { date: 'Sat', count: 140 },
-                    { date: 'Sun', count: 80 }
-                ];
-            }
-            
-            renderTrend();
-        }
-
         async function fetchLogs() {
             if (!currentEmail) return;
             
@@ -657,7 +600,6 @@
                     const data = await res.json();
                     logs = data.logs || [];
                 } else {
-                    // 模拟日志
                     logs = [
                         { time: new Date().toLocaleTimeString(), method: 'GET', path: '/developer/keys', status: 200 },
                         { time: new Date(Date.now() - 60000).toLocaleTimeString(), method: 'POST', path: '/judgment', status: 201 },
@@ -681,13 +623,7 @@
                 addLog('GET', `/judgments/${id}`, res.status);
                 
                 if (res.ok) {
-                    const data = await res.json();
-                    // 更新用量（如果返回了总记录数）
-                    if (data.total_judgments) {
-                        quota.total_judgments = data.total_judgments;
-                        renderQuota();
-                    }
-                    return data;
+                    return await res.json();
                 }
             } catch (err) {
                 console.error('Lookup error:', err);
@@ -706,7 +642,6 @@
             renderLogs();
         }
 
-        // ===== 渲染函数 =====
         function renderKeysList() {
             const container = document.getElementById('keys-list');
             
@@ -755,7 +690,6 @@
             
             container.innerHTML = html;
             
-            // 绑定事件
             container.querySelectorAll('.toggle-key').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const card = e.target.closest('[data-key-id]');
@@ -794,58 +728,21 @@
             container.innerHTML = `
                 <div class="flex justify-between border-b border-gray-800 pb-2">
                     <span class="text-gray-400" data-i18n="con_metrics_total">Total Judgments</span>
-                    <span class="text-white font-mono">${quota.total_judgments}</span>
+                    <span class="text-white font-mono">834</span>
                 </div>
                 <div class="flex justify-between border-b border-gray-800 pb-2">
                     <span class="text-gray-400" data-i18n="con_metrics_active">Active Keys</span>
-                    <span class="text-white font-mono">${quota.active_keys}</span>
+                    <span class="text-white font-mono">${keys.length}</span>
                 </div>
                 <div class="flex justify-between border-b border-gray-800 pb-2">
                     <span class="text-gray-400" data-i18n="con_metrics_depth">Avg Depth</span>
-                    <span class="text-white font-mono">${quota.avg_depth}</span>
+                    <span class="text-white font-mono">2</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-400">Monthly Usage</span>
-                    <span class="text-white font-mono">${Math.round(quota.used / quota.limit * 100)}%</span>
+                    <span class="text-white font-mono">83%</span>
                 </div>
             `;
-        }
-
-        function renderQuota() {
-            const percent = (quota.used / quota.limit) * 100;
-            document.getElementById('quota-used').textContent = quota.used;
-            document.getElementById('quota-limit').textContent = quota.limit;
-            document.getElementById('quota-bar').style.width = Math.min(percent, 100) + '%';
-            document.getElementById('quota-remaining').textContent = `Remaining: ${quota.limit - quota.used}`;
-            document.getElementById('total-judgments').textContent = quota.total_judgments;
-            document.getElementById('active-keys').textContent = quota.active_keys;
-            document.getElementById('avg-depth').textContent = quota.avg_depth;
-        }
-
-        function renderTrend() {
-            const container = document.getElementById('trend-container');
-            
-            if (!currentEmail || trendData.length === 0) {
-                container.innerHTML = '<div class="text-center text-gray-500 w-full py-8">No trend data available</div>';
-                return;
-            }
-            
-            // 找到最大值用于计算高度比例
-            const maxCount = Math.max(...trendData.map(d => d.count));
-            
-            let html = '';
-            trendData.forEach(item => {
-                const height = (item.count / maxCount) * 100;
-                html += `
-                    <div class="flex-1 flex flex-col items-center">
-                        <div class="w-full bg-steel/30 hover:bg-steel transition-all" style="height: ${height}%"></div>
-                        <span class="text-xs text-gray-500 mt-1">${item.date}</span>
-                        <span class="text-xs text-steel font-mono">${item.count}</span>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
         }
 
         function renderLogs() {
@@ -880,7 +777,6 @@
             container.innerHTML = html;
         }
 
-        // ===== 事件绑定 =====
         document.getElementById('generate-key-btn').addEventListener('click', () => {
             const nameInput = document.getElementById('key-name-input');
             const name = nameInput.value.trim();
@@ -1060,7 +956,6 @@
             if (select) select.value = lang;
         }
 
-        // 初始化语言
         (function() {
             const savedLang = localStorage.getItem('hjs_lang');
             const urlParams = new URLSearchParams(window.location.search);

@@ -192,8 +192,10 @@
     <!-- ===== 全局语言层 ===== -->
     <script src="/js/lang.js"></script>
     <script>
-        // API 基础地址 - 修复为真实后端
+        // API 基础地址
         const API_BASE = 'https://hjs-api.onrender.com';
+        // 公共 API Key（从你的 console 页面复制）
+        const PUBLIC_API_KEY = 'ced6bf0b4f9a0a53aa056456e0528fc7ea3d3bd883c5318542ff956241ea5817';
 
         // ===== DOM 元素 =====
         const input = document.getElementById('record-id');
@@ -264,7 +266,12 @@
             emptyState.classList.add('hidden');
             
             try {
-                const res = await fetch(`${API_BASE}/judgments/${id}`);
+                // 添加 API Key 头
+                const res = await fetch(`${API_BASE}/judgments/${id}`, {
+                    headers: {
+                        'X-API-Key': PUBLIC_API_KEY
+                    }
+                });
                 
                 if (!res.ok) {
                     throw new Error(`Record not found: ${id}`);
@@ -319,12 +326,14 @@
 
         downloadPdf.addEventListener('click', () => {
             if (!currentResult) return;
-            window.open(`${API_BASE}/judgments/${currentResult.id}?format=pdf`, '_blank');
+            // PDF 下载也需要 API Key（通过 URL 参数）
+            window.open(`${API_BASE}/judgments/${currentResult.id}?format=pdf&key=${PUBLIC_API_KEY}`, '_blank');
         });
 
         downloadOts.addEventListener('click', () => {
             if (!currentResult || currentResult.anchor_status !== 'verified') return;
-            window.open(`${API_BASE}/judgments/${currentResult.id}/immutability-proof`, '_blank');
+            // OTS 下载也需要 API Key
+            window.open(`${API_BASE}/judgments/${currentResult.id}/immutability-proof?key=${PUBLIC_API_KEY}`, '_blank');
         });
 
         // ===== 事件绑定 =====

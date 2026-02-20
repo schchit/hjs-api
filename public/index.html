@@ -30,10 +30,12 @@
         .animate-spin {
             animation: spin 1s linear infinite;
         }
+        
+        .test-input { background: #1a1a1a; border: 1px solid #333; color: white; }
+        .test-input:focus { border-color: #5ee0c0; outline: none; }
     </style>
 </head>
 <body>
-    <!-- 顶部内边距从 pt-20 改为 pt-12 -->
     <div class="mx-auto max-w-4xl px-6 pt-12 pb-12">
         <!-- ===== 导航栏 ===== -->
         <div class="flex justify-between items-center py-6 text-base">
@@ -53,7 +55,7 @@
             </select>
         </div>
 
-        <!-- ===== 第一屏：只显示标题（垂直居中） ===== -->
+        <!-- ===== 第一屏：只显示标题 ===== -->
         <section class="min-h-[calc(100vh-8rem)] flex flex-col justify-center py-16">
             <p class="mb-4 font-mono text-xs text-gray-500" data-i18n="home_version_tag">
                 HJS Responsibility Protocol · Version 0.1 Draft
@@ -63,8 +65,7 @@
             </h1>
         </section>
 
-        <!-- 分隔线 -->
-        <hr class="border-gray-800 my-16">
+        <hr class="border-gray-800">
 
         <!-- ===== 第二屏：四项原语模型图 ===== -->
         <section class="py-24">
@@ -150,13 +151,32 @@
 
         <hr class="border-gray-800">
 
-        <!-- ===== 第四屏：实现入口 ===== -->
+        <!-- ===== 第四屏：实现入口 + 快速测试 ===== -->
         <section class="py-24">
             <div class="max-w-2xl space-y-4 text-sm leading-relaxed text-gray-400">
                 <p data-i18n="home_impl_p1">HJS provides a hosted reference implementation.</p>
                 <p class="text-white" data-i18n="home_impl_p2">This service executes the protocol.</p>
                 <p data-i18n="home_impl_p3">You MAY implement the protocol independently.</p>
                 <p data-i18n="home_impl_p4">The specification is open and publicly available.</p>
+            </div>
+
+            <!-- 快速测试区域（真实API） -->
+            <div class="mt-12 p-6 border border-gray-800 bg-card rounded">
+                <h3 class="text-lg font-light text-white mb-4" data-i18n="quick_test">Quick Test</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1" data-i18n="test_email">Email</label>
+                        <input type="email" id="test-email" placeholder="your@email.com" 
+                               class="w-full border border-gray-800 bg-background px-3 py-2 text-sm text-white placeholder:text-gray-600 outline-none focus:border-steel rounded">
+                    </div>
+                    <div class="flex items-end">
+                        <button id="generate-test-key" 
+                                class="w-full border border-steel bg-steel/10 px-4 py-2 text-sm text-steel hover:bg-steel/20 rounded">
+                            Generate Test Key
+                        </button>
+                    </div>
+                </div>
+                <div id="test-key-result" class="mt-3 text-xs text-gray-400"></div>
             </div>
 
             <!-- 按钮 -->
@@ -186,6 +206,37 @@
     <!-- ===== 全局语言层 ===== -->
     <script src="/js/lang.js"></script>
     <script>
+        const API_BASE = 'https://hjs-api.onrender.com';
+
+        document.getElementById('generate-test-key')?.addEventListener('click', async () => {
+            const email = document.getElementById('test-email').value;
+            const resultDiv = document.getElementById('test-key-result');
+            
+            if (!email || !email.includes('@')) {
+                resultDiv.textContent = '❌ Please enter a valid email';
+                return;
+            }
+            
+            resultDiv.textContent = '⏳ Generating...';
+            
+            try {
+                const res = await fetch(`${API_BASE}/developer/keys`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, name: 'quick-test' })
+                });
+                const data = await res.json();
+                
+                if (data.key) {
+                    resultDiv.innerHTML = `✅ Key generated: <code class="bg-gray-900 px-1 py-0.5 rounded">${data.key.substring(0, 8)}...${data.key.substring(56)}</code>`;
+                } else {
+                    resultDiv.textContent = '❌ Failed to generate key';
+                }
+            } catch (err) {
+                resultDiv.textContent = '❌ Error: ' + err.message;
+            }
+        });
+
         const translations = {
             en: {
                 nav_home: "Home",
@@ -224,7 +275,9 @@
                 home_impl_p4: "The specification is open and publicly available.",
                 home_btn_spec: "View Specification",
                 home_btn_record: "Start Recording",
-                home_btn_verify: "Verify Record"
+                home_btn_verify: "Verify Record",
+                quick_test: "Quick Test",
+                test_email: "Email"
             },
             zh: {
                 nav_home: "首页",
@@ -263,7 +316,9 @@
                 home_impl_p4: "规范是开放且公开可用的",
                 home_btn_spec: "查看规范",
                 home_btn_record: "开始记录",
-                home_btn_verify: "验证记录"
+                home_btn_verify: "验证记录",
+                quick_test: "快速测试",
+                test_email: "邮箱"
             }
         };
 

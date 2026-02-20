@@ -23,7 +23,6 @@ const pool = new Pool({
 
 app.use(express.json());
 app.use(express.static('public'));
-// 在这里添加 CORS 配置
 app.use(cors({
   origin: [
     'https://humanjudgment.services',
@@ -73,7 +72,7 @@ app.get('/logs', async (req, res) => {
     }
 });
 
-// ==================== 获取用量统计 ====================
+// ==================== 获取用量统计（只统计锚定） ====================
 app.get('/metrics', async (req, res) => {
     const { email } = req.query;
     
@@ -82,7 +81,7 @@ app.get('/metrics', async (req, res) => {
     }
     
     try {
-        // 获取总记录数
+        // 获取总记录数（只用于展示，不收费）
         const totalResult = await pool.query(
             'SELECT COUNT(*) as count FROM judgments WHERE entity = $1',
             [email]
@@ -94,22 +93,15 @@ app.get('/metrics', async (req, res) => {
             [email]
         );
         
-        // 获取平均授权深度（如果有 verification 表）
-        let avgDepth = 0;
-        try {
-            const depthResult = await pool.query(
-                'SELECT AVG(delegation_depth) as avg FROM verifications WHERE email = $1',
-                [email]
-            );
-            avgDepth = depthResult.rows[0]?.avg || 0;
-        } catch (err) {
-            // 表不存在，忽略
-            console.log('Verifications table not yet created');
-        }
+        // 获取锚定计数（收费项）
+        const anchorResult = await pool.query(
+            'SELECT COUNT(*) as count FROM judgments WHERE entity = $1 AND anchor_type = $2',
+            [email, 'ots']
+        );
         
-        // 获取最近30天的每日用量
+        // 获取最近30天的每日锚定量
         const dailyResult = await pool.query(
-            `SELECT date, judgment_count, anchor_count 
+            `SELECT date, anchor_count 
              FROM daily_usage 
              WHERE email = $1 
              ORDER BY date DESC 
@@ -117,18 +109,22 @@ app.get('/metrics', async (req, res) => {
             [email]
         );
         
-        // 获取本月总计
+        // 获取本月锚定总计
         const now = new Date();
         const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
         const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
         
         const monthResult = await pool.query(
-            `SELECT 
-                COALESCE(SUM(judgment_count), 0) as month_judgments,
-                COALESCE(SUM(anchor_count), 0) as month_anchors
+            `SELECT COALESCE(SUM(anchor_count), 0) as month_anchors
              FROM daily_usage 
              WHERE email = $1 AND date BETWEEN $2 AND $3`,
             [email, firstDay, lastDay]
+        );
+        
+        // 获取用户余额
+        const balanceResult = await pool.query(
+            'SELECT balance FROM users WHERE email = $1',
+            [email]
         );
         
         // 记录日志
@@ -137,15 +133,11 @@ app.get('/metrics', async (req, res) => {
         res.json({
             total_judgments: parseInt(totalResult.rows[0]?.count || 0),
             active_keys: parseInt(keysResult.rows[0]?.count || 0),
-            avg_delegation_depth: parseFloat(avgDepth) || 0,
-            monthly: {
-                judgments: parseInt(monthResult.rows[0]?.month_judgments || 0),
-                anchors: parseInt(monthResult.rows[0]?.month_anchors || 0),
-                quota_limit: 1000 // 可以从用户表获取
-            },
+            total_anchors: parseInt(anchorResult.rows[0]?.count || 0),
+            monthly_anchors: parseInt(monthResult.rows[0]?.month_anchors || 0),
+            balance: parseFloat(balanceResult.rows[0]?.balance || 0),
             daily: dailyResult.rows.map(row => ({
                 date: row.date,
-                judgments: row.judgment_count,
                 anchors: row.anchor_count
             }))
         });
@@ -156,7 +148,139 @@ app.get('/metrics', async (req, res) => {
     }
 });
 
-// ==================== 根路径处理 ====================
+// ==================== 余额相关接口 ====================
+
+// 获取用户余额
+app.get('/billing/balance', async (req, res) => {
+    const { email } = req.query;
+    
+    if (!email) {
+        return res.status(400).json({ error: 'Email required' });
+    }
+    
+    try {
+        const result = await pool.query(
+            'SELECT balance FROM users WHERE email = $1',
+            [email]
+        );
+        
+        res.json({ 
+            balance: parseFloat(result.rows[0]?.balance || 0)
+        });
+    } catch (err) {
+        console.error('Error fetching balance:', err);
+        res.status(500).json({ error: 'Failed to fetch balance' });
+    }
+});
+
+// 充值接口（模拟，待对接Stripe）
+app.post('/billing/topup', express.json(), async (req, res) => {
+    const { email, amount } = req.body;
+    
+    if (!email || !amount) {
+        return res.status(400).json({ error: 'Email and amount required' });
+    }
+    
+    try {
+        // 先检查用户是否存在
+        const userResult = await pool.query(
+            'SELECT * FROM users WHERE email = $1',
+            [email]
+        );
+        
+        if (userResult.rows.length === 0) {
+            // 创建新用户
+            await pool.query(
+                'INSERT INTO users (email, balance) VALUES ($1, $2)',
+                [email, amount]
+            );
+        } else {
+            // 更新余额
+            await pool.query(
+                'UPDATE users SET balance = balance + $1 WHERE email = $2',
+                [amount, email]
+            );
+        }
+        
+        // 记录交易
+        await pool.query(
+            'INSERT INTO transactions (email, amount, type, status) VALUES ($1, $2, $3, $4)',
+            [email, amount, 'topup', 'completed']
+        );
+        
+        // 获取新余额
+        const result = await pool.query(
+            'SELECT balance FROM users WHERE email = $1',
+            [email]
+        );
+        
+        res.json({ 
+            success: true, 
+            new_balance: parseFloat(result.rows[0].balance),
+            transaction_id: 'tx_' + Date.now()
+        });
+    } catch (err) {
+        console.error('Error processing topup:', err);
+        res.status(500).json({ error: 'Failed to process topup' });
+    }
+});
+
+// 获取交易历史
+app.get('/billing/transactions', async (req, res) => {
+    const { email, limit = 10 } = req.query;
+    
+    if (!email) {
+        return res.status(400).json({ error: 'Email required' });
+    }
+    
+    try {
+        const result = await pool.query(
+            'SELECT id, amount, type, status, created_at as date FROM transactions WHERE email = $1 ORDER BY created_at DESC LIMIT $2',
+            [email, parseInt(limit)]
+        );
+        
+        res.json({ transactions: result.rows });
+    } catch (err) {
+        console.error('Error fetching transactions:', err);
+        res.status(500).json({ error: 'Failed to fetch transactions' });
+    }
+});
+
+// 扣费接口（内部使用，不对外暴露）
+async function deductBalance(email, amount, type, reference) {
+    try {
+        // 检查余额
+        const balanceResult = await pool.query(
+            'SELECT balance FROM users WHERE email = $1',
+            [email]
+        );
+        
+        const balance = parseFloat(balanceResult.rows[0]?.balance || 0);
+        
+        if (balance < amount) {
+            return { success: false, error: 'Insufficient balance' };
+        }
+        
+        // 扣费
+        await pool.query(
+            'UPDATE users SET balance = balance - $1 WHERE email = $2',
+            [amount, email]
+        );
+        
+        // 记录交易
+        await pool.query(
+            'INSERT INTO transactions (email, amount, type, status, reference_id) VALUES ($1, $2, $3, $4, $5)',
+            [email, -amount, type, 'completed', reference]
+        );
+        
+        return { success: true };
+    } catch (err) {
+        console.error('Error deducting balance:', err);
+        return { success: false, error: 'Internal error' };
+    }
+}
+
+// ==================== 根路径处理（完整首页） ====================
 app.get('/', (req, res) => {
   // 默认英文，可通过 lang 参数切换
   const lang = req.query.lang || 'en';
@@ -900,6 +1024,25 @@ app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =
   const hash = generateRecordHash(record);
 
   try {
+    // 如果是锚定记录，先检查余额
+    if (anchorType === 'ots') {
+      const balanceCheck = await pool.query(
+        'SELECT balance FROM users WHERE email = $1',
+        [entity]
+      );
+      
+      const balance = parseFloat(balanceCheck.rows[0]?.balance || 0);
+      const anchorCost = 0.03; // $0.03 per anchor
+      
+      if (balance < anchorCost) {
+        return res.status(402).json({ 
+          error: 'Insufficient balance for anchoring',
+          required: anchorCost,
+          balance: balance
+        });
+      }
+    }
+
     const anchorResult = await anchorRecord(anchorType, hash, anchorOptions);
 
     const query = `
@@ -919,16 +1062,9 @@ app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =
     // 更新每日用量
     try {
       const today = new Date().toISOString().split('T')[0];
-      await pool.query(
-        `INSERT INTO daily_usage (email, date, judgment_count) 
-         VALUES ($1, $2, 1)
-         ON CONFLICT (email, date) 
-         DO UPDATE SET judgment_count = daily_usage.judgment_count + 1`,
-        [entity, today]
-      );
       
-      // 如果使用了锚定，也要更新锚定计数
-      if (immutability?.type === 'ots') {
+      // 如果使用了锚定，更新锚定计数并扣费
+      if (anchorType === 'ots') {
         await pool.query(
           `INSERT INTO daily_usage (email, date, anchor_count) 
            VALUES ($1, $2, 1)
@@ -936,10 +1072,12 @@ app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =
            DO UPDATE SET anchor_count = daily_usage.anchor_count + 1`,
           [entity, today]
         );
+        
+        // 扣费
+        await deductBalance(entity, 0.03, 'anchor', id);
       }
     } catch (err) {
       console.error('Error updating daily usage:', err);
-      // 不影响主流程，只记录错误
     }
 
     const responseAnchor = {
@@ -972,7 +1110,7 @@ app.get('/judgments/:id', limiter, authenticateApiKey, auditLog, async (req, res
     
     const record = rows[0];
     
-    // 添加日志（如果有email）
+    // 添加日志
     const apiKey = req.headers['x-api-key'];
     if (apiKey) {
       const keyResult = await pool.query('SELECT user_id FROM api_keys WHERE key = $1', [apiKey]);

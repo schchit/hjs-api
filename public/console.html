@@ -200,7 +200,6 @@
                         RECORD LOOKUP
                     </h3>
                     
-                    <!-- Lookup Input -->
                     <div class="mb-4">
                         <div class="flex gap-2">
                             <input
@@ -222,7 +221,7 @@
                     </div>
 
                     <!-- Example IDs -->
-                    <div class="mb-4">
+                    <div class="mt-4">
                         <p class="text-xs text-gray-500 mb-2" data-i18n="con_lookup_examples">Examples:</p>
                         <div class="flex flex-wrap gap-2">
                             <button class="example-id text-xs text-steel hover:text-white border border-gray-800 px-2 py-1 rounded" data-id="jgd_1771313790343osf2">jgd_1771...osf2</button>
@@ -231,7 +230,6 @@
                         </div>
                     </div>
                     
-                    <!-- 提示信息 -->
                     <div class="mt-4 border-t border-gray-800 pt-3">
                         <p class="text-xs text-gray-500">
                             ⚡ <span data-i18n="con_lookup_note">Record verification moved to </span><a href="/lookup.html" class="text-steel hover:underline">Lookup page</a>.
@@ -265,84 +263,59 @@
             </section>
         </div>
 
-        <!-- ===== Usage & Billing 面板 ===== -->
+        <!-- ===== Usage & Billing 面板（存储免费版） ===== -->
         <div id="panel-usage" class="panel hidden">
             <section class="pb-24">
                 <!-- 用量概览卡片 -->
                 <div class="border border-gray-800 bg-card/50 p-6 mb-6">
-                    <h3 class="font-mono text-sm font-medium text-white mb-4">Current Plan: Developer</h3>
+                    <h3 class="font-mono text-sm font-medium text-white mb-4">Usage Overview</h3>
                     
-                    <!-- 余额进度条 -->
+                    <!-- 余额进度条（改为无限存储） -->
                     <div class="mb-6">
                         <div class="flex justify-between text-sm mb-2">
-                            <span class="text-gray-400">Monthly Quota</span>
-                            <span class="text-white font-mono" id="quota-used">834</span>
-                            <span class="text-gray-500">/ <span id="quota-limit">1000</span></span>
+                            <span class="text-gray-400">Storage</span>
+                            <span class="text-green-400 font-medium">FREE</span>
+                            <span class="text-gray-500">unlimited</span>
                         </div>
                         <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
-                            <div id="quota-bar" class="bg-steel h-2 rounded-full" style="width: 83.4%"></div>
+                            <div id="quota-bar" class="bg-steel h-2 rounded-full" style="width: 0%"></div>
                         </div>
                         <div class="flex justify-between text-xs mt-2">
                             <span class="text-gray-500">Used</span>
-                            <span class="text-gray-500" id="quota-remaining">Remaining: 166</span>
+                            <span class="text-gray-500" id="quota-remaining">Unlimited storage</span>
                         </div>
+                    </div>
+
+                    <!-- 锚定用量 -->
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-400">Monthly Anchors</span>
+                            <span class="text-white font-mono" id="monthly-anchors">0</span>
+                        </div>
+                        <p class="text-xs text-gray-500">$0.03 per anchor + network fee</p>
                     </div>
 
                     <!-- 详细用量 -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                         <div class="border border-gray-800 p-4">
-                            <p class="text-xs text-gray-500 mb-1">Total Judgments</p>
-                            <p class="text-2xl font-mono text-white" id="total-judgments">834</p>
+                            <p class="text-xs text-gray-500 mb-1">Total Records</p>
+                            <p class="text-2xl font-mono text-white" id="total-judgments">0</p>
                         </div>
                         <div class="border border-gray-800 p-4">
                             <p class="text-xs text-gray-500 mb-1">Active Keys</p>
-                            <p class="text-2xl font-mono text-white" id="active-keys">5</p>
+                            <p class="text-2xl font-mono text-white" id="active-keys">0</p>
                         </div>
                         <div class="border border-gray-800 p-4">
-                            <p class="text-xs text-gray-500 mb-1">Avg Delegation Depth</p>
-                            <p class="text-2xl font-mono text-white" id="avg-depth">2</p>
+                            <p class="text-xs text-gray-500 mb-1">Est. Cost</p>
+                            <p class="text-2xl font-mono text-white" id="monthly-cost">$0.00</p>
                         </div>
                     </div>
 
-                    <!-- 用量趋势 -->
-                    <div class="border-t border-gray-800 pt-6">
-                        <h3 class="font-mono text-sm font-medium text-white mb-4">Usage Trend (Last 7 days)</h3>
-                        <div class="h-32 flex items-end gap-2">
-                            <div class="flex-1 flex flex-col items-center">
-                                <div class="w-full bg-steel/30 h-16" style="height: 40%"></div>
-                                <span class="text-xs text-gray-500 mt-1">Mon</span>
-                                <span class="text-xs text-steel font-mono">120</span>
-                            </div>
-                            <div class="flex-1 flex flex-col items-center">
-                                <div class="w-full bg-steel/30 h-20" style="height: 60%"></div>
-                                <span class="text-xs text-gray-500 mt-1">Tue</span>
-                                <span class="text-xs text-steel font-mono">159</span>
-                            </div>
-                            <div class="flex-1 flex flex-col items-center">
-                                <div class="w-full bg-steel/30 h-24" style="height: 75%"></div>
-                                <span class="text-xs text-gray-500 mt-1">Wed</span>
-                                <span class="text-xs text-steel font-mono">180</span>
-                            </div>
-                            <div class="flex-1 flex flex-col items-center">
-                                <div class="w-full bg-steel/30 h-28" style="height: 85%"></div>
-                                <span class="text-xs text-gray-500 mt-1">Thu</span>
-                                <span class="text-xs text-steel font-mono">210</span>
-                            </div>
-                            <div class="flex-1 flex flex-col items-center">
-                                <div class="w-full bg-steel h-32" style="height: 100%"></div>
-                                <span class="text-xs text-gray-500 mt-1">Fri</span>
-                                <span class="text-xs text-steel font-mono">259</span>
-                            </div>
-                            <div class="flex-1 flex flex-col items-center">
-                                <div class="w-full bg-steel/30 h-20" style="height: 60%"></div>
-                                <span class="text-xs text-gray-500 mt-1">Sat</span>
-                                <span class="text-xs text-steel font-mono">140</span>
-                            </div>
-                            <div class="flex-1 flex flex-col items-center">
-                                <div class="w-full bg-steel/30 h-12" style="height: 35%"></div>
-                                <span class="text-xs text-gray-500 mt-1">Sun</span>
-                                <span class="text-xs text-steel font-mono">80</span>
-                            </div>
+                    <!-- 余额信息 -->
+                    <div class="border-t border-gray-800 pt-4 mb-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Current Balance</span>
+                            <span class="text-white font-mono" id="balance-amount">$0.00</span>
                         </div>
                     </div>
 
@@ -350,18 +323,18 @@
                     <div class="border-t border-gray-800 pt-4 mt-4">
                         <div class="flex justify-between items-center">
                             <div>
-                                <p class="text-sm text-white">Current Billing</p>
-                                <p class="text-xs text-gray-500">Free tier · 1000 judgments/month</p>
+                                <p class="text-sm text-white">Billing</p>
+                                <p class="text-xs text-gray-500">Free storage · Pay per anchor</p>
                             </div>
                             <a href="/billing.html" class="border border-steel text-steel px-4 py-2 text-xs hover:bg-steel/10 rounded">
-                                Upgrade Plan →
+                                Manage Balance →
                             </a>
                         </div>
                         
                         <div class="mt-4 pt-4 border-t border-gray-800">
                             <a href="/billing.html" class="text-steel text-xs hover:underline flex items-center justify-between">
                                 <span data-i18n="con_billing_link">View detailed billing →</span>
-                                <span class="text-gray-500" data-i18n="con_billing_desc">manage balance, history, rates</span>
+                                <span class="text-gray-500" data-i18n="con_billing_desc">balance, history, rates</span>
                             </a>
                         </div>
                     </div>
@@ -384,18 +357,16 @@
     <script>
         // API 基础地址
         const API_BASE = 'https://hjs-api.onrender.com';
-        const PUBLIC_API_KEY = 'ced6bf0b4f9a0a53aa056456e0528fc7ea3d3bd883c5318542ff956241ea5817';
 
         // ===== 状态管理 =====
         let currentEmail = localStorage.getItem('hjs_console_email') || '';
         let keys = [];
         let logs = [];
-        let quota = {
-            used: 834,
-            limit: 1000,
-            total_judgments: 834,
-            active_keys: 5,
-            avg_depth: 2
+        let metrics = {
+            total_judgments: 0,
+            active_keys: 0,
+            monthly_anchors: 0,
+            balance: 0
         };
 
         // ===== DOM 元素 =====
@@ -412,13 +383,13 @@
         const panelUsage = document.getElementById('panel-usage');
         
         // 用量元素
-        const quotaUsed = document.getElementById('quota-used');
-        const quotaLimit = document.getElementById('quota-limit');
-        const quotaBar = document.getElementById('quota-bar');
-        const quotaRemaining = document.getElementById('quota-remaining');
         const totalJudgments = document.getElementById('total-judgments');
         const activeKeys = document.getElementById('active-keys');
-        const avgDepth = document.getElementById('avg-depth');
+        const monthlyAnchors = document.getElementById('monthly-anchors');
+        const monthlyCost = document.getElementById('monthly-cost');
+        const balanceAmount = document.getElementById('balance-amount');
+        const quotaRemaining = document.getElementById('quota-remaining');
+        const quotaBar = document.getElementById('quota-bar');
         
         // 初始化邮箱输入
         if (currentEmail) {
@@ -445,6 +416,10 @@
             tabKeys.classList.remove('active');
             panelUsage.classList.remove('hidden');
             panelKeys.classList.add('hidden');
+            if (currentEmail) {
+                fetchMetrics();
+                fetchBalance();
+            }
         });
 
         // ===== 邮箱验证 =====
@@ -506,30 +481,24 @@
         function clearAllData() {
             keys = [];
             logs = [];
+            metrics = {
+                total_judgments: 0,
+                active_keys: 0,
+                monthly_anchors: 0,
+                balance: 0
+            };
             renderKeysList();
             renderQuickStats();
             renderLogs();
-            updateQuotaDisplay();
-        }
-
-        function updateQuotaDisplay() {
-            if (quotaUsed) quotaUsed.textContent = quota.used;
-            if (quotaLimit) quotaLimit.textContent = quota.limit;
-            if (quotaBar) {
-                const percent = (quota.used / quota.limit) * 100;
-                quotaBar.style.width = percent + '%';
-            }
-            if (quotaRemaining) quotaRemaining.textContent = `Remaining: ${quota.limit - quota.used}`;
-            if (totalJudgments) totalJudgments.textContent = quota.total_judgments;
-            if (activeKeys) activeKeys.textContent = quota.active_keys;
-            if (avgDepth) avgDepth.textContent = quota.avg_depth;
+            updateMetricsDisplay();
         }
 
         async function loadAllData() {
             await Promise.all([
                 fetchKeys(),
                 fetchLogs(),
-                fetchQuota()
+                fetchMetrics(),
+                fetchBalance()
             ]);
         }
 
@@ -538,12 +507,11 @@
             
             try {
                 const res = await fetch(`${API_BASE}/developer/keys?email=${encodeURIComponent(currentEmail)}`);
-                addLog('GET', '/developer/keys', res.status);
                 
                 if (res.ok) {
                     const data = await res.json();
                     keys = Array.isArray(data) ? data : [];
-                    quota.active_keys = keys.length;
+                    metrics.active_keys = keys.length;
                 } else {
                     keys = [];
                 }
@@ -554,7 +522,7 @@
             
             renderKeysList();
             renderQuickStats();
-            updateQuotaDisplay();
+            updateMetricsDisplay();
         }
 
         async function generateKey(name) {
@@ -566,8 +534,6 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: currentEmail, name })
                 });
-                
-                addLog('POST', '/developer/keys', res.status);
                 
                 if (res.ok) {
                     await fetchKeys();
@@ -585,35 +551,12 @@
                     method: 'DELETE'
                 });
                 
-                addLog('DELETE', `/developer/keys/${keyId}`, res.status);
-                
                 if (res.ok) {
                     await fetchKeys();
                 }
             } catch (err) {
                 console.error('Revoke key error:', err);
             }
-        }
-
-        async function fetchQuota() {
-            if (!currentEmail) return;
-            
-            try {
-                const res = await fetch(`${API_BASE}/billing/usage?email=${encodeURIComponent(currentEmail)}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    quota = {
-                        used: data.used || 834,
-                        limit: data.limit || 1000,
-                        total_judgments: data.total_judgments || 834,
-                        active_keys: keys.length,
-                        avg_depth: data.avg_depth || 2
-                    };
-                }
-            } catch (err) {
-                console.error('Fetch quota error:', err);
-            }
-            updateQuotaDisplay();
         }
 
         async function fetchLogs() {
@@ -625,13 +568,6 @@
                 if (res.ok) {
                     const data = await res.json();
                     logs = data.logs || [];
-                } else {
-                    logs = [
-                        { time: new Date().toLocaleTimeString(), method: 'GET', path: '/developer/keys', status: 200 },
-                        { time: new Date(Date.now() - 60000).toLocaleTimeString(), method: 'POST', path: '/judgment', status: 201 },
-                        { time: new Date(Date.now() - 120000).toLocaleTimeString(), method: 'GET', path: '/verify/jgd_xxx', status: 404 },
-                        { time: new Date(Date.now() - 180000).toLocaleTimeString(), method: 'DELETE', path: '/keys/xxx', status: 200 }
-                    ];
                 }
             } catch (err) {
                 console.error('Fetch logs error:', err);
@@ -641,15 +577,60 @@
             renderLogs();
         }
 
-        function addLog(method, path, status) {
-            const logEntry = {
-                time: new Date().toLocaleTimeString(),
-                method,
-                path,
-                status
-            };
-            logs = [logEntry, ...logs].slice(0, 10);
-            renderLogs();
+        async function fetchMetrics() {
+            if (!currentEmail) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/metrics?email=${encodeURIComponent(currentEmail)}`);
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    metrics = {
+                        total_judgments: data.total_judgments || 0,
+                        active_keys: keys.length,
+                        monthly_anchors: data.monthly_anchors || 0,
+                        balance: data.balance || 0
+                    };
+                }
+            } catch (err) {
+                console.error('Fetch metrics error:', err);
+            }
+            
+            updateMetricsDisplay();
+            renderQuickStats();
+        }
+
+        async function fetchBalance() {
+            if (!currentEmail) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/billing/balance?email=${encodeURIComponent(currentEmail)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    metrics.balance = data.balance || 0;
+                }
+            } catch (err) {
+                console.error('Fetch balance error:', err);
+            }
+            updateMetricsDisplay();
+        }
+
+        // ===== 更新用量显示（存储免费版） =====
+        function updateMetricsDisplay() {
+            if (totalJudgments) totalJudgments.textContent = metrics.total_judgments;
+            if (activeKeys) activeKeys.textContent = metrics.active_keys;
+            if (monthlyAnchors) monthlyAnchors.textContent = metrics.monthly_anchors;
+            if (balanceAmount) balanceAmount.textContent = `$${metrics.balance.toFixed(2)}`;
+            
+            // 计算预估成本（只算锚定）
+            if (monthlyCost) {
+                const cost = metrics.monthly_anchors * 0.03;
+                monthlyCost.textContent = `$${cost.toFixed(2)}`;
+            }
+            
+            // 无限存储提示
+            if (quotaRemaining) quotaRemaining.textContent = 'Unlimited storage';
+            if (quotaBar) quotaBar.style.width = '0%';
         }
 
         function renderKeysList() {
@@ -672,7 +653,7 @@
                     k.key || 'N/A';
                 
                 html += `
-                    <div class="border border-gray-800 p-3" data-key-id="${k.key || k.id || ''}">
+                    <div class="border border-gray-800 p-3" data-key-id="${k.key || ''}">
                         <div class="flex justify-between items-start">
                             <div>
                                 <div class="text-sm font-medium text-white">${k.name || '-'}</div>
@@ -683,16 +664,9 @@
                                 <div class="text-xs text-gray-500 mt-1">${k.created_at ? new Date(k.created_at).toLocaleString() : 'N/A'}</div>
                             </div>
                             <div class="flex gap-2">
-                                <button class="toggle-key text-gray-400 hover:text-white" title="Show/Hide">
-                                    👁️
-                                </button>
-                                <button class="revoke-key text-gray-400 hover:text-red-400" title="Revoke">
-                                    🗑️
-                                </button>
+                                <button class="toggle-key text-gray-400 hover:text-white" title="Show/Hide">👁️</button>
+                                <button class="revoke-key text-gray-400 hover:text-red-400" title="Revoke">🗑️</button>
                             </div>
-                        </div>
-                        <div class="mt-2">
-                            <span class="text-xs px-2 py-0.5 ${k.status === 'active' ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'}">${k.status || 'active'}</span>
                         </div>
                     </div>
                 `;
@@ -737,20 +711,20 @@
             
             container.innerHTML = `
                 <div class="flex justify-between border-b border-gray-800 pb-2">
-                    <span class="text-gray-400" data-i18n="con_metrics_total">Total Judgments</span>
-                    <span class="text-white font-mono">${quota.total_judgments}</span>
+                    <span class="text-gray-400">Total Records</span>
+                    <span class="text-white font-mono">${metrics.total_judgments}</span>
                 </div>
                 <div class="flex justify-between border-b border-gray-800 pb-2">
-                    <span class="text-gray-400" data-i18n="con_metrics_active">Active Keys</span>
+                    <span class="text-gray-400">Active Keys</span>
                     <span class="text-white font-mono">${keys.length}</span>
                 </div>
                 <div class="flex justify-between border-b border-gray-800 pb-2">
-                    <span class="text-gray-400" data-i18n="con_metrics_depth">Avg Depth</span>
-                    <span class="text-white font-mono">${quota.avg_depth}</span>
+                    <span class="text-gray-400">Monthly Anchors</span>
+                    <span class="text-white font-mono">${metrics.monthly_anchors}</span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-gray-400">Monthly Usage</span>
-                    <span class="text-white font-mono">${Math.round((quota.used / quota.limit) * 100)}%</span>
+                    <span class="text-gray-400">Est. Cost</span>
+                    <span class="text-white font-mono">$${(metrics.monthly_anchors * 0.03).toFixed(2)}</span>
                 </div>
             `;
         }
@@ -776,7 +750,7 @@
                 
                 html += `
                     <div class="flex items-center gap-2 text-xs border-b border-gray-800 pb-1">
-                        <span class="text-gray-500">[${log.time}]</span>
+                        <span class="text-gray-500">[${new Date(log.time).toLocaleTimeString()}]</span>
                         <span class="text-steel">${log.method}</span>
                         <span class="text-gray-400">${log.path}</span>
                         <span class="${statusClass}">${log.status}</span>
@@ -797,21 +771,16 @@
             }
         });
 
-        // 查询按钮 - 跳转到 Lookup 页面
         document.getElementById('lookup-btn').addEventListener('click', () => {
             const id = document.getElementById('record-id-input').value.trim();
-            if (!id) {
-                alert('请输入记录ID');
-                return;
+            if (id) {
+                window.location.href = `/lookup.html?id=${id}`;
             }
-            window.location.href = `/lookup.html?id=${id}`;
         });
 
-        // 示例ID按钮 - 也跳转到 Lookup 页面
         document.querySelectorAll('.example-id').forEach(btn => {
             btn.addEventListener('click', () => {
-                const id = btn.getAttribute('data-id');
-                window.location.href = `/lookup.html?id=${id}`;
+                document.getElementById('record-id-input').value = btn.getAttribute('data-id');
             });
         });
 
@@ -826,12 +795,8 @@
                         <code class="text-xs text-gray-400">${keyId.substring(0, 4)}...${keyId.substring(keyId.length - 4)}</code>
                     </div>
                     <div class="flex justify-end gap-2">
-                        <button class="cancel-revoke border border-gray-700 px-4 py-2 text-sm text-gray-400 hover:text-white">
-                            Cancel
-                        </button>
-                        <button class="confirm-revoke bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700">
-                            Revoke
-                        </button>
+                        <button class="cancel-revoke border border-gray-700 px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+                        <button class="confirm-revoke bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700">Revoke</button>
                     </div>
                 </div>
             `;
@@ -881,11 +846,8 @@
                 con_logs_no_logs: "No recent requests",
                 con_revoke_title: "Revoke API Key",
                 con_revoke_desc: "This action cannot be undone.",
-                con_metrics_total: "Total Judgments",
-                con_metrics_active: "Active Keys",
-                con_metrics_depth: "Avg Depth",
                 con_billing_link: "View detailed billing →",
-                con_billing_desc: "manage balance, history, rates"
+                con_billing_desc: "balance, history, rates"
             },
             zh: {
                 nav_home: "首页",
@@ -918,11 +880,8 @@
                 con_logs_no_logs: "暂无请求记录",
                 con_revoke_title: "吊销 API 密钥",
                 con_revoke_desc: "此操作无法撤销。",
-                con_metrics_total: "总记录数",
-                con_metrics_active: "活跃密钥",
-                con_metrics_depth: "平均深度",
                 con_billing_link: "查看详细计费 →",
-                con_billing_desc: "管理余额、历史、费率"
+                con_billing_desc: "余额、历史、费率"
             }
         };
 

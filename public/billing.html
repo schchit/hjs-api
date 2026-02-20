@@ -75,7 +75,7 @@
                 Usage & Billing
             </h1>
             <p class="mt-4 max-w-xl text-sm leading-relaxed text-gray-400" data-i18n="bill_subtitle">
-                Pay only for what you use. No subscriptions. No tiers.
+                Free storage · Pay only for anchoring
             </p>
         </section>
 
@@ -102,7 +102,7 @@
                 </div>
             </div>
 
-            <!-- 已认证状态（初始隐藏） -->
+            <!-- 已认证状态 -->
             <div id="auth-state" class="hidden border-b border-gray-800 pb-4">
                 <div class="flex justify-between items-center">
                     <p class="font-mono text-xs text-gray-400">
@@ -118,7 +118,7 @@
             </div>
         </div>
 
-        <!-- Main content (initially dimmed) -->
+        <!-- Main content -->
         <section id="billing-content" class="grid gap-6 pb-12 md:grid-cols-2 opacity-40 pointer-events-none">
             <!-- Left column: Balance + Rates + Monthly usage -->
             <div class="flex flex-col gap-6">
@@ -128,12 +128,12 @@
                         CURRENT BALANCE
                     </span>
                     <div class="mt-2 flex items-baseline gap-3">
-                        <span class="font-mono text-4xl font-light text-white" id="balance-amount">$--</span>
+                        <span class="font-mono text-4xl font-light text-white" id="balance-amount">$0.00</span>
                         <span id="topup-success" class="hidden font-mono text-sm text-steel animate-in"></span>
                     </div>
                 </div>
 
-                <!-- Rate Summary（更新后定价） -->
+                <!-- Rate Summary（存储免费） -->
                 <div class="border border-gray-800 bg-card p-6">
                     <span class="mb-4 block text-[10px] uppercase tracking-wider text-gray-400" data-i18n="bill_rates">
                         RATES
@@ -141,11 +141,11 @@
                     <div class="space-y-3 font-mono text-sm">
                         <div class="flex items-center justify-between">
                             <span class="text-gray-400" data-i18n="bill_rate_storage">Record Storage</span>
-                            <span class="text-white" id="rate-storage">$0.002/record/mo</span>
+                            <span class="text-green-400 font-medium">FREE</span>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="text-gray-400" data-i18n="bill_rate_anchor">Anchoring</span>
-                            <span class="text-white" id="rate-anchor">$0.03 + network fee</span>
+                            <span class="text-white">$0.03 + network fee</span>
                         </div>
                     </div>
                     <p class="text-xs text-gray-500 mt-4" data-i18n="bill_network_note">
@@ -160,20 +160,20 @@
                     </span>
                     <div class="space-y-2 font-mono text-sm">
                         <div class="flex justify-between">
-                            <span class="text-gray-400" data-i18n="bill_records">Records</span>
-                            <span class="text-white" id="month-records">--</span>
+                            <span class="text-gray-400" data-i18n="bill_records">Total Records</span>
+                            <span class="text-white" id="month-records">0</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-400" data-i18n="bill_anchors">Anchors</span>
-                            <span class="text-white" id="month-anchors">--</span>
+                            <span class="text-white" id="month-anchors">0</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-400" data-i18n="bill_network_fee">Network Fee</span>
-                            <span class="text-white" id="month-network">$--</span>
+                            <span class="text-white" id="month-network">$0.00</span>
                         </div>
                         <div class="mt-3 flex justify-between border-t border-gray-800 pt-3">
-                            <span class="font-medium text-white" data-i18n="bill_total">Total</span>
-                            <span class="font-medium text-white" id="month-total">$--</span>
+                            <span class="font-medium text-white" data-i18n="bill_total">Total Cost</span>
+                            <span class="font-medium text-white" id="month-total">$0.00</span>
                         </div>
                     </div>
                 </div>
@@ -181,7 +181,7 @@
 
             <!-- Right column: Top-up + Batch tip + History -->
             <div class="flex flex-col gap-6">
-                <!-- Top-up -->
+                <!-- Top-up（真实充值接口） -->
                 <div class="border border-gray-800 bg-card p-6">
                     <span class="mb-4 block text-[10px] uppercase tracking-wider text-gray-400" data-i18n="bill_topup">
                         ADD FUNDS
@@ -197,7 +197,7 @@
                             id="custom-amount"
                             min="1"
                             step="1"
-                            placeholder="Custom $"
+                            placeholder="Custom amount"
                             class="min-w-0 flex-1 border border-gray-700 bg-background px-3 py-2.5 font-mono text-sm text-white placeholder:text-gray-500 outline-none transition-colors focus:border-steel disabled:opacity-40"
                             disabled
                         />
@@ -206,9 +206,10 @@
                             class="shrink-0 border border-steel bg-steel/10 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-steel/20 disabled:opacity-40 disabled:cursor-not-allowed"
                             disabled
                         >
-                            Add
+                            Add Funds
                         </button>
                     </div>
+                    <div id="topup-status" class="mt-2 text-xs text-gray-400"></div>
                 </div>
 
                 <!-- Batch anchoring tip -->
@@ -224,7 +225,7 @@
                     <span class="mb-4 block text-[10px] uppercase tracking-wider text-gray-400" data-i18n="bill_history">
                         TRANSACTION HISTORY
                     </span>
-                    <div id="history-container" class="space-y-0 divide-y divide-gray-800">
+                    <div id="history-container" class="space-y-0 divide-y divide-gray-800 max-h-60 overflow-y-auto">
                         <p class="font-mono text-xs text-gray-400 py-4 text-center" data-i18n="bill_history_empty">
                             No transactions yet
                         </p>
@@ -264,6 +265,7 @@
         const currentEmailSpan = document.getElementById('current-email');
         const balanceSpan = document.getElementById('balance-amount');
         const topupSuccess = document.getElementById('topup-success');
+        const topupStatus = document.getElementById('topup-status');
         const monthRecords = document.getElementById('month-records');
         const monthAnchors = document.getElementById('month-anchors');
         const monthNetwork = document.getElementById('month-network');
@@ -273,7 +275,7 @@
         const addFundsBtn = document.getElementById('add-funds-btn');
         const presetBtns = document.querySelectorAll('.preset-btn');
 
-        // ===== 初始化 =====
+        // 初始化邮箱输入
         if (currentEmail) {
             unauthState.classList.add('hidden');
             authState.classList.remove('hidden');
@@ -336,12 +338,13 @@
             balance = 0;
             transactions = [];
             updateUI();
+            renderTransactions();
         }
 
         async function loadBillingData() {
             await Promise.all([
                 fetchBalance(),
-                fetchUsage(),
+                fetchMetrics(),
                 fetchTransactions()
             ]);
         }
@@ -352,69 +355,47 @@
                 if (res.ok) {
                     const data = await res.json();
                     balance = data.balance || 0;
-                } else {
-                    balance = 42.50;
                 }
             } catch (err) {
                 console.error('Fetch balance error:', err);
-                balance = 42.50;
+                balance = 0;
             }
             updateUI();
         }
 
-        async function fetchUsage() {
+        async function fetchMetrics() {
             try {
-                const res = await fetch(`${API_BASE}/billing/usage?email=${encodeURIComponent(currentEmail)}`);
+                const res = await fetch(`${API_BASE}/metrics?email=${encodeURIComponent(currentEmail)}`);
                 if (res.ok) {
                     const data = await res.json();
-                    monthRecords.textContent = data.records || 834;
-                    monthAnchors.textContent = data.anchors || 23;
-                    monthNetwork.textContent = `$${(data.network_fee || 7.36).toFixed(2)}`;
+                    monthRecords.textContent = data.total_judgments || 0;
+                    monthAnchors.textContent = data.monthly_anchors || 0;
                     
-                    // 按新价格计算总额
-                    const storageCost = (data.records || 834) * 0.002;
-                    const anchorCost = (data.anchors || 23) * 0.03;
-                    const network = data.network_fee || 7.36;
-                    const total = storageCost + anchorCost + network;
-                    monthTotal.textContent = `$${total.toFixed(2)}`;
-                } else {
-                    monthRecords.textContent = '834';
-                    monthAnchors.textContent = '23';
-                    monthNetwork.textContent = '$7.36';
+                    // 估算网络费（假设每个锚定 $0.32 网络费）
+                    const networkFee = (data.monthly_anchors || 0) * 0.32;
+                    monthNetwork.textContent = `$${networkFee.toFixed(2)}`;
                     
-                    const storageCost = 834 * 0.002;
-                    const anchorCost = 23 * 0.03;
-                    const network = 7.36;
-                    const total = storageCost + anchorCost + network;
+                    // 总费用 = 锚定服务费 ($0.03/次) + 网络费
+                    const total = (data.monthly_anchors * 0.03) + networkFee;
                     monthTotal.textContent = `$${total.toFixed(2)}`;
+                    
+                    // 更新余额（可能已经在fetchBalance中更新）
+                    if (data.balance !== undefined) {
+                        balance = data.balance;
+                        updateUI();
+                    }
                 }
             } catch (err) {
-                console.error('Fetch usage error:', err);
-                monthRecords.textContent = '834';
-                monthAnchors.textContent = '23';
-                monthNetwork.textContent = '$7.36';
-                
-                const storageCost = 834 * 0.002;
-                const anchorCost = 23 * 0.03;
-                const network = 7.36;
-                const total = storageCost + anchorCost + network;
-                monthTotal.textContent = `$${total.toFixed(2)}`;
+                console.error('Fetch metrics error:', err);
             }
         }
 
         async function fetchTransactions() {
             try {
-                const res = await fetch(`${API_BASE}/billing/transactions?email=${encodeURIComponent(currentEmail)}&limit=10`);
+                const res = await fetch(`${API_BASE}/billing/transactions?email=${encodeURIComponent(currentEmail)}&limit=20`);
                 if (res.ok) {
                     const data = await res.json();
                     transactions = data.transactions || [];
-                } else {
-                    transactions = [
-                        { id: 'tx_001', date: '2026-02-15', type: 'top-up', amount: 50 },
-                        { id: 'tx_002', date: '2026-02-14', type: 'anchor', amount: -12.50 },
-                        { id: 'tx_003', date: '2026-02-13', type: 'top-up', amount: 100 },
-                        { id: 'tx_004', date: '2026-02-12', type: 'storage', amount: -5.20 }
-                    ];
                 }
             } catch (err) {
                 console.error('Fetch transactions error:', err);
@@ -427,7 +408,8 @@
             if (amount <= 0 || !currentEmail) return;
             
             addFundsBtn.disabled = true;
-            addFundsBtn.textContent = '...';
+            addFundsBtn.textContent = 'Processing...';
+            topupStatus.textContent = '';
             
             try {
                 const res = await fetch(`${API_BASE}/billing/topup`, {
@@ -440,30 +422,30 @@
                     const data = await res.json();
                     balance = data.new_balance;
                     
+                    // 显示成功提示
                     topupSuccess.textContent = `+$${amount.toFixed(2)}`;
                     topupSuccess.classList.remove('hidden');
                     setTimeout(() => topupSuccess.classList.add('hidden'), 2500);
                     
-                    transactions.unshift({
-                        id: data.transaction_id || `tx_${Date.now()}`,
-                        date: new Date().toISOString().split('T')[0],
-                        type: 'top-up',
-                        amount: amount
-                    });
+                    // 重新获取交易历史
+                    await fetchTransactions();
                     
                     updateUI();
-                    renderTransactions();
                     
+                    // 清空输入
                     customAmount.value = '';
+                    topupStatus.textContent = '✅ 充值成功';
+                    setTimeout(() => topupStatus.textContent = '', 3000);
                 } else {
-                    alert('充值失败，请重试');
+                    const err = await res.json();
+                    topupStatus.textContent = `❌ ${err.error || '充值失败'}`;
                 }
             } catch (err) {
                 console.error('Top-up error:', err);
-                alert('充值失败，请检查网络');
+                topupStatus.textContent = '❌ 网络错误，请重试';
             } finally {
                 addFundsBtn.disabled = false;
-                addFundsBtn.textContent = 'Add';
+                addFundsBtn.textContent = 'Add Funds';
             }
         }
 
@@ -492,17 +474,19 @@
             }
             
             let html = '';
-            transactions.slice(0, 5).forEach(tx => {
-                const isTopup = tx.type === 'top-up' || tx.amount > 0;
+            transactions.slice(0, 10).forEach(tx => {
+                const isTopup = tx.type === 'topup' || tx.amount > 0;
+                const date = new Date(tx.date).toLocaleDateString();
+                const amount = Math.abs(tx.amount).toFixed(2);
+                
                 html += `
-                    <div class="flex items-center justify-between py-3 font-mono text-xs">
+                    <div class="flex items-center justify-between py-2 font-mono text-xs">
                         <div class="flex flex-col gap-0.5">
-                            <span class="text-white">${tx.id.substring(0, 8)}...</span>
-                            <span class="text-gray-500">${tx.date}</span>
+                            <span class="text-gray-500">${date}</span>
+                            <span class="text-gray-400">${tx.type}</span>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <span class="uppercase tracking-wider ${isTopup ? 'text-steel' : 'text-gray-400'}">${tx.type}</span>
-                            <span class="text-white">${isTopup ? '+' : '-'}$${Math.abs(tx.amount).toFixed(2)}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-white">${isTopup ? '+' : '-'}$${amount}</span>
                         </div>
                     </div>
                 `;
@@ -521,26 +505,24 @@
                 nav_lookup: "Lookup",
                 nav_billing: "Billing",
                 nav_governance: "Governance",
+                con_auth_current: "Current",
                 bill_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
                 bill_title: "Usage & Billing",
-                bill_subtitle: "Pay only for what you use. No subscriptions. No tiers.",
+                bill_subtitle: "Free storage · Pay only for anchoring",
                 bill_auth_heading: "EMAIL AUTHENTICATION",
-                con_auth_placeholder: "your@email.com",
-                con_auth_verify: "Verify",
-                con_auth_current: "Current",
                 bill_balance: "CURRENT BALANCE",
                 bill_rates: "RATES",
                 bill_rate_storage: "Record Storage",
                 bill_rate_anchor: "Anchoring",
                 bill_network_note: "Bitcoin network fee passed through at cost. Current estimate: $0.32 per anchor.",
                 bill_month: "THIS MONTH",
-                bill_records: "Records",
+                bill_records: "Total Records",
                 bill_anchors: "Anchors",
                 bill_network_fee: "Network Fee",
-                bill_total: "Total",
+                bill_total: "Total Cost",
                 bill_topup: "ADD FUNDS",
-                bill_custom: "Custom $",
-                bill_add: "Add",
+                bill_custom: "Custom amount",
+                bill_add: "Add Funds",
                 bill_batch_tip: "Batch anchoring with Merkle tree reduces network fee by up to 99%. Network fee is amortized across batch. HJS fee applies per anchor.",
                 bill_history: "TRANSACTION HISTORY",
                 bill_history_empty: "No transactions yet"
@@ -553,23 +535,21 @@
                 nav_lookup: "查询",
                 nav_billing: "计费",
                 nav_governance: "治理",
+                con_auth_current: "当前邮箱",
                 bill_version_tag: "HJS 责任协议 · 草案 0.1 版",
                 bill_title: "用量与计费",
-                bill_subtitle: "按使用付费。无订阅。无套餐。",
+                bill_subtitle: "存储免费 · 仅锚定收费",
                 bill_auth_heading: "邮箱验证",
-                con_auth_placeholder: "your@email.com",
-                con_auth_verify: "验证",
-                con_auth_current: "当前邮箱",
                 bill_balance: "当前余额",
                 bill_rates: "费率",
                 bill_rate_storage: "记录存储",
                 bill_rate_anchor: "锚定服务",
                 bill_network_note: "比特币网络费按实际成本转嫁。当前估算：$0.32/次。",
                 bill_month: "本月用量",
-                bill_records: "记录数",
+                bill_records: "总记录数",
                 bill_anchors: "锚定数",
                 bill_network_fee: "网络费",
-                bill_total: "总计",
+                bill_total: "总费用",
                 bill_topup: "充值",
                 bill_custom: "自定义金额",
                 bill_add: "充值",

@@ -18,6 +18,42 @@
         .text-foreground { color: #e5e5e5; }
         .hover\:border-steel:hover { border-color: #3B4B5C; }
         .hover\:text-foreground:hover { color: #e5e5e5; }
+        
+        /* 示例代码块样式 */
+        details.example-details {
+            margin-top: 1.25rem;
+        }
+        details.example-details summary {
+            display: inline-block;
+            border: 1px solid #374151;
+            padding: 0.375rem 1rem;
+            font-size: 0.75rem;
+            color: #9ca3af;
+            cursor: pointer;
+            transition: all 0.2s;
+            list-style: none;
+        }
+        details.example-details summary:hover {
+            border-color: #3B4B5C;
+            color: #e5e5e5;
+        }
+        details.example-details[open] summary {
+            border-color: #3B4B5C;
+            color: #e5e5e5;
+            margin-bottom: 1rem;
+        }
+        details.example-details pre {
+            background: #111111;
+            border: 1px solid #1f1f1f;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            color: #d4d4d4;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
     </style>
 </head>
 <body>
@@ -86,9 +122,40 @@
                     <p class="mt-4 border-l-2 border-gray-700 pl-4 font-mono text-xs leading-relaxed text-gray-400" data-i18n="prod_ep1_rule">
                         A Judgment MUST include actor and timestamp.
                     </p>
-                    <div class="mt-5">
-                        <button class="border border-gray-700 px-4 py-1.5 text-xs text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="prod_try_it">View Example</button>
-                    </div>
+                    
+                    <!-- 查看示例 - 可点击展开 -->
+                    <details class="example-details">
+                        <summary data-i18n="prod_try_it">View Example</summary>
+                        <pre>{
+  "request": {
+    "method": "POST",
+    "url": "/judgment",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "actor": "0x7F3a...e4b2",
+      "decision": "approve_loan_application",
+      "metadata": {
+        "application_id": "LN-2026-02-22-001",
+        "amount": 50000,
+        "risk_score": 0.23,
+        "model_version": "credit-scorer-v3"
+      },
+      "timestamp": "2026-02-22T14:35:00Z"
+    }
+  },
+  "response": {
+    "status": 201,
+    "body": {
+      "judgment_id": "jgd_9a7f5e3c1b2d",
+      "status": "recorded",
+      "proof_hash": "0x3f2a...c8e7",
+      "timestamp": "2026-02-22T14:35:01Z"
+    }
+  }
+}</pre>
+                    </details>
                 </div>
 
                 <!-- Bind Delegation -->
@@ -104,9 +171,34 @@
                     <p class="mt-1 border-l-2 border-gray-700 pl-4 font-mono text-xs leading-relaxed text-gray-400" data-i18n="prod_ep2_rule2">
                         Delegation MAY define scope and expiry.
                     </p>
-                    <div class="mt-5">
-                        <button class="border border-gray-700 px-4 py-1.5 text-xs text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="prod_try_it">View Example</button>
-                    </div>
+                    
+                    <!-- 查看示例 - 可点击展开 -->
+                    <details class="example-details">
+                        <summary data-i18n="prod_try_it">View Example</summary>
+                        <pre>{
+  "request": {
+    "method": "POST",
+    "url": "/delegation",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "judgment_id": "jgd_9a7f5e3c1b2d",
+      "delegate_to": "0xB2c8...a93f",
+      "scope": ["decisions.loan_under_100k", "data.view_credit_score"],
+      "expires_at": "2026-03-22T23:59:59Z"
+    }
+  },
+  "response": {
+    "status": 201,
+    "body": {
+      "delegation_id": "dlg_4d8e2a1f6c3b",
+      "status": "active",
+      "expires_at": "2026-03-22T23:59:59Z"
+    }
+  }
+}</pre>
+                    </details>
                 </div>
 
                 <!-- Terminate Responsibility -->
@@ -119,9 +211,34 @@
                     <p class="mt-4 border-l-2 border-gray-700 pl-4 font-mono text-xs leading-relaxed text-gray-400" data-i18n="prod_ep3_rule">
                         Termination MUST reference a valid Judgment or Delegation.
                     </p>
-                    <div class="mt-5">
-                        <button class="border border-gray-700 px-4 py-1.5 text-xs text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="prod_try_it">View Example</button>
-                    </div>
+                    
+                    <!-- 查看示例 - 可点击展开 -->
+                    <details class="example-details">
+                        <summary data-i18n="prod_try_it">View Example</summary>
+                        <pre>{
+  "request": {
+    "method": "POST",
+    "url": "/termination",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "reference_id": "dlg_4d8e2a1f6c3b",
+      "reason": "project_completed",
+      "terminated_by": "0x7F3a...e4b2"
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "termination_id": "trm_2b7c9d4e1f8a",
+      "status": "terminated",
+      "reference_id": "dlg_4d8e2a1f6c3b",
+      "timestamp": "2026-02-22T15:20:00Z"
+    }
+  }
+}</pre>
+                    </details>
                 </div>
 
                 <!-- Verify Record -->
@@ -137,18 +254,43 @@
                     <p class="mt-1 border-l-2 border-gray-700 pl-4 font-mono text-xs leading-relaxed text-gray-400" data-i18n="prod_ep4_rule2">
                         Verification does not require trust in this service.
                     </p>
-                    <div class="mt-5">
-                        <button class="border border-gray-700 px-4 py-1.5 text-xs text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="prod_try_it">View Example</button>
-                    </div>
+                    
+                    <!-- 查看示例 - 可点击展开 -->
+                    <details class="example-details">
+                        <summary data-i18n="prod_try_it">View Example</summary>
+                        <pre>{
+  "request": {
+    "method": "GET",
+    "url": "/verify/jgd_9a7f5e3c1b2d"
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "jgd_9a7f5e3c1b2d",
+      "exists": true,
+      "record": {
+        "actor": "0x7F3a...e4b2",
+        "decision": "approve_loan_application",
+        "timestamp": "2026-02-22T14:35:00Z"
+      },
+      "integrity": {
+        "verified": true,
+        "proof": "0x3f2a...c8e7",
+        "anchored_at": "2026-02-22T14:40:00Z"
+      }
+    }
+  }
+}</pre>
+                    </details>
                 </div>
             </div>
         </section>
 
         <hr class="border-gray-800">
 
-        <!-- Performance & SLA + Pricing -->
+        <!-- Performance & SLA Only (Pricing removed) -->
         <section class="py-24">
-            <div class="grid gap-px overflow-hidden border border-gray-800 bg-gray-800 sm:grid-cols-2">
+            <div class="grid gap-px overflow-hidden border border-gray-800 bg-gray-800 sm:grid-cols-1">
                 <!-- Performance & SLA -->
                 <div class="flex flex-col gap-4 bg-[#1a1a1a]/50 p-6">
                     <h3 class="text-xs font-medium tracking-widest text-gray-400 uppercase" data-i18n="prod_sla_heading">PERFORMANCE & SLA</h3>
@@ -158,22 +300,6 @@
                         </li>
                         <li class="text-sm text-gray-400">
                             {"< "}<span class="font-mono text-white">100ms</span> <span data-i18n="prod_sla_latency">response time (p95)</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Pricing -->
-                <div class="flex flex-col gap-4 bg-[#1a1a1a]/50 p-6">
-                    <h3 class="text-xs font-medium tracking-widest text-gray-400 uppercase" data-i18n="prod_pricing_heading">PRICING</h3>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li>
-                            <span class="font-mono text-white">Free</span> <span data-i18n="prod_pricing_free">1,000 judgments/month</span>
-                        </li>
-                        <li>
-                            <span class="font-mono text-white">$0.001</span> <span data-i18n="prod_pricing_paygo">per additional judgment</span>
-                        </li>
-                        <li>
-                            <span class="font-mono text-white">Enterprise</span> <span data-i18n="prod_pricing_enterprise">custom (contact)</span>
                         </li>
                     </ul>
                 </div>
@@ -195,13 +321,13 @@
     <script>
         const translations = {
             en: {
-        nav_home: "Home",
-        nav_product: "Product",
-        nav_developers: "Developers",
-        nav_console: "Console",
-        nav_lookup: "Lookup",
-        nav_billing: "Billing",
-        nav_governance: "Governance",
+                nav_home: "Home",
+                nav_product: "Product",
+                nav_developers: "Developers",
+                nav_console: "Console",
+                nav_lookup: "Lookup",
+                nav_billing: "Billing",
+                nav_governance: "Governance",
                 prod_version_tag: "HJS Responsibility Protocol · Version 0.1 Draft",
                 prod_title: "Hosted Protocol Execution",
                 prod_subtitle: "This service executes the HJS Responsibility Protocol.",
@@ -226,20 +352,16 @@
                 prod_try_it: "View Example",
                 prod_sla_heading: "PERFORMANCE & SLA",
                 prod_sla_uptime: "uptime for judgment recording",
-                prod_sla_latency: "response time (p95)",
-                prod_pricing_heading: "PRICING",
-                prod_pricing_free: "1,000 judgments/month",
-                prod_pricing_paygo: "per additional judgment",
-                prod_pricing_enterprise: "custom (contact)"
+                prod_sla_latency: "response time (p95)"
             },
             zh: {
-        nav_home: "首页",
-        nav_product: "产品",
-        nav_developers: "开发者",
-        nav_console: "控制台",
-        nav_lookup: "查询",
-        nav_billing: "计费",
-        nav_governance: "治理",
+                nav_home: "首页",
+                nav_product: "产品",
+                nav_developers: "开发者",
+                nav_console: "控制台",
+                nav_lookup: "查询",
+                nav_billing: "计费",
+                nav_governance: "治理",
                 prod_version_tag: "HJS 责任协议 · 草案 0.1 版",
                 prod_title: "托管协议执行",
                 prod_subtitle: "此服务执行 HJS 责任协议。",
@@ -264,11 +386,7 @@
                 prod_try_it: "查看示例",
                 prod_sla_heading: "性能与服务等级",
                 prod_sla_uptime: "记录判断可用性",
-                prod_sla_latency: "响应时间 (p95)",
-                prod_pricing_heading: "定价",
-                prod_pricing_free: "每月 1000 条免费",
-                prod_pricing_paygo: "每额外条 $0.001",
-                prod_pricing_enterprise: "企业版（联系）"
+                prod_sla_latency: "响应时间 (p95)"
             }
         };
 
@@ -279,6 +397,15 @@
                     el.innerHTML = translations[lang][key];
                 }
             });
+            
+            // 更新 details summary 中的文本
+            document.querySelectorAll('details.example-details summary').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+            
             const select = document.querySelector('select');
             if (select) select.value = lang;
         }

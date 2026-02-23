@@ -945,12 +945,17 @@ app.get('/', (req, res) => {
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  keyGenerator: (req) => req.headers['x-api-key'] || req.ip,
+  keyGenerator: (req, res) => {
+    // 使用API Key或IP作为限速键
+    return req.headers['x-api-key'] || req.ip;
+  },
   handler: (req, res) => {
     res.status(429).json({ error: 'Too many requests, please slow down' });
   },
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  // 跳过IPv6检查警告
+  validate: { xForwardedForHeader: false }
 });
 
 const authenticateApiKey = async (req, res, next) => {

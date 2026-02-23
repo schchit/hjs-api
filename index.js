@@ -12,7 +12,7 @@ const { autoMigrate } = require('./lib/auto-migrate');
 const { authenticateAccount, createAccount, recordUsage, checkQuota } = require('./lib/tenant');
 const { injectAccountId, requireOwnership, withAccountFilter } = require('./lib/tenant-middleware');
 const { getAccountIdFromRequest } = require('./lib/tenant-compat');
-const { versionNegotiation, createVersionRouter } = require('./lib/versioning');
+const { versionNegotiation } = require('./lib/versioning');
 const { SLAMonitor, metricsMiddleware } = require('./monitoring/sla');
 const { SandboxManager, sandboxMiddleware } = require('./sandbox/manager');
 const rateLimit = require('express-rate-limit');
@@ -946,7 +946,6 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   keyGenerator: (req, res) => {
-    // 使用API Key或IP作为限速键
     return req.headers['x-api-key'] || req.ip;
   },
   handler: (req, res) => {
@@ -954,8 +953,7 @@ const limiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  // 跳过IPv6检查警告
-  validate: { xForwardedForHeader: false }
+  validate: false
 });
 
 const authenticateApiKey = async (req, res, next) => {
@@ -1581,8 +1579,16 @@ if (hjsExtension) {
 const { createV1Router } = require('./lib/v1-api');
 app.use('/v1', createV1Router(pool, authenticateApiKey, limiter, auditLog, generateRecordHash, anchorRecord));
 
-// ==================== API 版本控制路由 ====================
-app.use(createVersionRouter(pool, authenticateApiKey, limiter, auditLog));
+// ==================== API 版本控制 ====================
+// v0 废弃提示
+app.get('/v0', (req, res) => {
+  res.status(301).json({
+    error: 'v0 API is deprecated',
+    message: 'Please use /v1',
+    redirect: '/v1',
+    sunset_date: '2026-06-01'
+  });
+});
 
 // ==================== 监控和指标端点 ====================
 // SLA 报告

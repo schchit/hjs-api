@@ -206,13 +206,11 @@
                                 type="text"
                                 id="record-id-input"
                                 placeholder="jgd_xxx"
-                                class="flex-1 border border-gray-800 bg-background px-3 py-2 font-mono text-sm text-white placeholder:text-gray-500 outline-none focus:border-steel disabled:opacity-60"
-                                disabled
+                                class="flex-1 border border-gray-800 bg-background px-3 py-2 font-mono text-sm text-white placeholder:text-gray-500 outline-none focus:border-steel"
                             />
                             <button
                                 id="lookup-btn"
-                                class="shrink-0 border border-steel bg-steel/10 px-4 py-2 text-xs text-white hover:bg-steel/20 disabled:opacity-40 disabled:cursor-not-allowed"
-                                disabled
+                                class="shrink-0 border border-steel bg-steel/10 px-4 py-2 text-xs text-white hover:bg-steel/20"
                                 data-i18n="con_lookup_button"
                             >
                                 Lookup →
@@ -463,7 +461,7 @@
         });
 
         function enableAllFeatures() {
-            document.querySelectorAll('#api-keys-panel input, #api-keys-panel button, #record-lookup-panel input, #record-lookup-panel button').forEach(el => {
+            document.querySelectorAll('#api-keys-panel input, #api-keys-panel button').forEach(el => {
                 if (el.id !== 'verify-btn' && el.id !== 'logout-btn') {
                     el.disabled = false;
                 }
@@ -471,7 +469,7 @@
         }
 
         function disableAllFeatures() {
-            document.querySelectorAll('#api-keys-panel input, #api-keys-panel button, #record-lookup-panel input, #record-lookup-panel button').forEach(el => {
+            document.querySelectorAll('#api-keys-panel input, #api-keys-panel button').forEach(el => {
                 if (el.id !== 'verify-btn' && el.id !== 'logout-btn') {
                     el.disabled = true;
                 }

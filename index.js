@@ -82,6 +82,69 @@ app.get('/logs', async (req, res) => {
     }
 });
 
+// ==================== 健康检查端点 ====================
+app.get('/health', async (req, res) => {
+    try {
+        await pool.query('SELECT NOW()');
+        res.json({
+            status: 'healthy',
+            timestamp: new Date().toISOString(),
+            version: '1.0.0',
+            services: { database: 'connected', api: 'running' }
+        });
+    } catch (err) {
+        res.status(503).json({
+            status: 'unhealthy',
+            timestamp: new Date().toISOString(),
+            error: 'Database connection failed'
+        });
+    }
+});
+
+// ==================== API 文档端点 ====================
+app.get('/api/docs', (req, res) => {
+    res.json({
+        name: 'HJS Protocol API',
+        version: '1.0.0',
+        description: 'Human Judgment Systems - Structural Traceability Protocol',
+        base_url: 'https://api.hjs.sh',
+        endpoints: {
+            authentication: {
+                'POST /developer/keys': 'Generate API key',
+                'GET /developer/keys': 'List API keys',
+                'DELETE /developer/keys/:key': 'Revoke API key'
+            },
+            core_protocol: {
+                'POST /judgments': 'Create a judgment record',
+                'GET /judgments/:id': 'Get judgment by ID',
+                'GET /judgments': 'List judgments',
+                'POST /delegations': 'Create delegation',
+                'GET /delegations/:id': 'Get delegation by ID',
+                'GET /delegations': 'List delegations',
+                'POST /terminations': 'Create termination',
+                'GET /terminations/:id': 'Get termination by ID',
+                'POST /verifications': 'Verify record',
+                'POST /verify': 'Quick verify (auto-detect type)'
+            },
+            utilities: {
+                'GET /health': 'Health check',
+                'GET /metrics': 'Usage metrics',
+                'GET /logs': 'Audit logs'
+            }
+        },
+        authentication: {
+            type: 'API Key',
+            header: 'X-API-Key',
+            example: 'curl -H "X-API-Key: your_key" https://api.hjs.sh/judgments'
+        }
+    });
+});
+
+// ==================== /docs 重定向 ====================
+app.get('/docs', (req, res) => {
+    res.redirect('/api/docs');
+});
+
 // ==================== 获取用量统计（只统计锚定） ====================
 app.get('/metrics', async (req, res) => {
     const { email } = req.query;

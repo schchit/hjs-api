@@ -9,6 +9,7 @@ const { submitToOTS } = require('./lib/ots-utils');
 const { anchorRecord, upgradeAnchor } = require('./lib/anchor');
 const { validateInput, sanitizeInput, limitScopeSize } = require('./lib/validation');
 const { autoMigrate } = require('./lib/auto-migrate');
+const { authenticateAccount, createAccount, recordUsage, checkQuota } = require('./lib/tenant');
 const rateLimit = require('express-rate-limit');
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
@@ -1080,7 +1081,63 @@ async function generateJudgmentPDF(record, res) {
   doc.end();
 }
 
-// ==================== 开发者密钥管理 API ====================
+// ==================== 账户管理 API（多租户） ====================
+
+// 注册新账户
+app.post('/v1/accounts', express.json(), sanitizeInput, validateInput({
+  name: { required: true, type: 'string', maxLength: 255 },
+  email: { required: true, type: 'email', maxLength: 255 }
+}), async (req, res) => {
+  const { name, email } = req.body;
+  
+  try {
+    // 检查邮箱是否已注册
+    const existing = await pool.query('SELECT id FROM accounts WHERE email = $1', [email]);
+    if (existing.rows.length > 0) {
+      return res.status(409).json({ error: 'Email already registered' });
+    }
+    
+    // 创建账户
+    const result = await createAccount(pool, { name, email, plan: 'free' });
+    
+    res.status(201).json({
+      account: result.account,
+      keys: {
+        production: result.keys.production,
+        sandbox: result.keys.sandbox
+      },
+      note: 'Save these keys securely. The sandbox key can be used for testing without charges.'
+    });
+    
+  } catch (err) {
+    console.error('Account creation error:', err);
+    res.status(500).json({ error: 'Failed to create account' });
+  }
+});
+
+// 获取账户信息（需要认证）
+app.get('/v1/account', authenticateAccount(pool), async (req, res) => {
+  try {
+    // 获取用量
+    const quota = await checkQuota(pool, req.account.id, req.account.plan);
+    
+    res.json({
+      account: {
+        id: req.account.id,
+        name: req.account.name,
+        plan: req.account.plan,
+        environment: req.isSandbox ? 'sandbox' : 'production'
+      },
+      usage: quota.usage,
+      quota: quota.quota
+    });
+  } catch (err) {
+    console.error('Account info error:', err);
+    res.status(500).json({ error: 'Failed to get account info' });
+  }
+});
+
+// ==================== 开发者密钥管理 API（向后兼容） ====================
 
 // 生成新密钥
 app.post('/developer/keys', express.json(), sanitizeInput, validateInput({

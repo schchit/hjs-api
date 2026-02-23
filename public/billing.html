@@ -9,7 +9,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
         .font-mono, code, pre { font-family: 'JetBrains Mono', monospace !important; }
-        body { background: #0a0a0a; color: #e5e5e5; }
+        body { background: #0a0a0a; color: #e5e5e5; min-height: 100vh; }
+        html { scroll-behavior: smooth; }
         .text-steel { color: #3B4B5C; }
         .border-steel { border-color: #3B4B5C; }
         .bg-steel\/10 { background-color: rgba(59, 75, 92, 0.1); }
@@ -58,6 +59,7 @@
                 <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
                 <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
                 <a href="/billing.html" class="text-white" data-i18n="nav_billing">Billing</a>
+                <a href="/roi-calculator.html" class="hover:text-teal-400 transition" data-i18n="nav_roi">ROI</a>
                 <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
             </div>
             <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
@@ -626,6 +628,7 @@
                 nav_billing: "Billing",
                 nav_roi: "ROI",
                 nav_governance: "Governance",
+                nav_roi: "ROI",
                 con_auth_current: "Current",
                 bill_version_tag: "HJS Responsibility Protocol · v1.0 Beta",
                 bill_title: "Usage & Billing",
@@ -663,6 +666,7 @@
                 nav_billing: "计费",
                 nav_roi: "ROI",
                 nav_governance: "治理",
+                nav_roi: "ROI",
                 con_auth_current: "当前邮箱",
                 bill_version_tag: "HJS 责任协议 · v1.0 Beta",
                 bill_title: "用量与计费",

@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name="hjs-client",
-    version="0.1.0",
-    description="Python client for HJS API - A Protocol for Structural Traceability",
-    long_description=open("README.md").read(),
+    version="1.0.0",
+    description="Complete Python SDK for HJS Protocol - Judgment, Delegation, Termination, Verification",
+    long_description=open("README.md").read() if open("README.md") else "",
     long_description_content_type="text/markdown",
     author="HJS Contributors",
     author_email="signal@humanjudgment.org",
@@ -15,7 +15,7 @@ setup(
     ],
     python_requires=">=3.7",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
@@ -24,6 +24,9 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: System :: Logging",
     ],
-    keywords="hjs, traceability, structural, judgment, api",
+    keywords="hjs, traceability, structural, judgment, delegation, termination, verification, blockchain, anchoring, compliance, audit",
 )

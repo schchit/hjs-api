@@ -15,6 +15,7 @@ const { getAccountIdFromRequest } = require('./lib/tenant-compat');
 const { versionNegotiation } = require('./lib/versioning');
 const { SLAMonitor, metricsMiddleware } = require('./monitoring/sla');
 const { SandboxManager, sandboxMiddleware } = require('./sandbox/manager');
+const { TieredBillingSystem } = require('./lib/tiered-billing');
 const rateLimit = require('express-rate-limit');
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
@@ -68,6 +69,10 @@ console.log('📊 SLA Monitor initialized');
 // 沙盒管理
 const sandboxManager = new SandboxManager(pool);
 console.log('🏖️  Sandbox Manager initialized');
+
+// 阶梯计费系统
+const billingSystem = new TieredBillingSystem(pool);
+console.log('💰 Tiered Billing System initialized');
 
 // 应用监控中间件
 app.use(metricsMiddleware(slaMonitor));
@@ -1340,17 +1345,25 @@ app.post('/judgments', limiter, authenticateApiKey, auditLog, sanitizeInput, lim
       try {
         await client.query('BEGIN');
         
-        // 原子化扣费
-        const deductResult = await deductBalanceAtomic(client, entity, 0.03, 'anchor', id);
-        if (!deductResult.success) {
+        // 计算阶梯定价
+        const priceInfo = await billingSystem.calculateAnchorPrice(entity);
+        
+        // 检查余额
+        const balanceCheck = await billingSystem.checkBalance(entity, priceInfo.price);
+        if (!balanceCheck.sufficient) {
           await client.query('ROLLBACK');
           return res.status(402).json({
-            error: deductResult.error === 'Insufficient balance' 
-              ? 'Insufficient balance for anchoring' 
-              : deductResult.error,
-            required: 0.03
+            error: 'Insufficient balance for anchoring',
+            required: priceInfo.price,
+            balance: balanceCheck.balance,
+            shortfall: balanceCheck.shortfall,
+            currentTier: priceInfo.tier,
+            pricing: '/billing/pricing'
           });
         }
+        
+        // 扣费
+        await billingSystem.charge(entity, priceInfo.price, id);
         
         // 插入记录
         await client.query(
@@ -1403,13 +1416,27 @@ app.post('/judgments', limiter, authenticateApiKey, auditLog, sanitizeInput, lim
     if (anchorResult.reference) responseAnchor.reference = anchorResult.reference;
     if (anchorResult.anchoredAt) responseAnchor.anchored_at = anchorResult.anchoredAt;
 
-    res.json({
+    // 构建响应
+    const response = {
       id,
       status: 'recorded',
       protocol: 'HJS/1.0',
       timestamp: recordedAt,
       immutability_anchor: responseAnchor
-    });
+    };
+    
+    // 如果是锚定，添加计费信息
+    if (anchorType === 'ots') {
+      const priceInfo = await billingSystem.calculateAnchorPrice(entity);
+      response.billing = {
+        charged: priceInfo.price,
+        tier: priceInfo.tier,
+        currentCount: priceInfo.currentCount,
+        nextTier: priceInfo.nextTier
+      };
+    }
+
+    res.json(response);
 
   } catch (err) {
     console.error('Database error:', err);
@@ -1622,9 +1649,63 @@ app.get('/health', async (req, res) => {
   });
 });
 
+// ==================== 阶梯定价计费端点 ====================
+// 获取当前定价信息
+app.get('/billing/pricing', authenticateAccount(pool), async (req, res) => {
+  try {
+    const pricing = await billingSystem.getPricingInfo(req.account.id);
+    res.json(pricing);
+  } catch (err) {
+    console.error('Get pricing error:', err);
+    res.status(500).json({ error: 'Failed to get pricing' });
+  }
+});
+
+// 预估批量锚定费用
+app.post('/billing/estimate', authenticateAccount(pool), async (req, res) => {
+  try {
+    const { count } = req.body;
+    if (!count || count < 1) {
+      return res.status(400).json({ error: 'Count required' });
+    }
+    const estimate = await billingSystem.estimateBulkCost(req.account.id, count);
+    res.json(estimate);
+  } catch (err) {
+    console.error('Estimate error:', err);
+    res.status(500).json({ error: 'Failed to estimate' });
+  }
+});
+
+// 充值
+app.post('/billing/deposit', authenticateAccount(pool), async (req, res) => {
+  try {
+    const { amount } = req.body;
+    const result = await billingSystem.deposit(req.account.id, amount);
+    res.json(result);
+  } catch (err) {
+    console.error('Deposit error:', err);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// 查询余额
+app.get('/billing/balance', authenticateAccount(pool), async (req, res) => {
+  try {
+    const balance = await billingSystem.checkBalance(req.account.id, 0);
+    res.json({
+      balance: balance.balance,
+      sufficient: balance.sufficient,
+      minDeposit: billingSystem.minDeposit
+    });
+  } catch (err) {
+    console.error('Balance error:', err);
+    res.status(500).json({ error: 'Failed to get balance' });
+  }
+});
+
 // ==================== 沙盒管理端点 ====================
 // 沙盒状态
-app.get('/sandbox/status', authenticateApiKey, async (req, res) => {
+app.get('/sandbox/status', authenticateAccount(pool), async (req, res) => {
   if (!req.isSandbox) {
     return res.status(400).json({ error: 'This endpoint is only available in sandbox mode' });
   }
@@ -1633,7 +1714,7 @@ app.get('/sandbox/status', authenticateApiKey, async (req, res) => {
 });
 
 // 重置沙盒数据
-app.post('/sandbox/reset', authenticateApiKey, async (req, res) => {
+app.post('/sandbox/reset', authenticateAccount(pool), async (req, res) => {
   if (!req.isSandbox) {
     return res.status(400).json({ error: 'This endpoint is only available in sandbox mode' });
   }

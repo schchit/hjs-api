@@ -142,12 +142,12 @@
                     <!-- Current Tier Badge -->
                     <div id="current-tier-badge" class="mb-4 p-3 border border-steel bg-steel/10 rounded">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs text-gray-400">Current Tier</span>
+                            <span class="text-xs text-gray-400" data-i18n="bill_current_tier">Current Tier</span>
                             <span id="current-tier-name" class="font-mono text-sm text-white font-medium">Experience</span>
                         </div>
                         <div class="mt-2 flex items-baseline gap-2">
                             <span id="current-tier-price" class="font-mono text-2xl text-white">$0.03</span>
-                            <span class="text-xs text-gray-500">/anchor</span>
+                            <span class="text-xs text-gray-500" data-i18n="bill_per_anchor">/anchor</span>
                         </div>
                         <div id="next-tier-progress" class="mt-2">
                             <div class="flex justify-between text-xs text-gray-500 mb-1">
@@ -166,7 +166,7 @@
                         <div class="tier-row flex items-center justify-between p-2 rounded text-sm" data-tier="experience">
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-gray-600"></span>
-                                <span class="text-gray-400">Experience</span>
+                                <span class="text-gray-400" data-i18n="bill_tier_experience">Experience</span>
                                 <span class="text-xs text-gray-600">0-100</span>
                             </div>
                             <span class="font-mono text-white">$0.03</span>
@@ -174,7 +174,7 @@
                         <div class="tier-row flex items-center justify-between p-2 rounded text-sm" data-tier="standard">
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-gray-600"></span>
-                                <span class="text-gray-400">Standard</span>
+                                <span class="text-gray-400" data-i18n="bill_tier_standard">Standard</span>
                                 <span class="text-xs text-gray-600">101-1K</span>
                             </div>
                             <span class="font-mono text-white">$0.02</span>
@@ -182,7 +182,7 @@
                         <div class="tier-row flex items-center justify-between p-2 rounded text-sm" data-tier="bulk">
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-gray-600"></span>
-                                <span class="text-gray-400">Bulk</span>
+                                <span class="text-gray-400" data-i18n="bill_tier_bulk">Bulk</span>
                                 <span class="text-xs text-gray-600">1K-10K</span>
                             </div>
                             <span class="font-mono text-white">$0.01</span>
@@ -190,7 +190,7 @@
                         <div class="tier-row flex items-center justify-between p-2 rounded text-sm" data-tier="enterprise">
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-gray-600"></span>
-                                <span class="text-gray-400">Enterprise</span>
+                                <span class="text-gray-400" data-i18n="bill_tier_enterprise">Enterprise</span>
                                 <span class="text-xs text-gray-600">10K+</span>
                             </div>
                             <span class="font-mono text-white">$0.005</span>
@@ -419,14 +419,27 @@
         }
 
         function updatePricingUI(pricing) {
+            const currentLang = localStorage.getItem('hjs_lang') || 'en';
+            const t = translations[currentLang] || translations.en;
+            
+            // Helper to get tier name
+            const getTierName = (tierKey) => {
+                const tierMap = {
+                    'experience': t.bill_tier_experience,
+                    'standard': t.bill_tier_standard,
+                    'bulk': t.bill_tier_bulk,
+                    'enterprise': t.bill_tier_enterprise
+                };
+                return tierMap[tierKey] || tierKey.charAt(0).toUpperCase() + tierKey.slice(1);
+            };
+            
             // Update current tier badge
             const currentTier = pricing.current;
-            document.getElementById('current-tier-name').textContent = 
-                currentTier.tier.charAt(0).toUpperCase() + currentTier.tier.slice(1);
+            document.getElementById('current-tier-name').textContent = getTierName(currentTier.tier);
             document.getElementById('current-tier-price').textContent = 
                 `$${currentTier.price.toFixed(3)}`;
             document.getElementById('anchors-this-month').textContent = 
-                `${currentTier.count} anchors this month`;
+                currentLang === 'zh' ? `${currentTier.count} 次锚定` : `${currentTier.count} anchors`;
             
             // Highlight current tier row
             document.querySelectorAll('.tier-row').forEach(row => {
@@ -442,14 +455,16 @@
             if (pricing.nextTier) {
                 const progress = Math.min(100, (currentTier.count / pricing.nextTier.at) * 100);
                 document.getElementById('tier-progress-bar').style.width = `${progress}%`;
+                const remaining = pricing.nextTier.at - currentTier.count;
                 document.getElementById('next-tier-threshold').textContent = 
-                    `${pricing.nextTier.at - currentTier.count} to ${pricing.nextTier.at}`;
+                    currentLang === 'zh' ? `再${remaining}次到${getTierName(pricing.nextTier.at > 10000 ? 'enterprise' : pricing.nextTier.at > 1000 ? 'bulk' : 'standard')}` : `${remaining} to ${pricing.nextTier.at}`;
                 document.getElementById('next-tier-savings').textContent = 
-                    `Save ${pricing.nextTier.savePercentage}% at next tier`;
+                    currentLang === 'zh' ? `下一等级可省 ${pricing.nextTier.savePercentage}%` : `Save ${pricing.nextTier.savePercentage}% at next tier`;
                 document.getElementById('next-tier-savings').classList.remove('hidden');
             } else {
                 document.getElementById('tier-progress-bar').style.width = '100%';
-                document.getElementById('next-tier-threshold').textContent = 'Max tier reached';
+                document.getElementById('next-tier-threshold').textContent = 
+                    currentLang === 'zh' ? '已达最高等级' : 'Max tier reached';
                 document.getElementById('next-tier-savings').classList.add('hidden');
             }
         }
@@ -616,7 +631,13 @@
                 bill_subtitle: "Free storage · Pay only for anchoring",
                 bill_auth_heading: "EMAIL AUTHENTICATION",
                 bill_balance: "CURRENT BALANCE",
-                bill_rates: "RATES",
+                bill_rates: "TIERED RATES",
+                bill_current_tier: "Current Tier",
+                bill_per_anchor: "/anchor",
+                bill_tier_experience: "Experience",
+                bill_tier_standard: "Standard",
+                bill_tier_bulk: "Bulk",
+                bill_tier_enterprise: "Enterprise",
                 bill_rate_storage: "Record Storage",
                 bill_rate_anchor: "Anchoring",
                 bill_network_note: "Bitcoin network fee passed through at cost. Current estimate: $0.32 per anchor.",
@@ -646,7 +667,13 @@
                 bill_subtitle: "存储免费 · 仅锚定收费",
                 bill_auth_heading: "邮箱验证",
                 bill_balance: "当前余额",
-                bill_rates: "费率",
+                bill_rates: "阶梯费率",
+                bill_current_tier: "当前等级",
+                bill_per_anchor: "/次",
+                bill_tier_experience: "体验版",
+                bill_tier_standard: "标准版",
+                bill_tier_bulk: "批量版",
+                bill_tier_enterprise: "企业版",
                 bill_rate_storage: "记录存储",
                 bill_rate_anchor: "锚定服务",
                 bill_network_note: "比特币网络费按实际成本转嫁。当前估算：$0.32/次。",

@@ -228,7 +228,17 @@
                 const data = await res.json();
                 
                 if (data.key) {
-                    resultDiv.innerHTML = `✅ Key generated: <code class="bg-gray-900 px-1 py-0.5 rounded">${data.key.substring(0, 8)}...${data.key.substring(56)}</code>`;
+                    const shortKey = data.key.substring(0, 8) + '...' + data.key.substring(56);
+                    resultDiv.innerHTML = `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span>✅ Key generated:</span>
+                            <code class="bg-gray-900 px-2 py-1 rounded text-teal-400 font-mono">${shortKey}</code>
+                            <button onclick="copyToClipboard('${data.key}', this)" class="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white text-xs rounded flex items-center gap-1">
+                                <span>📋</span>
+                                <span class="copy-text">Copy</span>
+                            </button>
+                        </div>
+                    `;
                 } else {
                     resultDiv.textContent = '❌ Failed to generate key';
                 }
@@ -236,6 +246,21 @@
                 resultDiv.textContent = '❌ Error: ' + err.message;
             }
         });
+
+        // Copy to clipboard function
+        async function copyToClipboard(text, btn) {
+            try {
+                await navigator.clipboard.writeText(text);
+                const btnText = btn.querySelector('.copy-text');
+                btnText.textContent = 'Copied!';
+                setTimeout(() => {
+                    btnText.textContent = 'Copy';
+                }, 2000);
+            } catch (err) {
+                console.error('Copy failed:', err);
+                alert('Copy failed: ' + text);
+            }
+        }
 
         const translations = {
             en: {

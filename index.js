@@ -1649,6 +1649,30 @@ app.get('/health', async (req, res) => {
   });
 });
 
+// ==================== 公共定价端点（无需认证）====================
+// 获取阶梯定价配置（公开）
+app.get('/pricing', (req, res) => {
+  res.json({
+    model: 'tiered',
+    description: 'Infrastructure model: the more you anchor, the less you pay per anchor',
+    tiers: [
+      { name: 'experience', range: '0-100', price: 0.03 },
+      { name: 'standard', range: '101-1,000', price: 0.02 },
+      { name: 'bulk', range: '1,001-10,000', price: 0.01 },
+      { name: 'enterprise', range: '10,000+', price: 0.005 }
+    ],
+    networkFee: {
+      description: 'Bitcoin network fee passed through at cost',
+      estimate: 0.32
+    },
+    storage: {
+      description: 'Record storage',
+      price: 0
+    },
+    minDeposit: 10
+  });
+});
+
 // ==================== 阶梯定价计费端点 ====================
 // 获取当前定价信息
 app.get('/billing/pricing', authenticateAccount(pool), async (req, res) => {

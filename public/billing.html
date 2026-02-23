@@ -133,24 +133,80 @@
                     </div>
                 </div>
 
-                <!-- Rate Summary（存储免费） -->
+                <!-- Tiered Pricing Table -->
                 <div class="border border-gray-800 bg-card p-6">
                     <span class="mb-4 block text-[10px] uppercase tracking-wider text-gray-400" data-i18n="bill_rates">
-                        RATES
+                        TIERED RATES
                     </span>
-                    <div class="space-y-3 font-mono text-sm">
+                    
+                    <!-- Current Tier Badge -->
+                    <div id="current-tier-badge" class="mb-4 p-3 border border-steel bg-steel/10 rounded">
                         <div class="flex items-center justify-between">
-                            <span class="text-gray-400" data-i18n="bill_rate_storage">Record Storage</span>
-                            <span class="text-green-400 font-medium">FREE</span>
+                            <span class="text-xs text-gray-400">Current Tier</span>
+                            <span id="current-tier-name" class="font-mono text-sm text-white font-medium">Experience</span>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-gray-400" data-i18n="bill_rate_anchor">Anchoring</span>
-                            <span class="text-white">$0.03 + network fee</span>
+                        <div class="mt-2 flex items-baseline gap-2">
+                            <span id="current-tier-price" class="font-mono text-2xl text-white">$0.03</span>
+                            <span class="text-xs text-gray-500">/anchor</span>
+                        </div>
+                        <div id="next-tier-progress" class="mt-2">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span id="anchors-this-month">0 anchors</span>
+                                <span id="next-tier-threshold">100 to Standard</span>
+                            </div>
+                            <div class="h-1 bg-gray-800 rounded-full overflow-hidden">
+                                <div id="tier-progress-bar" class="h-full bg-steel transition-all" style="width: 0%"></div>
+                            </div>
+                            <p id="next-tier-savings" class="text-xs text-green-400 mt-1">Save 33% at next tier</p>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-500 mt-4" data-i18n="bill_network_note">
-                        Bitcoin network fee passed through at cost. Current estimate: $0.32 per anchor.
-                    </p>
+                    
+                    <!-- Pricing Tiers Table -->
+                    <div class="space-y-2">
+                        <div class="tier-row flex items-center justify-between p-2 rounded text-sm" data-tier="experience">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-gray-600"></span>
+                                <span class="text-gray-400">Experience</span>
+                                <span class="text-xs text-gray-600">0-100</span>
+                            </div>
+                            <span class="font-mono text-white">$0.03</span>
+                        </div>
+                        <div class="tier-row flex items-center justify-between p-2 rounded text-sm" data-tier="standard">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-gray-600"></span>
+                                <span class="text-gray-400">Standard</span>
+                                <span class="text-xs text-gray-600">101-1K</span>
+                            </div>
+                            <span class="font-mono text-white">$0.02</span>
+                        </div>
+                        <div class="tier-row flex items-center justify-between p-2 rounded text-sm" data-tier="bulk">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-gray-600"></span>
+                                <span class="text-gray-400">Bulk</span>
+                                <span class="text-xs text-gray-600">1K-10K</span>
+                            </div>
+                            <span class="font-mono text-white">$0.01</span>
+                        </div>
+                        <div class="tier-row flex items-center justify-between p-2 rounded text-sm" data-tier="enterprise">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-gray-600"></span>
+                                <span class="text-gray-400">Enterprise</span>
+                                <span class="text-xs text-gray-600">10K+</span>
+                            </div>
+                            <span class="font-mono text-white">$0.005</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Storage Note -->
+                    <div class="mt-4 pt-3 border-t border-gray-800">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-400">Record Storage</span>
+                            <span class="text-green-400 font-medium">FREE</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">
+                            Bitcoin network fee: ~$0.32 per anchor (passed through at cost)
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Monthly Usage -->
@@ -345,8 +401,57 @@
             await Promise.all([
                 fetchBalance(),
                 fetchMetrics(),
-                fetchTransactions()
+                fetchTransactions(),
+                fetchPricing()
             ]);
+        }
+
+        async function fetchPricing() {
+            try {
+                const res = await fetch(`${API_BASE}/billing/pricing?email=${encodeURIComponent(currentEmail)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    updatePricingUI(data);
+                }
+            } catch (err) {
+                console.error('Fetch pricing error:', err);
+            }
+        }
+
+        function updatePricingUI(pricing) {
+            // Update current tier badge
+            const currentTier = pricing.current;
+            document.getElementById('current-tier-name').textContent = 
+                currentTier.tier.charAt(0).toUpperCase() + currentTier.tier.slice(1);
+            document.getElementById('current-tier-price').textContent = 
+                `$${currentTier.price.toFixed(3)}`;
+            document.getElementById('anchors-this-month').textContent = 
+                `${currentTier.count} anchors this month`;
+            
+            // Highlight current tier row
+            document.querySelectorAll('.tier-row').forEach(row => {
+                row.classList.remove('bg-steel/10', 'border', 'border-steel');
+                if (row.dataset.tier === currentTier.tier) {
+                    row.classList.add('bg-steel/10', 'border', 'border-steel');
+                    row.querySelector('.rounded-full').classList.remove('bg-gray-600');
+                    row.querySelector('.rounded-full').classList.add('bg-steel');
+                }
+            });
+            
+            // Update progress to next tier
+            if (pricing.nextTier) {
+                const progress = Math.min(100, (currentTier.count / pricing.nextTier.at) * 100);
+                document.getElementById('tier-progress-bar').style.width = `${progress}%`;
+                document.getElementById('next-tier-threshold').textContent = 
+                    `${pricing.nextTier.at - currentTier.count} to ${pricing.nextTier.at}`;
+                document.getElementById('next-tier-savings').textContent = 
+                    `Save ${pricing.nextTier.savePercentage}% at next tier`;
+                document.getElementById('next-tier-savings').classList.remove('hidden');
+            } else {
+                document.getElementById('tier-progress-bar').style.width = '100%';
+                document.getElementById('next-tier-threshold').textContent = 'Max tier reached';
+                document.getElementById('next-tier-savings').classList.add('hidden');
+            }
         }
 
         async function fetchBalance() {

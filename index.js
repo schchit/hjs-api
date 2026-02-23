@@ -13,6 +13,9 @@ const QRCode = require('qrcode');
 const crypto = require('crypto');
 const cors = require('cors');
 
+// HJS Protocol Core Extension - Delegation, Termination, Verification
+const { initHJSExtensionTables, createHJSExtensionRouter } = require('./hjs-extension');
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -496,12 +499,39 @@ app.get('/', (req, res) => {
                       });
                       const data = await res.json();
                       if (data.key) {
-                          resultDiv.innerHTML = \`✅ Key generated: <code class="bg-gray-900 px-1 py-0.5 rounded">\${data.key.substring(0, 8)}...\${data.key.substring(56)}</code>\`;
+                          const shortKey = data.key.substring(0, 8) + '...' + data.key.substring(56);
+                          resultDiv.innerHTML = \`
+                            <div class="flex items-center gap-2 flex-wrap">
+                              <span>✅ Key generated:</span>
+                              <code id="generated-key" class="bg-gray-900 px-2 py-1 rounded text-teal-400 font-mono">\${shortKey}</code>
+                              <button onclick="copyGeneratedKey()" class="px-2 py-1 bg-teal-600 text-white text-xs rounded hover:bg-teal-700 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                                <span id="copy-btn-text">Copy</span>
+                              </button>
+                            </div>
+                            <input type="hidden" id="full-key-value" value="\${data.key}">
+                          \`;
                       } else {
                           resultDiv.textContent = '❌ Failed to generate key';
                       }
                   } catch (err) {
                       resultDiv.textContent = '❌ Error: ' + err.message;
+                  }
+              }
+
+              async function copyGeneratedKey() {
+                  const fullKey = document.getElementById('full-key-value').value;
+                  try {
+                      await navigator.clipboard.writeText(fullKey);
+                      const btnText = document.getElementById('copy-btn-text');
+                      btnText.textContent = 'Copied!';
+                      setTimeout(() => {
+                          btnText.textContent = 'Copy';
+                      }, 2000);
+                  } catch (err) {
+                      alert('Copy failed, please copy manually: ' + fullKey);
                   }
               }
 
@@ -727,12 +757,39 @@ app.get('/', (req, res) => {
                       });
                       const data = await res.json();
                       if (data.key) {
-                          resultDiv.innerHTML = \`✅ 密钥生成成功: <code class="bg-gray-900 px-1 py-0.5 rounded">\${data.key.substring(0, 8)}...\${data.key.substring(56)}</code>\`;
+                          const shortKey = data.key.substring(0, 8) + '...' + data.key.substring(56);
+                          resultDiv.innerHTML = \`
+                            <div class="flex items-center gap-2 flex-wrap">
+                              <span>✅ 密钥生成成功:</span>
+                              <code id="generated-key" class="bg-gray-900 px-2 py-1 rounded text-teal-400 font-mono">\${shortKey}</code>
+                              <button onclick="copyGeneratedKey()" class="px-2 py-1 bg-teal-600 text-white text-xs rounded hover:bg-teal-700 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                                <span id="copy-btn-text">复制</span>
+                              </button>
+                            </div>
+                            <input type="hidden" id="full-key-value" value="\${data.key}">
+                          \`;
                       } else {
                           resultDiv.textContent = '❌ 生成失败';
                       }
                   } catch (err) {
                       resultDiv.textContent = '❌ 错误: ' + err.message;
+                  }
+              }
+
+              async function copyGeneratedKey() {
+                  const fullKey = document.getElementById('full-key-value').value;
+                  try {
+                      await navigator.clipboard.writeText(fullKey);
+                      const btnText = document.getElementById('copy-btn-text');
+                      btnText.textContent = '已复制!';
+                      setTimeout(() => {
+                          btnText.textContent = '复制';
+                      }, 2000);
+                  } catch (err) {
+                      alert('复制失败，请手动复制: ' + fullKey);
                   }
               }
 
@@ -1260,6 +1317,20 @@ app.get('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =>
   
   res.json(result);
 });
+
+// ==================== HJS Protocol Extension - 核心原语 API ====================
+// Delegation, Termination, Verification
+
+// 初始化扩展表
+initHJSExtensionTables(pool).then(() => {
+  console.log('✅ HJS Protocol Extension loaded');
+}).catch(err => {
+  console.error('❌ Failed to load HJS Extension:', err);
+});
+
+// 挂载扩展路由
+const hjsExtensionRouter = createHJSExtensionRouter(pool, authenticateApiKey, limiter);
+app.use('/', hjsExtensionRouter);
 
 // ==================== 启动服务 ====================
 app.listen(port, () => {

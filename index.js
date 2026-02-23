@@ -221,6 +221,44 @@ app.get('/metrics', async (req, res) => {
     }
 });
 
+// ==================== 原子化计费函数 ====================
+async function deductBalanceAtomic(client, email, amount, type, reference) {
+    try {
+        // 使用行级锁防止并发问题
+        const balanceResult = await client.query(
+            'SELECT balance FROM users WHERE email = $1 FOR UPDATE',
+            [email]
+        );
+        
+        if (balanceResult.rows.length === 0) {
+            return { success: false, error: 'User not found' };
+        }
+        
+        const balance = parseFloat(balanceResult.rows[0].balance);
+        
+        if (balance < amount) {
+            return { success: false, error: 'Insufficient balance' };
+        }
+        
+        // 扣费
+        await client.query(
+            'UPDATE users SET balance = balance - $1 WHERE email = $2',
+            [amount, email]
+        );
+        
+        // 记录交易
+        await client.query(
+            'INSERT INTO transactions (email, amount, type, status, reference_id) VALUES ($1, $2, $3, $4, $5)',
+            [email, -amount, type, 'completed', reference]
+        );
+        
+        return { success: true };
+    } catch (err) {
+        console.error('Error in atomic deduct:', err);
+        return { success: false, error: 'Internal error' };
+    }
+}
+
 // ==================== 余额相关接口 ====================
 
 // 获取用户余额
@@ -1126,10 +1164,40 @@ app.delete('/developer/keys/:key', async (req, res) => {
 
 // POST /judgments - 记录事件
 app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) => {
-  const { entity, action, scope, timestamp, immutability } = req.body;
+  const { entity, action, scope, timestamp, immutability, idempotency_key } = req.body;
 
   if (!entity || !action) {
     return res.status(400).json({ error: 'entity and action are required' });
+  }
+
+  // 幂等性检查：如果提供了幂等键，先查询是否已存在
+  if (idempotency_key) {
+    try {
+      const existing = await pool.query(
+        'SELECT * FROM judgments WHERE idempotency_key = $1',
+        [idempotency_key]
+      );
+      if (existing.rows.length > 0) {
+        // 返回已存在的记录
+        const record = existing.rows[0];
+        return res.json({
+          id: record.id,
+          status: 'recorded',
+          protocol: 'HJS/1.0',
+          timestamp: record.recorded_at,
+          immutability_anchor: {
+            type: record.anchor_type,
+            reference: record.anchor_reference,
+            anchored_at: record.anchor_processed_at
+          },
+          idempotency_key: idempotency_key,
+          note: 'Returning existing record'
+        });
+      }
+    } catch (err) {
+      console.error('Idempotency check error:', err);
+      // 继续创建新记录
+    }
   }
 
   const id = 'jgd_' + Date.now() + Math.random().toString(36).substring(2, 6);
@@ -1151,48 +1219,44 @@ app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =
   const hash = generateRecordHash(record);
 
   try {
-    // 如果是锚定记录，先检查余额
-    if (anchorType === 'ots') {
-      const balanceCheck = await pool.query(
-        'SELECT balance FROM users WHERE email = $1',
-        [entity]
-      );
-      
-      const balance = parseFloat(balanceCheck.rows[0]?.balance || 0);
-      const anchorCost = 0.03; // $0.03 per anchor
-      
-      if (balance < anchorCost) {
-        return res.status(402).json({ 
-          error: 'Insufficient balance for anchoring',
-          required: anchorCost,
-          balance: balance
-        });
-      }
-    }
-
     const anchorResult = await anchorRecord(anchorType, hash, anchorOptions);
 
-    const query = `
-      INSERT INTO judgments (
-        id, entity, action, scope, timestamp, recorded_at,
-        anchor_type, anchor_reference, anchor_proof, anchor_processed_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-    `;
-    await pool.query(query, [
-      id, entity, action, scope || {}, eventTime, recordedAt,
-      anchorResult._error ? 'none' : anchorType,
-      anchorResult.reference,
-      anchorResult.proof,
-      anchorResult.anchoredAt
-    ]);
-
-    // 更新每日用量
-    try {
-      const today = new Date().toISOString().split('T')[0];
-      
-      // 如果使用了锚定，更新锚定计数并扣费
-      if (anchorType === 'ots') {
-        await pool.query(
+    // 如果需要锚定，使用事务确保原子性
+    if (anchorType === 'ots') {
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        
+        // 原子化扣费
+        const deductResult = await deductBalanceAtomic(client, entity, 0.03, 'anchor', id);
+        if (!deductResult.success) {
+          await client.query('ROLLBACK');
+          return res.status(402).json({
+            error: deductResult.error === 'Insufficient balance' 
+              ? 'Insufficient balance for anchoring' 
+              : deductResult.error,
+            required: 0.03
+          });
+        }
+        
+        // 插入记录
+        await client.query(
+          `INSERT INTO judgments (
+            id, entity, action, scope, timestamp, recorded_at,
+            anchor_type, anchor_reference, anchor_proof, anchor_processed_at,
+            idempotency_key
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+          [id, entity, action, scope || {}, eventTime, recordedAt,
+           anchorResult._error ? 'none' : anchorType,
+           anchorResult.reference,
+           anchorResult.proof,
+           anchorResult.anchoredAt,
+           idempotency_key || null]
+        );
+        
+        // 更新每日用量
+        const today = new Date().toISOString().split('T')[0];
+        await client.query(
           `INSERT INTO daily_usage (email, date, anchor_count) 
            VALUES ($1, $2, 1)
            ON CONFLICT (email, date) 
@@ -1200,11 +1264,24 @@ app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =
           [entity, today]
         );
         
-        // 扣费
-        await deductBalance(entity, 0.03, 'anchor', id);
+        await client.query('COMMIT');
+      } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+      } finally {
+        client.release();
       }
-    } catch (err) {
-      console.error('Error updating daily usage:', err);
+    } else {
+      // 无锚定，直接插入
+      await pool.query(
+        `INSERT INTO judgments (
+          id, entity, action, scope, timestamp, recorded_at,
+          anchor_type, anchor_reference, anchor_proof, anchor_processed_at,
+          idempotency_key
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+        [id, entity, action, scope || {}, eventTime, recordedAt,
+         'none', null, null, null, idempotency_key || null]
+      );
     }
 
     const responseAnchor = {

@@ -1,0 +1,11 @@
+# HJS Database Backup Configuration
+# 添加到 crontab: crontab -e
+
+# 每天凌晨 2 点执行备份
+0 2 * * * cd /path/to/hjs-api && DATABASE_URL="your-db-url" ./scripts/backup.sh >> /var/log/hjs-backup.log 2>&1
+
+# 或者使用 Render 的 Cron Job 服务
+# 在 Render Dashboard 中添加:
+# - Command: ./scripts/backup.sh
+# - Schedule: 0 2 * * *
+# - Environment: DATABASE_URL=${DATABASE_URL}

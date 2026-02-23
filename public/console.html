@@ -18,6 +18,7 @@
         .bg-card { background: rgba(26, 26, 26, 0.5); }
         .border-border { border-color: #1f1f1f; }
         .text-muted-foreground { color: #9ca3af; }
+        .key-value { word-break: break-all; max-width: 100%; display: inline-block; }
         .text-foreground { color: #e5e5e5; }
         .bg-background { background: #0a0a0a; }
         .hover\:border-steel:hover { border-color: #3B4B5C; }
@@ -557,9 +558,9 @@
                     <h3 class="text-lg font-medium text-white mb-4">API Key Generated</h3>
                     <p class="text-gray-400 text-sm mb-4">Copy this key now. You won't be able to see it again.</p>
                     
-                    <div class="bg-gray-800 p-3 rounded mb-4">
+                    <div class="bg-gray-800 p-3 rounded mb-4 max-w-full">
                         <div class="text-xs text-gray-500 mb-1">${name}</div>
-                        <div class="font-mono text-sm text-teal-400 break-all" id="new-key-full">${shortKey}</div>
+                        <div class="font-mono text-sm text-teal-400 break-all overflow-x-auto" id="new-key-full">${shortKey}</div>
                         <input type="hidden" id="new-key-value" value="${key}">
                     </div>
                     
@@ -713,8 +714,8 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <div class="text-sm font-medium text-white">${k.name || '-'}</div>
-                                <div class="font-mono text-xs text-gray-400 mt-1">
-                                    <span class="key-value hidden">${k.key || ''}</span>
+                                <div class="font-mono text-xs text-gray-400 mt-1 max-w-[200px] overflow-x-auto">
+                                    <span class="key-value hidden break-all">${k.key || ''}</span>
                                     <span class="key-masked">${maskedKey}</span>
                                 </div>
                                 <div class="text-xs text-gray-500 mt-1">${k.created_at ? new Date(k.created_at).toLocaleString() : 'N/A'}</div>

@@ -7,6 +7,7 @@ require('dotenv').config();
 const { generateRecordHash } = require('./lib/canonical');
 const { submitToOTS } = require('./lib/ots-utils');
 const { anchorRecord, upgradeAnchor } = require('./lib/anchor');
+const { validateInput, sanitizeInput, limitScopeSize } = require('./lib/validation');
 const rateLimit = require('express-rate-limit');
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
@@ -31,7 +32,7 @@ const pool = new Pool({
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
 app.use(cors({
   origin: [
@@ -1076,7 +1077,10 @@ async function generateJudgmentPDF(record, res) {
 // ==================== 开发者密钥管理 API ====================
 
 // 生成新密钥
-app.post('/developer/keys', express.json(), async (req, res) => {
+app.post('/developer/keys', express.json(), sanitizeInput, validateInput({
+  email: { required: true, type: 'email', maxLength: 255 },
+  name: { required: false, type: 'string', maxLength: 255 }
+}), async (req, res) => {
   const { email, name } = req.body;
   
   if (!email || !email.includes('@')) {
@@ -1163,7 +1167,11 @@ app.delete('/developer/keys/:key', async (req, res) => {
 // ==================== 核心 API 路由 ====================
 
 // POST /judgments - 记录事件
-app.post('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) => {
+app.post('/judgments', limiter, authenticateApiKey, auditLog, sanitizeInput, limitScopeSize, validateInput({
+  entity: { required: true, type: 'string', maxLength: 255 },
+  action: { required: true, type: 'string', maxLength: 100 },
+  idempotency_key: { required: false, type: 'string', maxLength: 64 }
+}), async (req, res) => {
   const { entity, action, scope, timestamp, immutability, idempotency_key } = req.body;
 
   if (!entity || !action) {

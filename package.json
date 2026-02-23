@@ -4,7 +4,15 @@
   "description": "Implementation layer for HJS – API for recording judgment events",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "NODE_ENV=development node index.js",
+    "test": "cd test-client && node test.js",
+    "test:sdk": "cd client-js && node -e \"console.log('SDK tests would run here')\"",
+    "backup": "bash scripts/backup.sh",
+    "health": "bash scripts/health-check.sh",
+    "db:migrate": "psql $DATABASE_URL -f migrations/init.sql && psql $DATABASE_URL -f migrations/003_add_anchor_fields.sql && psql $DATABASE_URL -f migrations/004_add_idempotency.sql",
+    "db:backup": "bash scripts/backup.sh",
+    "db:restore": "bash scripts/restore.sh"
   },
   "repository": {
     "type": "git",

@@ -33,6 +33,36 @@
             border-color: #3B4B5C;
             background: rgba(26, 26, 26, 0.5);
         }
+        .case-card.hidden {
+            display: none;
+        }
+        /* 行业标签筛选 */
+        .industry-tab {
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #1f1f1f;
+            background: rgba(26, 26, 26, 0.3);
+        }
+        .industry-tab:hover {
+            border-color: #3B4B5C;
+        }
+        .industry-tab.active {
+            border-color: #3B4B5C;
+            background: rgba(59, 75, 92, 0.2);
+        }
+        /* 行业徽章 */
+        .industry-badge {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            font-size: 0.625rem;
+            border-radius: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .badge-healthcare { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-autonomous { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .badge-energy { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
+        .badge-robotics { background: rgba(168, 85, 247, 0.1); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3); }
     </style>
 </head>
 <body>
@@ -47,6 +77,7 @@
                 <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
                 <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
                 <a href="/billing.html" class="hover:text-teal-400 transition" data-i18n="nav_billing">Billing</a>
+                <a href="/roi-calculator.html" class="hover:text-teal-400 transition" data-i18n="nav_roi">ROI</a>
                 <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
             </div>
             <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
@@ -70,12 +101,36 @@
 
         <hr class="border-gray-800">
 
+        <!-- 行业筛选标签 -->
+        <section class="py-8">
+            <div class="flex flex-wrap gap-3 justify-center" id="industry-tabs">
+                <button class="industry-tab active px-4 py-2 text-sm text-gray-300 rounded" data-filter="all" data-i18n="filter_all">
+                    All Industries
+                </button>
+                <button class="industry-tab px-4 py-2 text-sm text-gray-300 rounded" data-filter="healthcare" data-i18n="filter_healthcare">
+                    Healthcare
+                </button>
+                <button class="industry-tab px-4 py-2 text-sm text-gray-300 rounded" data-filter="autonomous" data-i18n="filter_autonomous">
+                    Autonomous Driving
+                </button>
+                <button class="industry-tab px-4 py-2 text-sm text-gray-300 rounded" data-filter="energy" data-i18n="filter_energy">
+                    Energy
+                </button>
+                <button class="industry-tab px-4 py-2 text-sm text-gray-300 rounded" data-filter="robotics" data-i18n="filter_robotics">
+                    Robotics
+                </button>
+            </div>
+        </section>
+
         <!-- 案例网格 (2x2) -->
-        <section class="py-16">
-            <div class="grid md:grid-cols-2 gap-6">
+        <section class="py-8">
+            <div class="grid md:grid-cols-2 gap-6" id="cases-grid">
                 
                 <!-- 案例 1：医疗AI辅助诊断 -->
-                <div class="case-card p-6">
+                <div class="case-card p-6" data-industry="healthcare">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="industry-badge badge-healthcare" data-i18n="badge_healthcare">Healthcare</span>
+                    </div>
                     <h2 class="text-lg font-light text-white mb-3" data-i18n="case1_title">Medical AI Assistance</h2>
                     <p class="text-sm text-gray-400 mb-4 leading-relaxed" data-i18n="case1_desc">
                         A German hospital uses AI to screen thousands of medical images annually, increasing early cancer detection by 30%.
@@ -91,7 +146,10 @@
                 </div>
 
                 <!-- 案例 2：护理机器人决策 -->
-                <div class="case-card p-6">
+                <div class="case-card p-6" data-industry="robotics">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="industry-badge badge-robotics" data-i18n="badge_robotics">Robotics</span>
+                    </div>
                     <h2 class="text-lg font-light text-white mb-3" data-i18n="case2_title">Care Robot Decisions</h2>
                     <p class="text-sm text-gray-400 mb-4 leading-relaxed" data-i18n="case2_desc">
                         A Japanese nursing home uses AI robots to assist elderly with waking, medication reminders, and fall detection. Thousands of decisions daily.
@@ -108,7 +166,10 @@
                 </div>
 
                 <!-- 案例 3：能源AI调度 -->
-                <div class="case-card p-6">
+                <div class="case-card p-6" data-industry="energy">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="industry-badge badge-energy" data-i18n="badge_energy">Energy</span>
+                    </div>
                     <h2 class="text-lg font-light text-white mb-3" data-i18n="case3_title">Energy AI Dispatch</h2>
                     <p class="text-sm text-gray-400 mb-4 leading-relaxed" data-i18n="case3_desc">
                         UK National Grid uses AI to optimize renewable energy, balancing wind, solar and traditional power, reducing carbon emissions by 1.2M tons annually.
@@ -125,7 +186,10 @@
                 </div>
 
                 <!-- 案例 4：沃尔沃透明责任 -->
-                <div class="case-card p-6">
+                <div class="case-card p-6" data-industry="autonomous">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="industry-badge badge-autonomous" data-i18n="badge_autonomous">Autonomous</span>
+                    </div>
                     <h2 class="text-lg font-light text-white mb-3" data-i18n="case4_title">Volvo Transparent Responsibility</h2>
                     <p class="text-sm text-gray-400 mb-4 leading-relaxed" data-i18n="case4_desc">
                         Volvo's Swedish autonomous driving test program equips all vehicles with complete decision records, showing responsibility transparently.
@@ -185,6 +249,7 @@
                 nav_console: "Console",
                 nav_lookup: "Lookup",
                 nav_billing: "Billing",
+                nav_roi: "ROI",
                 nav_governance: "Governance",
                 cases_version_tag: "HJS Responsibility Protocol · v1.0 Beta",
                 cases_title: "When Technology Advances, Accountability Can't Lag Behind",
@@ -213,7 +278,16 @@
                 cases_cta_title: "Ready to make your AI decisions traceable?",
                 cases_cta_subtitle: "Join leading organizations in building trustworthy AI systems.",
                 cases_cta_primary: "Start Free Trial",
-                cases_cta_secondary: "View Technical Details"
+                cases_cta_secondary: "View Technical Details",
+                filter_all: "All Industries",
+                filter_healthcare: "Healthcare",
+                filter_autonomous: "Autonomous Driving",
+                filter_energy: "Energy",
+                filter_robotics: "Robotics",
+                badge_healthcare: "Healthcare",
+                badge_autonomous: "Autonomous",
+                badge_energy: "Energy",
+                badge_robotics: "Robotics"
             },
             zh: {
                 nav_home: "首页",
@@ -222,6 +296,7 @@
                 nav_console: "控制台",
                 nav_lookup: "查询",
                 nav_billing: "计费",
+                nav_roi: "ROI",
                 nav_governance: "治理",
                 cases_version_tag: "HJS 责任协议 · v1.0 Beta",
                 cases_title: "当技术向前，责任不能落后",
@@ -250,7 +325,16 @@
                 cases_cta_title: "准备好让你的AI决策可追溯了吗？",
                 cases_cta_subtitle: "加入领先企业，共建可信AI系统。",
                 cases_cta_primary: "免费试用",
-                cases_cta_secondary: "查看技术详情"
+                cases_cta_secondary: "查看技术详情",
+                filter_all: "全部行业",
+                filter_healthcare: "医疗健康",
+                filter_autonomous: "自动驾驶",
+                filter_energy: "能源",
+                filter_robotics: "机器人",
+                badge_healthcare: "医疗",
+                badge_autonomous: "自动驾驶",
+                badge_energy: "能源",
+                badge_robotics: "机器人"
             }
         };
 
@@ -272,6 +356,31 @@
             const lang = savedLang || urlLang || 'en';
             switchLang(lang);
         })();
+
+        // Industry filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.industry-tab');
+            const cards = document.querySelectorAll('.case-card');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filter cards
+                    cards.forEach(card => {
+                        if (filter === 'all' || card.dataset.industry === filter) {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+        });
     </script>
 </body>
 </html>

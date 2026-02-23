@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HJS · ROI Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        .font-mono, code, pre { font-family: 'JetBrains Mono', monospace !important; }
+        body { background: #0a0a0a; color: #e5e5e5; }
+        .text-steel { color: #3B4B5C; }
+        .border-steel { border-color: #3B4B5C; }
+        .bg-steel\/10 { background-color: rgba(59, 75, 92, 0.1); }
+        .bg-steel\/20 { background-color: rgba(59, 75, 92, 0.2); }
+        .bg-card { background: rgba(26, 26, 26, 0.5); }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px;
+            background: #1f1f1f;
+            border-radius: 2px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #3B4B5C;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #3B4B5C;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="max-w-5xl mx-auto px-6 py-12">
+        <!-- 导航栏 -->
+        <div class="flex justify-between items-center py-6 text-base">
+            <div class="text-white font-semibold text-lg">HJS</div>
+            <div class="flex gap-8 md:gap-10 text-gray-400">
+                <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
+                <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
+                <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
+                <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
+                <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
+                <a href="/billing.html" class="hover:text-teal-400 transition" data-i18n="nav_billing">Billing</a>
+                <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
+            </div>
+            <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
+                <option value="en">EN</option>
+                <option value="zh">中文</option>
+            </select>
+        </div>
+
+        <!-- Header -->
+        <section class="py-16">
+            <p class="font-mono text-xs text-gray-500 mb-4" data-i18n="roi_version_tag">HJS Responsibility Protocol · v1.0 Beta</p>
+            <h1 class="text-3xl font-light leading-tight tracking-tight text-white md:text-4xl" data-i18n="roi_title">ROI Calculator</h1>
+            <p class="mt-4 max-w-2xl text-sm leading-relaxed text-gray-400" data-i18n="roi_subtitle">
+                Estimate your compliance cost savings with HJS.
+            </p>
+        </section>
+
+        <hr class="border-gray-800">
+
+        <!-- Calculator -->
+        <section class="py-16">
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Left: Inputs -->
+                <div class="space-y-8">
+                    <!-- AI Decisions per Day -->
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-3" data-i18n="roi_decisions_label">
+                            AI decisions per day
+                        </label>
+                        <div class="flex items-center gap-4">
+                            <input type="range" id="decisions-per-day" min="100" max="100000" value="1000" step="100">
+                            <span class="font-mono text-white min-w-[80px] text-right" id="decisions-value">1,000</span>
+                        </div>
+                    </div>
+
+                    <!-- Anchoring Rate -->
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-3" data-i18n="roi_anchoring_label">
+                            % of decisions to anchor
+                        </label>
+                        <div class="flex items-center gap-4">
+                            <input type="range" id="anchoring-rate" min="1" max="100" value="10" step="1">
+                            <span class="font-mono text-white min-w-[80px] text-right" id="anchoring-value">10%</span>
+                        </div>
+                        <p class="text-xs text-gray-600 mt-2" data-i18n="roi_anchoring_hint">
+                            Typical: 5-20% of critical decisions
+                        </p>
+                    </div>
+
+                    <!-- Compliance Cost per Incident -->
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-3" data-i18n="roi_incident_label">
+                            Average compliance incident cost
+                        </label>
+                        <div class="flex items-center gap-4">
+                            <span class="text-gray-500">$</span>
+                            <input type="number" id="incident-cost" value="50000" min="0" step="1000" 
+                                class="flex-1 bg-transparent border-b border-gray-700 py-2 text-white focus:border-steel outline-none font-mono">
+                        </div>
+                        <p class="text-xs text-gray-600 mt-2" data-i18n="roi_incident_hint">
+                            Including legal fees, audit costs, reputation damage
+                        </p>
+                    </div>
+
+                    <!-- Expected Incidents per Year -->
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-3" data-i18n="roi_incidents_label">
+                            Expected incidents per year without audit trail
+                        </label>
+                        <div class="flex items-center gap-4">
+                            <input type="range" id="incidents-per-year" min="0" max="20" value="2" step="0.5">
+                            <span class="font-mono text-white min-w-[80px] text-right" id="incidents-value">2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Results -->
+                <div class="space-y-6">
+                    <!-- Monthly Cost Card -->
+                    <div class="border border-gray-800 bg-card p-6">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-2" data-i18n="roi_monthly_cost">
+                            Estimated Monthly Cost
+                        </p>
+                        <div class="flex items-baseline gap-2">
+                            <span class="font-mono text-3xl text-white" id="monthly-cost">$30.00</span>
+                            <span class="text-sm text-gray-500" data-i18n="roi_per_month">/month</span>
+                        </div>
+                        <p class="text-xs text-gray-600 mt-2" id="tier-display" data-i18n="roi_tier">
+                            Experience tier (0-100 anchors/month)
+                        </p>
+                    </div>
+
+                    <!-- Annual Savings Card -->
+                    <div class="border border-green-500/30 bg-green-500/5 p-6">
+                        <p class="text-xs text-green-400 uppercase tracking-wider mb-2" data-i18n="roi_annual_savings">
+                            Potential Annual Savings
+                        </p>
+                        <div class="flex items-baseline gap-2">
+                            <span class="font-mono text-3xl text-green-400" id="annual-savings">$91,960</span>
+                        </div>
+                        <p class="text-xs text-green-600/70 mt-2" data-i18n="roi_savings_desc">
+                            From reduced compliance incidents and faster audits
+                        </p>
+                    </div>
+
+                    <!-- ROI Ratio -->
+                    <div class="border border-steel/30 bg-steel/5 p-6 text-center">
+                        <p class="text-4xl font-mono text-white mb-2" id="roi-ratio">255x</p>
+                        <p class="text-sm text-gray-500" data-i18n="roi_ratio_label">
+                            Return on Investment
+                        </p>
+                    </div>
+
+                    <!-- Breakdown -->
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between text-gray-400">
+                            <span data-i18n="roi_anchors_monthly">Anchors per month</span>
+                            <span class="font-mono text-white" id="anchors-monthly">3,000</span>
+                        </div>
+                        <div class="flex justify-between text-gray-400">
+                            <span data-i18n="roi_hjs_fee">HJS service fee</span>
+                            <span class="font-mono text-white" id="hjs-fee">$30.00</span>
+                        </div>
+                        <div class="flex justify-between text-gray-400">
+                            <span data-i18n="roi_network_fee">Network fees (~$0.32/anchor)</span>
+                            <span class="font-mono text-white" id="network-fee">$960.00</span>
+                        </div>
+                        <div class="flex justify-between text-gray-400">
+                            <span data-i18n="roi_total_cost">Total monthly cost</span>
+                            <span class="font-mono text-white" id="total-monthly">$990.00</span>
+                        </div>
+                    </div>
+
+                    <!-- CTA -->
+                    <a href="/console.html" class="block w-full text-center px-6 py-4 bg-steel/20 border border-steel text-white font-medium hover:bg-steel/30 transition-colors" data-i18n="roi_cta">
+                        Start Free Trial →
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="py-16 border-t border-gray-800">
+            <h2 class="text-lg font-light text-white mb-8" data-i18n="roi_faq_title">How it works</h2>
+            <div class="space-y-6 text-sm text-gray-400">
+                <div>
+                    <p class="text-white mb-2" data-i18n="roi_faq_1_q">How is the tier calculated?</p>
+                    <p data-i18n="roi_faq_1_a">
+                        HJS uses tiered pricing: Experience (0-100 anchors, $0.03), Standard (101-1K, $0.02), Bulk (1K-10K, $0.01), Enterprise (10K+, $0.005). The more you anchor, the less you pay per anchor.
+                    </p>
+                </div>
+                <div>
+                    <p class="text-white mb-2" data-i18n="roi_faq_2_q">What counts as a compliance incident?</p>
+                    <p data-i18n="roi_faq_2_a">
+                        Regulatory investigations, customer disputes, audit findings, or legal actions where you need to prove your AI made correct decisions. Average costs include legal fees ($20-50K), audit costs ($10-30K), and operational disruption.
+                    </p>
+                </div>
+                <div>
+                    <p class="text-white mb-2" data-i18n="roi_faq_3_q">Can I reduce network fees?</p>
+                    <p data-i18n="roi_faq_3_a">
+                        Yes. Batch anchoring with Merkle trees reduces network fees by up to 99%. Contact us for enterprise batch processing options.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <div class="text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-12">
+            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
+            <span class="text-gray-700">·</span>
+            <a href="/spec/README.md" class="hover:text-gray-400 mx-2">Spec</a>
+            <span class="text-gray-700">·</span>
+            <a href="/cases.html" class="hover:text-gray-400 mx-2">Cases</a>
+        </div>
+    </div>
+
+    <!-- Language script -->
+    <script src="/js/lang.js"></script>
+    <script>
+        const translations = {
+            en: {
+                nav_home: "Home",
+                nav_product: "Product",
+                nav_developers: "Developers",
+                nav_console: "Console",
+                nav_lookup: "Lookup",
+                nav_billing: "Billing",
+                nav_governance: "Governance",
+                roi_version_tag: "HJS Responsibility Protocol · v1.0 Beta",
+                roi_title: "ROI Calculator",
+                roi_subtitle: "Estimate your compliance cost savings with HJS. See how much you can save by having auditable AI decision records.",
+                roi_decisions_label: "AI decisions per day",
+                roi_anchoring_label: "% of decisions to anchor",
+                roi_anchoring_hint: "Typical: 5-20% of critical decisions",
+                roi_incident_label: "Average compliance incident cost",
+                roi_incident_hint: "Including legal fees, audit costs, reputation damage",
+                roi_incidents_label: "Expected incidents per year without audit trail",
+                roi_monthly_cost: "Estimated Monthly Cost",
+                roi_per_month: "/month",
+                roi_tier: "Experience tier (0-100 anchors/month)",
+                roi_annual_savings: "Potential Annual Savings",
+                roi_savings_desc: "From reduced compliance incidents and faster audits",
+                roi_ratio_label: "Return on Investment",
+                roi_anchors_monthly: "Anchors per month",
+                roi_hjs_fee: "HJS service fee",
+                roi_network_fee: "Network fees (~$0.32/anchor)",
+                roi_total_cost: "Total monthly cost",
+                roi_cta: "Start Free Trial →",
+                roi_faq_title: "How it works",
+                roi_faq_1_q: "How is the tier calculated?",
+                roi_faq_1_a: "HJS uses tiered pricing: Experience (0-100 anchors, $0.03), Standard (101-1K, $0.02), Bulk (1K-10K, $0.01), Enterprise (10K+, $0.005). The more you anchor, the less you pay per anchor.",
+                roi_faq_2_q: "What counts as a compliance incident?",
+                roi_faq_2_a: "Regulatory investigations, customer disputes, audit findings, or legal actions where you need to prove your AI made correct decisions. Average costs include legal fees ($20-50K), audit costs ($10-30K), and operational disruption.",
+                roi_faq_3_q: "Can I reduce network fees?",
+                roi_faq_3_a: "Yes. Batch anchoring with Merkle trees reduces network fees by up to 99%. Contact us for enterprise batch processing options."
+            },
+            zh: {
+                nav_home: "首页",
+                nav_product: "产品",
+                nav_developers: "开发者",
+                nav_console: "控制台",
+                nav_lookup: "查询",
+                nav_billing: "计费",
+                nav_governance: "治理",
+                roi_version_tag: "HJS 责任协议 · v1.0 Beta",
+                roi_title: "ROI计算器",
+                roi_subtitle: "估算使用HJS后的合规成本节省。了解可审计的AI决策记录能为你节省多少费用。",
+                roi_decisions_label: "每日AI决策数",
+                roi_anchoring_label: "需要锚定的决策比例",
+                roi_anchoring_hint: "典型值：关键决策的5-20%",
+                roi_incident_label: "平均合规事件成本",
+                roi_incident_hint: "包括法律费用、审计成本、声誉损失",
+                roi_incidents_label: "无审计追踪时的预期年度事件数",
+                roi_monthly_cost: "预估月成本",
+                roi_per_month: "/月",
+                roi_tier: "体验版 (0-100次锚定/月)",
+                roi_annual_savings: "潜在年度节省",
+                roi_savings_desc: "来自减少的合规事件和更快的审计",
+                roi_ratio_label: "投资回报率",
+                roi_anchors_monthly: "每月锚定次数",
+                roi_hjs_fee: "HJS服务费",
+                roi_network_fee: "网络费 (~$0.32/次)",
+                roi_total_cost: "月成本总计",
+                roi_cta: "开始免费试用 →",
+                roi_faq_title: "工作原理",
+                roi_faq_1_q: "等级如何计算？",
+                roi_faq_1_a: "HJS使用阶梯定价：体验版 (0-100次, $0.03)、标准版 (101-1K, $0.02)、批量版 (1K-10K, $0.01)、企业版 (10K+, $0.005)。锚定越多，单价越低。",
+                roi_faq_2_q: "什么是合规事件？",
+                roi_faq_2_a: "监管调查、客户纠纷、审计发现或法律诉讼，你需要证明AI做出了正确决策的情况。平均成本包括法律费用($2-5万)、审计成本($1-3万)和业务中断。",
+                roi_faq_3_q: "可以降低网络费吗？",
+                roi_faq_3_a: "可以。使用默克尔树批量锚定可降低高达99%的网络费。联系我们了解企业批量处理方案。"
+            }
+        };
+
+        function switchLang(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+            const select = document.querySelector('select');
+            if (select) select.value = lang;
+            calculateROI();
+        }
+
+        // ROI Calculator Logic
+        function calculateROI() {
+            const decisionsPerDay = parseInt(document.getElementById('decisions-per-day').value);
+            const anchoringRate = parseInt(document.getElementById('anchoring-rate').value) / 100;
+            const incidentCost = parseInt(document.getElementById('incident-cost').value) || 50000;
+            const incidentsPerYear = parseFloat(document.getElementById('incidents-per-year').value);
+
+            const anchorsPerMonth = Math.round(decisionsPerDay * anchoringRate * 30);
+            const networkFeePerAnchor = 0.32;
+
+            // Tier pricing
+            let hjsFeePerAnchor = 0.03;
+            let tierName = 'Experience tier (0-100 anchors/month)';
+            let tierNameZh = '体验版 (0-100次锚定/月)';
+            
+            if (anchorsPerMonth > 10000) {
+                hjsFeePerAnchor = 0.005;
+                tierName = 'Enterprise tier (10K+ anchors/month)';
+                tierNameZh = '企业版 (10K+次锚定/月)';
+            } else if (anchorsPerMonth > 1000) {
+                hjsFeePerAnchor = 0.01;
+                tierName = 'Bulk tier (1K-10K anchors/month)';
+                tierNameZh = '批量版 (1K-10K次锚定/月)';
+            } else if (anchorsPerMonth > 100) {
+                hjsFeePerAnchor = 0.02;
+                tierName = 'Standard tier (101-1K anchors/month)';
+                tierNameZh = '标准版 (101-1K次锚定/月)';
+            }
+
+            const hjsFee = anchorsPerMonth * hjsFeePerAnchor;
+            const networkFee = anchorsPerMonth * networkFeePerAnchor;
+            const totalMonthly = hjsFee + networkFee;
+
+            // Savings calculation
+            const annualHJSCost = totalMonthly * 12;
+            const annualIncidentCostWithout = incidentsPerYear * incidentCost;
+            const incidentReductionRate = 0.8; // Assume 80% reduction with audit trail
+            const annualIncidentCostWith = annualIncidentCostWithout * (1 - incidentReductionRate);
+            const annualSavings = annualIncidentCostWithout - annualIncidentCostWith - annualHJSCost;
+
+            const roi = annualSavings > 0 ? Math.round(annualSavings / annualHJSCost) : 0;
+
+            // Update UI
+            document.getElementById('decisions-value').textContent = decisionsPerDay.toLocaleString();
+            document.getElementById('anchoring-value').textContent = Math.round(anchoringRate * 100) + '%';
+            document.getElementById('incidents-value').textContent = incidentsPerYear;
+            document.getElementById('monthly-cost').textContent = '$' + hjsFee.toFixed(2);
+            
+            const lang = localStorage.getItem('hjs_lang') || 'en';
+            document.getElementById('tier-display').textContent = lang === 'zh' ? tierNameZh : tierName;
+            
+            document.getElementById('annual-savings').textContent = '$' + annualSavings.toLocaleString();
+            document.getElementById('roi-ratio').textContent = roi + 'x';
+            document.getElementById('anchors-monthly').textContent = anchorsPerMonth.toLocaleString();
+            document.getElementById('hjs-fee').textContent = '$' + hjsFee.toFixed(2);
+            document.getElementById('network-fee').textContent = '$' + networkFee.toFixed(2);
+            document.getElementById('total-monthly').textContent = '$' + totalMonthly.toFixed(2);
+        }
+
+        // Event listeners
+        document.getElementById('decisions-per-day').addEventListener('input', calculateROI);
+        document.getElementById('anchoring-rate').addEventListener('input', calculateROI);
+        document.getElementById('incident-cost').addEventListener('input', calculateROI);
+        document.getElementById('incidents-per-year').addEventListener('input', calculateROI);
+
+        // Initialize
+        (function() {
+            const savedLang = localStorage.getItem('hjs_lang');
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            const lang = savedLang || urlLang || 'en';
+            switchLang(lang);
+        })();
+    </script>
+</body>
+</html>

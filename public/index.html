@@ -55,14 +55,57 @@
             </select>
         </div>
 
-        <!-- ===== 第一屏：只显示标题 ===== -->
+        <!-- ===== 第一屏：价值主张 + 痛点 + CTA ===== -->
         <section class="min-h-[calc(100vh-8rem)] flex flex-col justify-center py-16">
             <p class="mb-4 font-mono text-xs text-gray-500" data-i18n="home_version_tag">
                 HJS Responsibility Protocol · v1.0 Beta
             </p>
+            
+            <!-- 主标题：通俗易懂 -->
             <h1 class="text-3xl font-light leading-tight tracking-tight text-white md:text-4xl max-w-3xl" data-i18n="home_headline">
-                A minimal deterministic structure<br>for binding responsibility in AI systems
+                AI决策审计基础设施<br>
+                <span class="text-gray-400 text-2xl md:text-3xl">让每一次AI判断都可追溯、可验证</span>
             </h1>
+            
+            <!-- 痛点描述 -->
+            <div class="mt-8 max-w-2xl">
+                <p class="text-lg text-gray-300 leading-relaxed" data-i18n="home_pain_point">
+                    当AI出错时，你能证明你做了正确的事吗？
+                </p>
+                <p class="mt-4 text-sm text-gray-400 leading-relaxed" data-i18n="home_solution">
+                    HJS 将你的 AI 决策记录锚定到区块链，生成不可篡改的时间戳证明。
+                    监管审计、客户质疑、内部追责——你都有证据。
+                </p>
+            </div>
+            
+            <!-- CTA 按钮组 -->
+            <div class="mt-10 flex flex-wrap gap-4">
+                <a href="/console.html" class="inline-flex items-center gap-2 px-6 py-3 bg-steel/20 border border-steel text-white text-sm font-medium hover:bg-steel/30 transition-colors" data-i18n="home_cta_try">
+                    5分钟免费试用
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="/cases.html" class="inline-flex items-center gap-2 px-6 py-3 border border-gray-700 text-gray-300 text-sm font-medium hover:border-steel hover:text-white transition-colors" data-i18n="home_cta_cases">
+                    查看客户案例
+                </a>
+            </div>
+            
+            <!-- 信任指标 -->
+            <div class="mt-12 flex flex-wrap gap-8 text-sm text-gray-500">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                    <span data-i18n="home_trust_1">区块链锚定</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                    <span data-i18n="home_trust_2">30秒验证</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                    <span data-i18n="home_trust_3">一行代码接入</span>
+                </div>
+            </div>
         </section>
 
         <hr class="border-gray-800">
@@ -272,7 +315,14 @@
                 nav_billing: "Billing",
                 nav_governance: "Governance",
                 home_version_tag: "HJS Responsibility Protocol · v1.0 Beta",
-                home_headline: "A minimal deterministic structure<br>for binding responsibility in AI systems",
+                home_headline: "AI Decision Audit Infrastructure<br><span class='text-gray-400 text-2xl md:text-3xl'>Make every AI judgment traceable and verifiable</span>",
+                home_pain_point: "When AI makes mistakes, can you prove you did the right thing?",
+                home_solution: "HJS anchors your AI decision records to the blockchain, generating tamper-proof timestamp proofs. Regulatory audits, customer questions, internal accountability—you have the evidence.",
+                home_cta_try: "Try Free in 5 Minutes",
+                home_cta_cases: "View Customer Cases",
+                home_trust_1: "Blockchain Anchored",
+                home_trust_2: "Verify in 30 Seconds",
+                home_trust_3: "One Line of Code",
                 diagram_actor: "Actor",
                 diagram_judgment: "Judgment",
                 diagram_delegation: "Delegation (OPTIONAL)",
@@ -313,7 +363,14 @@
                 nav_billing: "计费",
                 nav_governance: "治理",
                 home_version_tag: "HJS 责任协议 · v1.0 Beta",
-                home_headline: "为 AI 系统绑定责任的<br>最小确定性结构",
+                home_headline: "AI决策审计基础设施<br><span class='text-gray-400 text-2xl md:text-3xl'>让每一次AI判断都可追溯、可验证</span>",
+                home_pain_point: "当AI出错时，你能证明你做了正确的事吗？",
+                home_solution: "HJS 将你的 AI 决策记录锚定到区块链，生成不可篡改的时间戳证明。监管审计、客户质疑、内部追责——你都有证据。",
+                home_cta_try: "5分钟免费试用",
+                home_cta_cases: "查看客户案例",
+                home_trust_1: "区块链锚定",
+                home_trust_2: "30秒验证",
+                home_trust_3: "一行代码接入",
                 diagram_actor: "行为者",
                 diagram_judgment: "判断",
                 diagram_delegation: "授权（可选）",

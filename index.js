@@ -10,6 +10,8 @@ const { anchorRecord, upgradeAnchor } = require('./lib/anchor');
 const { validateInput, sanitizeInput, limitScopeSize } = require('./lib/validation');
 const { autoMigrate } = require('./lib/auto-migrate');
 const { authenticateAccount, createAccount, recordUsage, checkQuota } = require('./lib/tenant');
+const { injectAccountId, requireOwnership, withAccountFilter } = require('./lib/tenant-middleware');
+const { getAccountIdFromRequest } = require('./lib/tenant-compat');
 const rateLimit = require('express-rate-limit');
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
@@ -1553,6 +1555,10 @@ if (hjsExtension) {
 } else {
   console.log('⚠️  HJS Extension not available - running in legacy mode');
 }
+
+// ==================== v1 API (多租户版本) ====================
+const { createV1Router } = require('./lib/v1-api');
+app.use('/v1', createV1Router(pool, authenticateApiKey, limiter, auditLog, generateRecordHash, anchorRecord));
 
 // ==================== 启动服务 ====================
 app.listen(port, () => {

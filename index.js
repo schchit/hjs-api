@@ -12,6 +12,9 @@ const { autoMigrate } = require('./lib/auto-migrate');
 const { authenticateAccount, createAccount, recordUsage, checkQuota } = require('./lib/tenant');
 const { injectAccountId, requireOwnership, withAccountFilter } = require('./lib/tenant-middleware');
 const { getAccountIdFromRequest } = require('./lib/tenant-compat');
+const { versionNegotiation, createVersionRouter } = require('./lib/versioning');
+const { SLAMonitor, metricsMiddleware } = require('./monitoring/sla');
+const { SandboxManager, sandboxMiddleware } = require('./sandbox/manager');
 const rateLimit = require('express-rate-limit');
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
@@ -56,6 +59,19 @@ app.use(cors({
 autoMigrate(pool).catch(err => {
   console.error('Auto-migration error:', err);
 });
+
+// ==================== 初始化基础设施模块 ====================
+// SLA监控
+const slaMonitor = new SLAMonitor(pool);
+console.log('📊 SLA Monitor initialized');
+
+// 沙盒管理
+const sandboxManager = new SandboxManager(pool);
+console.log('🏖️  Sandbox Manager initialized');
+
+// 应用监控中间件
+app.use(metricsMiddleware(slaMonitor));
+app.use(sandboxMiddleware(sandboxManager));
 
 // ==================== 添加日志函数 ====================
 async function addLog(email, method, path, status) {
@@ -1559,6 +1575,60 @@ if (hjsExtension) {
 // ==================== v1 API (多租户版本) ====================
 const { createV1Router } = require('./lib/v1-api');
 app.use('/v1', createV1Router(pool, authenticateApiKey, limiter, auditLog, generateRecordHash, anchorRecord));
+
+// ==================== API 版本控制路由 ====================
+app.use(createVersionRouter(pool, authenticateApiKey, limiter, auditLog));
+
+// ==================== 监控和指标端点 ====================
+// SLA 报告
+app.get('/metrics/sla', async (req, res) => {
+  const report = slaMonitor.getSLAReport();
+  res.json(report);
+});
+
+// 实时指标
+app.get('/metrics/realtime', (req, res) => {
+  res.json({
+    timestamp: new Date().toISOString(),
+    requests: slaMonitor.metrics.requests,
+    latency: {
+      p99: slaMonitor.getLatencyPercentile(99),
+      p95: slaMonitor.getLatencyPercentile(95),
+      p50: slaMonitor.getLatencyPercentile(50)
+    },
+    top_endpoints: slaMonitor.getTopEndpoints(10)
+  });
+});
+
+// 健康检查（增强版）
+app.get('/health', async (req, res) => {
+  const health = await slaMonitor.healthCheck();
+  const statusCode = health.healthy ? 200 : 503;
+  res.status(statusCode).json({
+    ...health,
+    version: '1.0.0',
+    environment: req.isSandbox ? 'sandbox' : 'production'
+  });
+});
+
+// ==================== 沙盒管理端点 ====================
+// 沙盒状态
+app.get('/sandbox/status', authenticateApiKey, async (req, res) => {
+  if (!req.isSandbox) {
+    return res.status(400).json({ error: 'This endpoint is only available in sandbox mode' });
+  }
+  const status = await sandboxManager.getStatus(req.account.id);
+  res.json(status);
+});
+
+// 重置沙盒数据
+app.post('/sandbox/reset', authenticateApiKey, async (req, res) => {
+  if (!req.isSandbox) {
+    return res.status(400).json({ error: 'This endpoint is only available in sandbox mode' });
+  }
+  const result = await sandboxManager.reset(req.account.id);
+  res.json(result);
+});
 
 // ==================== 启动服务 ====================
 app.listen(port, () => {

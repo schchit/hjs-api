@@ -14,7 +14,14 @@ const crypto = require('crypto');
 const cors = require('cors');
 
 // HJS Protocol Core Extension - Delegation, Termination, Verification
-const { initHJSExtensionTables, createHJSExtensionRouter } = require('./hjs-extension');
+let hjsExtension;
+try {
+  hjsExtension = require('./hjs-extension');
+  console.log('✅ HJS Extension loaded');
+} catch (err) {
+  console.error('⚠️  HJS Extension failed to load:', err.message);
+  hjsExtension = null;
+}
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -1321,16 +1328,20 @@ app.get('/judgments', limiter, authenticateApiKey, auditLog, async (req, res) =>
 // ==================== HJS Protocol Extension - 核心原语 API ====================
 // Delegation, Termination, Verification
 
-// 初始化扩展表
-initHJSExtensionTables(pool).then(() => {
-  console.log('✅ HJS Protocol Extension loaded');
-}).catch(err => {
-  console.error('❌ Failed to load HJS Extension:', err);
-});
+if (hjsExtension) {
+  // 初始化扩展表
+  hjsExtension.initHJSExtensionTables(pool).then(() => {
+    console.log('✅ HJS Extension tables initialized');
+  }).catch(err => {
+    console.error('❌ Failed to init HJS Extension tables:', err);
+  });
 
-// 挂载扩展路由
-const hjsExtensionRouter = createHJSExtensionRouter(pool, authenticateApiKey, limiter);
-app.use('/', hjsExtensionRouter);
+  // 挂载扩展路由
+  const hjsExtensionRouter = hjsExtension.createHJSExtensionRouter(pool, authenticateApiKey, limiter);
+  app.use('/', hjsExtensionRouter);
+} else {
+  console.log('⚠️  HJS Extension not available - running in legacy mode');
+}
 
 // ==================== 启动服务 ====================
 app.listen(port, () => {

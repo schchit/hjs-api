@@ -536,11 +536,69 @@
                 });
                 
                 if (res.ok) {
+                    const data = await res.json();
                     await fetchKeys();
+                    
+                    // Show newly generated key with copy button
+                    if (data.key) {
+                        showNewKeyDialog(data.key, name);
+                    }
                 }
             } catch (err) {
                 console.error('Generate key error:', err);
             }
+        }
+        
+        function showNewKeyDialog(key, name) {
+            const shortKey = key.substring(0, 8) + '...' + key.substring(key.length - 8);
+            
+            const dialog = document.createElement('div');
+            dialog.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-50';
+            dialog.innerHTML = `
+                <div class="bg-gray-900 border border-gray-700 p-6 max-w-md w-full mx-4">
+                    <h3 class="text-lg font-medium text-white mb-4">API Key Generated</h3>
+                    <p class="text-gray-400 text-sm mb-4">Copy this key now. You won't be able to see it again.</p>
+                    
+                    <div class="bg-gray-800 p-3 rounded mb-4">
+                        <div class="text-xs text-gray-500 mb-1">${name}</div>
+                        <div class="font-mono text-sm text-teal-400 break-all" id="new-key-full">${shortKey}</div>
+                        <input type="hidden" id="new-key-value" value="${key}">
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button id="copy-new-key" class="flex-1 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded text-sm flex items-center justify-center gap-2">
+                            <span>📋</span>
+                            <span id="copy-btn-text">Copy Key</span>
+                        </button>
+                        <button id="close-new-key" class="px-4 py-2 border border-gray-700 hover:border-gray-600 text-gray-300 rounded text-sm">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(dialog);
+            
+            dialog.querySelector('#copy-new-key').addEventListener('click', async () => {
+                const fullKey = document.getElementById('new-key-value').value;
+                try {
+                    await navigator.clipboard.writeText(fullKey);
+                    document.getElementById('copy-btn-text').textContent = 'Copied!';
+                    setTimeout(() => {
+                        document.getElementById('copy-btn-text').textContent = 'Copy Key';
+                    }, 2000);
+                } catch (err) {
+                    alert('Copy failed: ' + fullKey);
+                }
+            });
+            
+            dialog.querySelector('#close-new-key').addEventListener('click', () => {
+                dialog.remove();
+            });
+            
+            dialog.addEventListener('click', (e) => {
+                if (e.target === dialog) dialog.remove();
+            });
         }
 
         async function revokeKey(keyId) {
@@ -663,7 +721,8 @@
                                 </div>
                                 <div class="text-xs text-gray-500 mt-1">${k.created_at ? new Date(k.created_at).toLocaleString() : 'N/A'}</div>
                             </div>
-                            <div class="flex gap-2">
+                            <div class="flex gap-2 items-center">
+                                <button class="copy-key text-gray-400 hover:text-teal-400" title="Copy">📋</button>
                                 <button class="toggle-key text-gray-400 hover:text-white" title="Show/Hide">👁️</button>
                                 <button class="revoke-key text-gray-400 hover:text-red-400" title="Revoke">🗑️</button>
                             </div>
@@ -688,6 +747,24 @@
                         masked.classList.add('hidden');
                         full.classList.remove('hidden');
                         btn.textContent = '🙈';
+                    }
+                });
+            });
+            
+            container.querySelectorAll('.copy-key').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const card = e.target.closest('[data-key-id]');
+                    const fullKey = card.getAttribute('data-key-id');
+                    
+                    try {
+                        await navigator.clipboard.writeText(fullKey);
+                        btn.textContent = '✅';
+                        setTimeout(() => {
+                            btn.textContent = '📋';
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Copy failed:', err);
+                        alert('Copy failed: ' + fullKey);
                     }
                 });
             });

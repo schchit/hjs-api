@@ -8,6 +8,7 @@ const { generateRecordHash } = require('./lib/canonical');
 const { submitToOTS } = require('./lib/ots-utils');
 const { anchorRecord, upgradeAnchor } = require('./lib/anchor');
 const { validateInput, sanitizeInput, limitScopeSize } = require('./lib/validation');
+const { autoMigrate } = require('./lib/auto-migrate');
 const rateLimit = require('express-rate-limit');
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
@@ -47,6 +48,11 @@ app.use(cors({
   methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'X-API-Key']
 }));
+
+// ==================== 自动数据库迁移 ====================
+autoMigrate(pool).catch(err => {
+  console.error('Auto-migration error:', err);
+});
 
 // ==================== 添加日志函数 ====================
 async function addLog(email, method, path, status) {

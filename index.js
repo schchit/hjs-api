@@ -171,6 +171,27 @@ app.get('/docs', (req, res) => {
     res.redirect('/api/docs');
 });
 
+// ==================== 监控和指标端点 ====================
+// SLA 报告
+app.get('/metrics/sla', async (req, res) => {
+  const report = slaMonitor.getSLAReport();
+  res.json(report);
+});
+
+// 实时指标
+app.get('/metrics/realtime', (req, res) => {
+  res.json({
+    timestamp: new Date().toISOString(),
+    requests: slaMonitor.metrics.requests,
+    latency: {
+      p99: slaMonitor.getLatencyPercentile(99),
+      p95: slaMonitor.getLatencyPercentile(95),
+      p50: slaMonitor.getLatencyPercentile(50)
+    },
+    top_endpoints: slaMonitor.getTopEndpoints(10)
+  });
+});
+
 // ==================== 获取用量统计（只统计锚定） ====================
 app.get('/metrics', async (req, res) => {
     const { email } = req.query;
@@ -1587,27 +1608,6 @@ app.get('/v0', (req, res) => {
     message: 'Please use /v1',
     redirect: '/v1',
     sunset_date: '2026-06-01'
-  });
-});
-
-// ==================== 监控和指标端点 ====================
-// SLA 报告
-app.get('/metrics/sla', async (req, res) => {
-  const report = slaMonitor.getSLAReport();
-  res.json(report);
-});
-
-// 实时指标
-app.get('/metrics/realtime', (req, res) => {
-  res.json({
-    timestamp: new Date().toISOString(),
-    requests: slaMonitor.metrics.requests,
-    latency: {
-      p99: slaMonitor.getLatencyPercentile(99),
-      p95: slaMonitor.getLatencyPercentile(95),
-      p50: slaMonitor.getLatencyPercentile(50)
-    },
-    top_endpoints: slaMonitor.getTopEndpoints(10)
   });
 });
 

@@ -26,6 +26,17 @@
         html { overflow-y: scroll; }
         body { min-height: 100vh; display: flex; flex-direction: column; }
     </style>
+<script>
+        // 同步设置语言，避免闪烁
+        (function() {
+            const savedLang = localStorage.getItem('hjs_lang');
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            const lang = urlLang || savedLang || 'en';
+            document.documentElement.lang = lang;
+            document.documentElement.setAttribute('data-initial-lang', lang);
+        })();
+    </script>
 </head>
 <body>
     <div class="mx-auto max-w-4xl px-6 pt-12 pb-12">
@@ -174,20 +185,28 @@
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
             const urlLang = urlParams.get('lang');
+            const savedLang = localStorage.getItem('hjs_lang');
+            const initialLang = document.documentElement.getAttribute('data-initial-lang');
             let lang;
             
             if (urlLang) {
                 lang = urlLang;
                 localStorage.setItem('hjs_lang', lang);
+                document.documentElement.lang = lang;
                 const url = new URL(window.location);
                 url.searchParams.delete('lang');
                 window.history.replaceState({}, '', url);
-            } else if (localStorage.getItem('hjs_lang')) {
-                lang = localStorage.getItem('hjs_lang');
+            } else if (savedLang) {
+                lang = savedLang;
+                document.documentElement.lang = lang;
+            } else if (initialLang && initialLang !== 'en') {
+                lang = initialLang;
+                localStorage.setItem('hjs_lang', lang);
             } else {
                 const browserLang = navigator.language || navigator.userLanguage;
                 lang = browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en';
                 localStorage.setItem('hjs_lang', lang);
+                document.documentElement.lang = lang;
             }
             
             switchLang(lang);

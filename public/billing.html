@@ -95,6 +95,17 @@
             margin-left: 1rem;
         }
 </style>
+<script>
+        // 同步设置语言，避免闪烁
+        (function() {
+            const savedLang = localStorage.getItem('hjs_lang');
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            const lang = urlLang || savedLang || 'en';
+            document.documentElement.lang = lang;
+            document.documentElement.setAttribute('data-initial-lang', lang);
+        })();
+    </script>
 </head>
 <body>
     <div class="mx-auto max-w-4xl px-6 pt-12 pb-12">

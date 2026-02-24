@@ -302,6 +302,57 @@
 
         <hr class="border-gray-800">
 
+        <!-- API 错误码 -->
+        <section class="py-24">
+            <h2 class="text-xs font-medium tracking-widest text-gray-400 uppercase" data-i18n="dev_error_title">Error Codes</h2>
+            <div class="mt-6 space-y-4">
+                <div class="flex items-start gap-4">
+                    <code class="text-steel font-mono text-sm">400</code>
+                    <div>
+                        <p class="text-sm text-white">Bad Request</p>
+                        <p class="text-xs text-gray-500" data-i18n="dev_error_400">Missing required fields or invalid JSON format</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <code class="text-steel font-mono text-sm">401</code>
+                    <div>
+                        <p class="text-sm text-white">Unauthorized</p>
+                        <p class="text-xs text-gray-500" data-i18n="dev_error_401">Invalid or missing API key</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <code class="text-steel font-mono text-sm">402</code>
+                    <div>
+                        <p class="text-sm text-white">Payment Required</p>
+                        <p class="text-xs text-gray-500" data-i18n="dev_error_402">Insufficient balance for anchoring</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <code class="text-steel font-mono text-sm">404</code>
+                    <div>
+                        <p class="text-sm text-white">Not Found</p>
+                        <p class="text-xs text-gray-500" data-i18n="dev_error_404">Record ID does not exist</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <code class="text-steel font-mono text-sm">429</code>
+                    <div>
+                        <p class="text-sm text-white">Rate Limited</p>
+                        <p class="text-xs text-gray-500" data-i18n="dev_error_429">Too many requests, retry after 60s</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <code class="text-steel font-mono text-sm">500</code>
+                    <div>
+                        <p class="text-sm text-white">Server Error</p>
+                        <p class="text-xs text-gray-500" data-i18n="dev_error_500">Internal server error, contact support</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-gray-800">
+
         <!-- SDK Install -->
         <section class="py-24">
             <h2 class="text-xs font-medium tracking-widest text-gray-400 uppercase" data-i18n="dev_sdk_heading">SDK IMPLEMENTATIONS</h2>

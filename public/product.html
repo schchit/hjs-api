@@ -323,6 +323,30 @@
             </div>
         </section>
 
+        <hr class="border-gray-800">
+
+        <!-- 性能指标 -->
+        <section class="py-24">
+            <h2 class="text-sm text-gray-500 mb-8" data-i18n="prod_perf_title">Performance & SLA</h2>
+            <div class="grid grid-cols-3 gap-6">
+                <div class="border border-gray-800 p-6 text-center">
+                    <p class="text-3xl font-mono text-white mb-2">&lt;100ms</p>
+                    <p class="text-xs text-gray-500" data-i18n="prod_perf_latency">Response Time (p95)</p>
+                </div>
+                <div class="border border-gray-800 p-6 text-center">
+                    <p class="text-3xl font-mono text-white mb-2">99.9%</p>
+                    <p class="text-xs text-gray-500" data-i18n="prod_perf_uptime">Uptime SLA</p>
+                </div>
+                <div class="border border-gray-800 p-6 text-center">
+                    <p class="text-3xl font-mono text-white mb-2">∞</p>
+                    <p class="text-xs text-gray-500" data-i18n="prod_perf_scale">Unlimited Scale</p>
+                </div>
+            </div>
+            <p class="mt-6 text-xs text-gray-500" data-i18n="prod_perf_note">
+                All metrics are monitored 24/7. View real-time status at status.hjs.io
+            </p>
+        </section>
+
         <!-- 后续内容保持不变... -->
         
     </div>
@@ -331,7 +355,12 @@ const translations = {
     en: {
         nav_home: "Home", nav_product: "Product", nav_developers: "Developers",
         nav_console: "Console", nav_lookup: "Lookup", nav_billing: "Billing",
-        nav_roi: "ROI", nav_governance: "Governance"
+        nav_roi: "ROI", nav_governance: "Governance",
+        prod_perf_title: "Performance & SLA",
+        prod_perf_latency: "Response Time (p95)",
+        prod_perf_uptime: "Uptime SLA",
+        prod_perf_scale: "Unlimited Scale",
+        prod_perf_note: "All metrics are monitored 24/7. View real-time status at status.hjs.io"
     },
     zh: {
         nav_home: "首页", nav_product: "产品", nav_developers: "开发者",
@@ -357,7 +386,12 @@ const translations = {
         prod_guarantee_privacy: "隐私保证",
         prod_guarantee_privacy_desc: "只存储决策哈希。你的业务数据永远不会离开你的基础设施。",
         prod_guarantee_verify: "验证保证",
-        prod_guarantee_verify_desc: "记录可以使用开源工具独立验证。不锁定在 HJS。"
+        prod_guarantee_verify_desc: "记录可以使用开源工具独立验证。不锁定在 HJS。",
+        prod_perf_title: "性能与服务等级",
+        prod_perf_latency: "响应时间 (p95)",
+        prod_perf_uptime: "可用性 SLA",
+        prod_perf_scale: "无限扩展",
+        prod_perf_note: "所有指标7x24小时监控。查看实时状态请访问 status.hjs.io"
     }
 };
 

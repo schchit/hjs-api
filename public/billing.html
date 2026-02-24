@@ -45,10 +45,11 @@
         
         /* 圆角 */
         .rounded { border-radius: 0.25rem; }
+        /* 防止页面跳动 */n        html { overflow-y: scroll; }n        body { min-height: 100vh; display: flex; flex-direction: column; }
     </style>
 </head>
 <body>
-    <div class="mx-auto max-w-5xl px-6">
+    <div class="mx-auto max-w-4xl px-6 pt-12 pb-12">
         <!-- ===== 导航栏 ===== -->
         <div class="flex justify-between items-center py-6 text-base">
             <div class="text-white font-semibold text-lg">HJS</div>
@@ -73,7 +74,7 @@
             <p class="font-mono text-xs text-gray-500" data-i18n="bill_version_tag">
                 HJS Responsibility Protocol · v1.0 Beta
             </p>
-            <h1 class="mt-4 text-3xl font-light leading-tight tracking-tight text-white md:text-4xl" data-i18n="bill_title">
+            <h1 class="mt-6 text-3xl font-light leading-tight tracking-tight text-white md:text-4xl" data-i18n="bill_title">
                 Usage & Billing
             </h1>
             <p class="mt-4 max-w-xl text-sm leading-relaxed text-gray-400" data-i18n="bill_subtitle">

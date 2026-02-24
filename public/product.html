@@ -55,10 +55,11 @@
             white-space: pre-wrap;
             word-wrap: break-word;
         }
+        /* 防止页面跳动 */n        html { overflow-y: scroll; }n        body { min-height: 100vh; display: flex; flex-direction: column; }
     </style>
 </head>
 <body>
-    <div class="mx-auto max-w-5xl px-6">
+    <div class="mx-auto max-w-4xl px-6 pt-12 pb-12">
         <!-- ===== 导航栏 ===== -->
         <div class="flex justify-between items-center py-6 text-base">
             <div class="text-white font-semibold text-lg">HJS</div>

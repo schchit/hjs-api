@@ -139,14 +139,53 @@
         }
 </style>
 <script>
-        // 同步设置语言，避免闪烁
+        // 预翻译关键内容，在页面渲染前执行
         (function() {
             const savedLang = localStorage.getItem('hjs_lang');
             const urlParams = new URLSearchParams(window.location.search);
             const urlLang = urlParams.get('lang');
-            const lang = urlLang || savedLang || 'en';
+            const browserLang = navigator.language || navigator.userLanguage;
+            const lang = urlLang || savedLang || (browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en');
+            
+            if (!savedLang || urlLang) {
+                localStorage.setItem('hjs_lang', lang);
+            }
+            if (urlLang) {
+                const url = new URL(window.location);
+                url.searchParams.delete('lang');
+                window.history.replaceState({}, '', url);
+            }
             document.documentElement.lang = lang;
-            document.documentElement.setAttribute('data-initial-lang', lang);
+            
+            // 关键翻译映射（导航栏）
+            const navTranslations = {
+                zh: {
+                    'nav_home': '首页', 'nav_product': '产品', 'nav_developers': '开发者',
+                    'nav_console': '控制台', 'nav_lookup': '查询', 'nav_billing': '计费',
+                    'nav_roi': 'ROI', 'nav_governance': '治理'
+                },
+                en: {
+                    'nav_home': 'Home', 'nav_product': 'Product', 'nav_developers': 'Developers',
+                    'nav_console': 'Console', 'nav_lookup': 'Lookup', 'nav_billing': 'Billing',
+                    'nav_roi': 'ROI', 'nav_governance': 'Governance'
+                }
+            };
+            
+            // 立即翻译（在DOM加载前）
+            if (lang !== 'en' && navTranslations[lang]) {
+                const originalContent = document.documentElement.innerHTML;
+                let newContent = originalContent;
+                
+                // 替换关键文本
+                Object.keys(navTranslations[lang]).forEach(key => {
+                    const regex = new RegExp('data-i18n="' + key + '">([^<]+)', 'g');
+                    newContent = newContent.replace(regex, 'data-i18n="' + key + '">' + navTranslations[lang][key]);
+                });
+                
+                if (newContent !== originalContent) {
+                    document.documentElement.innerHTML = newContent;
+                }
+            }
         })();
     </script>
 </head>

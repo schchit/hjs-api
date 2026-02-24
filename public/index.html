@@ -9,31 +9,42 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace !important; }
-        body { background: #0a0a0a; color: #e5e5e5; min-height: 100vh; opacity: 0; }
-        body.translated { opacity: 1; transition: opacity 0.1s; }
+        body { background: #0a0a0a; color: #e5e5e5; min-height: 100vh; }
         html { scroll-behavior: smooth; overflow-y: scroll; }
         .text-steel { color: #3B4B5C; }
         .border-steel { border-color: #3B4B5C; }
+        .bg-card { background: rgba(26, 26, 26, 0.5); }
     </style>
-    <script>
+<script>
+        // 语言设置：URL参数 > 用户选择 > 浏览器语言 > 默认英文
         (function() {
-            const savedLang = localStorage.getItem('hjs_lang');
             const urlParams = new URLSearchParams(window.location.search);
             const urlLang = urlParams.get('lang');
+            const savedLang = localStorage.getItem('hjs_lang');
             const browserLang = navigator.language || navigator.userLanguage;
+            
+            // 确定语言优先级
             let lang;
             if (urlLang) {
+                // URL参数优先级最高
                 lang = urlLang;
                 localStorage.setItem('hjs_lang', lang);
+            document.documentElement.lang = lang;
+                // 清理URL参数
                 const url = new URL(window.location);
                 url.searchParams.delete('lang');
                 window.history.replaceState({}, '', url);
             } else if (savedLang) {
+                // 用户使用手动选择的语言（优先级第二）
                 lang = savedLang;
             } else {
+                // 首次访问，根据浏览器语言
                 lang = browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en';
                 localStorage.setItem('hjs_lang', lang);
+            document.documentElement.lang = lang;
             }
+            
+            // 设置HTML lang属性
             document.documentElement.lang = lang;
             document.documentElement.setAttribute('data-initial-lang', lang);
         })();
@@ -42,91 +53,146 @@
 <body>
     <div class="mx-auto max-w-4xl px-6 pt-12 pb-12">
         <!-- 导航栏 -->
-        <nav class="flex items-center py-6 text-base gap-8">
-            <a href="/" class="text-white font-semibold text-lg">HJS</a>
+        <div class="flex items-center py-6 text-base gap-8">
+            <a href="/" class="text-white font-semibold text-lg flex-shrink-0">HJS</a>
             <div class="flex gap-6 md:gap-8 text-gray-400">
                 <a href="/" class="text-white" data-i18n="nav_home">Home</a>
                 <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
                 <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
                 <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
+                <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
                 <a href="/billing.html" class="hover:text-teal-400 transition" data-i18n="nav_billing">Billing</a>
+                <a href="/roi-calculator.html" class="hover:text-teal-400 transition" data-i18n="nav_roi">ROI</a>
+                <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
             </div>
             <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs ml-auto">
                 <option value="en">EN</option>
                 <option value="zh">中文</option>
             </select>
-        </nav>
+        </div>
 
-        <!-- Hero -->
         <section class="py-24">
-            <p class="mb-4 font-mono text-xs text-steel" data-i18n="home_version_tag">HJS Responsibility Protocol · v1.0 Beta</p>
-            <h1 class="text-4xl md:text-5xl font-light tracking-tight text-white mb-6" data-i18n="home_headline">HJS 责任协议</h1>
-            <p class="text-xl md:text-2xl text-gray-400 mb-8 max-w-2xl" data-i18n="home_tagline">AI系统的行车记录仪，记录每一次决策，留下不可篡改的证据</p>
-            <p class="text-gray-500 mb-8" data-i18n="home_primitives">Judgment → Delegation → Termination → Verification</p>
-            <p class="text-gray-400 mb-10 max-w-xl" data-i18n="home_desc">只存储决策哈希，不触碰业务数据。按需上链，独立验证。</p>
-            <div class="flex gap-4">
-                <a href="/console.html" class="px-6 py-3 bg-steel/20 border border-steel text-white hover:bg-steel/30 transition" data-i18n="home_cta_try">5分钟免费试用</a>
-                <a href="/developers.html" class="px-6 py-3 border border-gray-700 text-gray-300 hover:border-steel hover:text-white transition" data-i18n="home_cta_docs">查看API文档</a>
+            <p class="mb-4 font-mono text-xs text-gray-500" data-i18n="home_version_tag">HJS Responsibility Protocol · v1.0 Beta</p>
+            <h1 class="mt-6 text-3xl font-light tracking-tight text-white md:text-4xl" data-i18n="home_headline">HJS 责任协议</h1>
+            <p class="mt-6 max-w-2xl text-base text-gray-400" data-i18n="home_tagline">让AI的每一笔决策，都有一张不可抵赖的发票</p>
+        </section>
+
+        <hr class="border-gray-800">
+
+        <section class="py-24">
+            <h2 class="text-sm text-gray-500 mb-4">四层原语</h2>
+            <p class="text-sm text-gray-400 mb-8">Judgment → Delegation → Termination → Verification</p>
+            <div class="border-l-2 border-steel pl-6 py-4 mb-8 max-w-2xl">
+                <p class="text-base text-gray-300" data-i18n="home_privacy_desc">只存储决策哈希，不触碰业务数据。按需上链，独立验证。</p>
+            </div>
+            <div class="flex gap-4 mb-6">
+                <a href="/console.html" class="px-6 py-3 bg-steel/20 border border-steel text-white text-sm hover:bg-steel/30 transition" data-i18n="home_cta_try">5分钟免费试用</a>
+                <a href="/developers.html" class="px-6 py-3 border border-gray-700 text-gray-300 text-sm hover:border-steel hover:text-white transition" data-i18n="home_cta_docs">查看API文档</a>
+            </div>
+            <p class="text-xs text-gray-600 font-mono" data-i18n="home_ietf">基于 IETF 草案 draft-wang-tp-definition-00 构建</p>
+        </section>
+
+        <hr class="border-gray-800">
+
+        <section class="py-24">
+            <p class="font-mono text-xs text-gray-500 mb-3" data-i18n="home_usecases_tag">应用场景</p>
+            <h2 class="text-xl font-light text-white mb-3" data-i18n="home_usecases_title">适用于高风险AI决策场景</h2>
+            <div class="flex flex-wrap gap-3">
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm" data-i18n="industry_fintech">FinTech</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm" data-i18n="industry_medical">Medical AI</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm" data-i18n="industry_autonomous">Autonomous</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm" data-i18n="industry_trading">Algo Trading</span>
             </div>
         </section>
 
         <hr class="border-gray-800">
 
-        <!-- Features -->
-        <section class="py-16">
-            <div class="flex flex-wrap gap-8 text-sm text-gray-500">
-                <span class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-steel"></span>
-                    <span data-i18n="feat_opensource">Open Source</span>
-                </span>
-                <span class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-steel"></span>
-                    <span data-i18n="feat_ietf">IETF Standard</span>
-                </span>
-                <span class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-steel"></span>
-                    <span data-i18n="feat_private">Privacy First</span>
-                </span>
-                <span class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-steel"></span>
-                    <span data-i18n="feat_verify">Independent Verification</span>
-                </span>
+        <!-- 真实优势 -->
+        <section class="py-24">
+            <p class="font-mono text-xs text-gray-500 mb-3" data-i18n="home_trust_tag">TRUST & TRANSPARENCY</p>
+            <h2 class="text-xl font-light text-white mb-6" data-i18n="home_trust_title">Built on Open Standards</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="https://github.com/schchit/hjs-api" target="_blank" class="border border-gray-800 p-4 hover:border-steel transition">
+                    <p class="text-2xl mb-2">⭐</p>
+                    <p class="text-sm text-white mb-1" data-i18n="home_trust_opensource">Open Source</p>
+                    <p class="text-xs text-gray-500">github.com/schchit/hjs-api</p>
+                </a>
+                <div class="border border-gray-800 p-4">
+                    <p class="text-2xl mb-2">📋</p>
+                    <p class="text-sm text-white mb-1" data-i18n="home_trust_ietf">IETF Standard</p>
+                    <p class="text-xs text-gray-500">draft-wang-tp-definition-00</p>
+                </div>
+                <div class="border border-gray-800 p-4">
+                    <p class="text-2xl mb-2">🔍</p>
+                    <p class="text-sm text-white mb-1" data-i18n="home_trust_transparent">Transparent</p>
+                    <p class="text-xs text-gray-500">Four primitives architecture</p>
+                </div>
+                <div class="border border-gray-800 p-4">
+                    <p class="text-2xl mb-2">🔓</p>
+                    <p class="text-sm text-white mb-1" data-i18n="home_trust_nolock">No Vendor Lock</p>
+                    <p class="text-xs text-gray-500">Verify independently</p>
+                </div>
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="text-center text-xs text-gray-600 pt-8 border-t border-gray-800">
+        <div class="text-center text-xs text-gray-600 pt-8 border-t border-gray-800">
             <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
             <span class="text-gray-700">·</span>
-            <a href="/status.html" class="hover:text-gray-400 mx-2">Status</a>
+            <a href="/spec/README.md" class="hover:text-gray-400 mx-2">Spec</a>
+            <span class="text-gray-700">·</span>
+            <a href="/cases.html" class="hover:text-gray-400 mx-2">Cases</a>
             <span class="text-gray-700">·</span>
             <a href="/privacy.html" class="hover:text-gray-400 mx-2">Privacy</a>
             <span class="text-gray-700">·</span>
             <a href="/terms.html" class="hover:text-gray-400 mx-2">Terms</a>
-        </footer>
+        </div>
     </div>
 
     <script>
         const translations = {
             en: {
-                nav_home: "Home", nav_product: "Product", nav_developers: "Developers", nav_console: "Console", nav_billing: "Billing",
+                nav_home: "Home", nav_product: "Product", nav_developers: "Developers",
+                nav_console: "Console", nav_lookup: "Lookup", nav_billing: "Billing",
+                nav_roi: "ROI", nav_governance: "Governance",
                 home_version_tag: "HJS Responsibility Protocol · v1.0 Beta",
                 home_headline: "HJS Responsibility Protocol",
-                home_tagline: "The dashcam for AI systems: recording decisions, preserving evidence",
-                home_primitives: "Judgment → Delegation → Termination → Verification",
-                home_desc: "Only decision hashes stored. No business data touches our servers. Anchor on-demand, verify independently.",
-                home_cta_try: "Start Free Trial", home_cta_docs: "View API Docs",
-                feat_opensource: "Open Source", feat_ietf: "IETF Standard", feat_private: "Privacy First", feat_verify: "Independent Verification"
+                home_tagline: "Every AI decision gets an undeniable receipt",
+                home_privacy_desc: "Only decision hashes stored. No business data touches our servers. Anchor on-demand, verify independently.",
+                home_cta_try: "Start Free Trial (5 min)", home_cta_docs: "View API Docs",
+                home_ietf: "Built on IETF draft draft-wang-tp-definition-00",
+                home_usecases_tag: "USE CASES", home_usecases_title: "For high-risk AI decision scenarios",
+                home_trust_tag: "TRUST & TRANSPARENCY",
+                home_trust_title: "Built on Open Standards",
+                home_trust_opensource: "Open Source",
+                home_trust_ietf: "IETF Standard",
+                home_trust_transparent: "Transparent",
+                home_trust_nolock: "No Vendor Lock",
+                industry_fintech: "FinTech",
+                industry_medical: "Medical AI",
+                industry_autonomous: "Autonomous",
+                industry_trading: "Algo Trading"
             },
             zh: {
-                nav_home: "首页", nav_product: "产品", nav_developers: "开发者", nav_console: "控制台", nav_billing: "计费",
+                nav_home: "首页", nav_product: "产品", nav_developers: "开发者",
+                nav_console: "控制台", nav_lookup: "查询", nav_billing: "计费",
+                nav_roi: "ROI", nav_governance: "治理",
                 home_version_tag: "HJS 责任协议 · v1.0 Beta",
                 home_headline: "HJS 责任协议",
-                home_tagline: "The dashcam for AI systems: recording decisions, preserving evidence, not judging right or wrong",
-                home_primitives: "Judgment → Delegation → Termination → Verification",
-                home_desc: "只存储决策哈希，不触碰业务数据。按需上链，独立验证。",
+                home_tagline: "让AI的每一笔决策，都有一张不可抵赖的发票",
+                home_privacy_desc: "只存储决策哈希，不触碰业务数据。按需上链，独立验证。",
                 home_cta_try: "5分钟免费试用", home_cta_docs: "查看API文档",
-                feat_opensource: "开源", feat_ietf: "IETF标准", feat_private: "隐私优先", feat_verify: "独立验证"
+                home_ietf: "基于 IETF 草案 draft-wang-tp-definition-00 构建",
+                home_usecases_tag: "应用场景", home_usecases_title: "适用于高风险AI决策场景",
+                home_trust_tag: "信任与透明",
+                home_trust_title: "基于开放标准构建",
+                home_trust_opensource: "开源",
+                home_trust_ietf: "IETF标准",
+                home_trust_transparent: "透明",
+                home_trust_nolock: "无供应商锁定",
+                industry_fintech: "金融风控",
+                industry_medical: "医疗诊断",
+                industry_autonomous: "自动驾驶",
+                industry_trading: "算法交易"
             }
         };
 
@@ -135,12 +201,15 @@
             document.documentElement.lang = lang;
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
             });
+            document.querySelector('select').value = lang;
         }
 
         (function() {
-            const lang = document.documentElement.getAttribute('data-initial-lang') || localStorage.getItem('hjs_lang') || 'en';
+            const lang = document.documentElement.lang || localStorage.getItem('hjs_lang') || 'en';
             switchLang(lang);
             document.body.classList.add('translated');
         })();

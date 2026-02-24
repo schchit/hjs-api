@@ -80,7 +80,10 @@
             flex-shrink: 0;
             margin-left: 1rem;
         }
-</style>
+        /* 防止语言闪烁 */
+        body { opacity: 0; transition: opacity 0.1s; }
+        body.translated { opacity: 1; }
+    </style>
 <script>
         // 预翻译关键内容，在页面渲染前执行
         (function() {
@@ -458,6 +461,7 @@ client.recordJudgment('user', 'test')
         (function() {
             const lang = document.documentElement.lang || localStorage.getItem('hjs_lang') || 'en';
             switchLang(lang);
+            document.body.classList.add('translated');
         })();
     </script>
 

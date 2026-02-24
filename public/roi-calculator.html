@@ -44,6 +44,9 @@
             border: none;
         }
         /* 防止页面跳动 */n        html { overflow-y: scroll; }n        body { min-height: 100vh; display: flex; flex-direction: column; }
+            /* 防止语言闪烁 */
+        body { opacity: 0; transition: opacity 0.1s; }
+        body.translated { opacity: 1; }
     </style>
 <script>
         // 预翻译关键内容，在页面渲染前执行

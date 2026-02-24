@@ -331,6 +331,18 @@
             </p>
         </section>
 
+        <hr class="border-gray-800">
+
+        <!-- 诚实声明 -->
+        <section class="py-16">
+            <div class="border border-steel/30 bg-steel/5 p-6">
+                <p class="text-xs text-steel font-mono mb-2" data-i18n="prod_disclaimer_label">IMPORTANT NOTICE</p>
+                <p class="text-sm text-gray-400 leading-relaxed" data-i18n="prod_disclaimer_text">
+                    HJS provides technical infrastructure for establishing decision audit trails. Complete AI compliance requires enterprises to implement internal data governance, algorithm auditing, and other measures. We provide "tamper-proof timestamp proofs," not "legal compliance guarantees."
+                </p>
+            </div>
+        </section>
+
         <!-- 后续内容保持不变... -->
         
     </div>
@@ -344,7 +356,9 @@ const translations = {
         prod_perf_latency: "Response Time (p95)",
         prod_perf_uptime: "Uptime SLA",
         prod_perf_scale: "Unlimited Scale",
-        prod_perf_note: "All metrics are monitored 24/7. View real-time status at status.hjs.io"
+        prod_perf_note: "All metrics are monitored 24/7. View real-time status at status.hjs.io",
+                prod_disclaimer_label: "IMPORTANT NOTICE",
+                prod_disclaimer_text: "HJS provides technical infrastructure for establishing decision audit trails. Complete AI compliance requires enterprises to implement internal data governance, algorithm auditing, and other measures. We provide 'tamper-proof timestamp proofs,' not 'legal compliance guarantees.'"
     },
     zh: {
         nav_home: "首页", nav_product: "产品", nav_developers: "开发者",
@@ -375,7 +389,9 @@ const translations = {
         prod_perf_latency: "响应时间 (p95)",
         prod_perf_uptime: "可用性 SLA",
         prod_perf_scale: "无限扩展",
-        prod_perf_note: "所有指标7x24小时监控。查看实时状态请访问 status.hjs.io"
+        prod_perf_note: "所有指标7x24小时监控。查看实时状态请访问 status.hjs.io",
+                prod_disclaimer_label: "重要声明",
+                prod_disclaimer_text: "HJS 提供建立决策审计追踪的技术基础设施。完整的 AI 合规需要企业实施内部数据治理、算法审计等措施。我们提供'不可篡改的时间戳证明'，而非'法律合规保证'。"
     }
 };
 

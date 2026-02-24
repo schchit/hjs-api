@@ -20,8 +20,16 @@
             const savedLang = localStorage.getItem('hjs_lang');
             const urlParams = new URLSearchParams(window.location.search);
             const urlLang = urlParams.get('lang');
-            const lang = urlLang || savedLang || 'en';
+            const browserLang = navigator.language || navigator.userLanguage;
+            const lang = urlLang || savedLang || (browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en');
             document.documentElement.lang = lang;
+            document.documentElement.setAttribute('data-initial-lang', lang);
+            if (urlLang) {
+                localStorage.setItem('hjs_lang', lang);
+                const url = new URL(window.location);
+                url.searchParams.delete('lang');
+                window.history.replaceState({}, '', url);
+            }
         })();
     </script>
 </head>
@@ -128,16 +136,7 @@
         }
 
         (function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const urlLang = urlParams.get('lang');
-            const savedLang = localStorage.getItem('hjs_lang');
-            const lang = urlLang || savedLang || (navigator.language.startsWith('zh') ? 'zh' : 'en');
-            localStorage.setItem('hjs_lang', lang);
-            if (urlLang) {
-                const url = new URL(window.location);
-                url.searchParams.delete('lang');
-                window.history.replaceState({}, '', url);
-            }
+            const lang = document.documentElement.lang || localStorage.getItem('hjs_lang') || 'en';
             switchLang(lang);
         })();
     </script>

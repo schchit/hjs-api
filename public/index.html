@@ -8,32 +8,20 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
-        .font-mono, code, pre { font-family: 'JetBrains Mono', monospace !important; }
+        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
         body { background: #0a0a0a; color: #e5e5e5; min-height: 100vh; }
         html { scroll-behavior: smooth; overflow-y: scroll; }
         .text-steel { color: #3B4B5C; }
         .border-steel { border-color: #3B4B5C; }
-        .bg-steel\/10 { background-color: rgba(59, 75, 92, 0.1); }
-        .bg-steel\/20 { background-color: rgba(59, 75, 92, 0.2); }
-        .hover\:bg-steel\/20:hover { background-color: rgba(59, 75, 92, 0.2); }
         .bg-card { background: rgba(26, 26, 26, 0.5); }
-        .border-border { border-color: #1f1f1f; }
-        .text-muted-foreground { color: #9ca3af; }
-        .text-foreground { color: #e5e5e5; }
-        .hover\:border-steel:hover { border-color: #3B4B5C; }
-        .hover\:text-foreground:hover { color: #e5e5e5; }
-        html { overflow-y: scroll; }
-        body { min-height: 100vh; display: flex; flex-direction: column; }
     </style>
 <script>
-        // 同步设置语言，避免闪烁
         (function() {
             const savedLang = localStorage.getItem('hjs_lang');
             const urlParams = new URLSearchParams(window.location.search);
             const urlLang = urlParams.get('lang');
             const lang = urlLang || savedLang || 'en';
             document.documentElement.lang = lang;
-            document.documentElement.setAttribute('data-initial-lang', lang);
         })();
     </script>
 </head>
@@ -58,63 +46,40 @@
             </select>
         </div>
 
-        <!-- Header -->
         <section class="py-24">
-            <p class="mb-4 font-mono text-xs text-gray-500" data-i18n="home_version_tag">
-                HJS Responsibility Protocol · v1.0 Beta
-            </p>
-            <h1 class="mt-6 text-3xl font-light leading-tight tracking-tight text-white md:text-4xl" data-i18n="home_headline">
-                HJS 责任协议
-            </h1>
-            <p class="mt-6 max-w-2xl text-base leading-relaxed text-gray-400" data-i18n="home_tagline">
-                让AI的每一笔决策，都有一张不可抵赖的发票
-            </p>
+            <p class="mb-4 font-mono text-xs text-gray-500" data-i18n="home_version_tag">HJS Responsibility Protocol · v1.0 Beta</p>
+            <h1 class="mt-6 text-3xl font-light tracking-tight text-white md:text-4xl" data-i18n="home_headline">HJS 责任协议</h1>
+            <p class="mt-6 max-w-2xl text-base text-gray-400" data-i18n="home_tagline">让AI的每一笔决策，都有一张不可抵赖的发票</p>
         </section>
 
         <hr class="border-gray-800">
 
-        <!-- 四词原语 -->
         <section class="py-24">
-            <h2 class="text-sm text-gray-500 mb-8">四层原语</h2>
-            <div class="flex flex-wrap gap-3 mb-8">
-                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm">Judgment → Delegation → Termination → Verification</span>
-            </div>
-            
+            <h2 class="text-sm text-gray-500 mb-4">四层原语</h2>
+            <p class="text-sm text-gray-400 mb-8">Judgment → Delegation → Termination → Verification</p>
             <div class="border-l-2 border-steel pl-6 py-4 mb-8 max-w-2xl">
-                <p class="text-base text-gray-300 leading-relaxed" data-i18n="home_privacy_desc">
-                    只存储决策哈希，不触碰业务数据。按需上链，独立验证。
-                </p>
+                <p class="text-base text-gray-300" data-i18n="home_privacy_desc">只存储决策哈希，不触碰业务数据。按需上链，独立验证。</p>
             </div>
-            
-            <div class="flex flex-wrap gap-4 mb-6">
-                <a href="/console.html" class="inline-flex items-center gap-2 px-6 py-3 bg-steel/20 border border-steel text-white text-sm font-medium hover:bg-steel/30 transition-colors" data-i18n="home_cta_try">
-                    5分钟免费试用
-                </a>
-                <a href="/developers.html" class="inline-flex items-center gap-2 px-6 py-3 border border-gray-700 text-gray-300 text-sm font-medium hover:border-steel hover:text-white transition-colors" data-i18n="home_cta_docs">
-                    查看API文档
-                </a>
+            <div class="flex gap-4 mb-6">
+                <a href="/console.html" class="px-6 py-3 bg-steel/20 border border-steel text-white text-sm hover:bg-steel/30 transition" data-i18n="home_cta_try">5分钟免费试用</a>
+                <a href="/developers.html" class="px-6 py-3 border border-gray-700 text-gray-300 text-sm hover:border-steel hover:text-white transition" data-i18n="home_cta_docs">查看API文档</a>
             </div>
-            
-            <p class="text-xs text-gray-600 font-mono" data-i18n="home_ietf">
-                基于 IETF 草案 draft-wang-tp-definition-00 构建
-            </p>
+            <p class="text-xs text-gray-600 font-mono" data-i18n="home_ietf">基于 IETF 草案 draft-wang-tp-definition-00 构建</p>
         </section>
 
         <hr class="border-gray-800">
 
-        <!-- 应用场景 -->
         <section class="py-24">
             <p class="font-mono text-xs text-gray-500 mb-3" data-i18n="home_usecases_tag">应用场景</p>
             <h2 class="text-xl font-light text-white mb-3" data-i18n="home_usecases_title">适用于高风险AI决策场景</h2>
             <div class="flex flex-wrap gap-3">
-                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">金融风控</span>
-                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">医疗诊断</span>
-                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">自动驾驶</span>
-                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">算法交易</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm">金融风控</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm">医疗诊断</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm">自动驾驶</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm">算法交易</span>
             </div>
         </section>
 
-        <!-- 底部 -->
         <div class="text-center text-xs text-gray-600 pt-8 border-t border-gray-800">
             <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
             <span class="text-gray-700">·</span>
@@ -159,37 +124,20 @@
                     el.innerHTML = translations[lang][key];
                 }
             });
-            const select = document.querySelector('select');
-            if (select) select.value = lang;
+            document.querySelector('select').value = lang;
         }
 
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
             const urlLang = urlParams.get('lang');
             const savedLang = localStorage.getItem('hjs_lang');
-            const initialLang = document.documentElement.getAttribute('data-initial-lang');
-            let lang;
-            
+            const lang = urlLang || savedLang || (navigator.language.startsWith('zh') ? 'zh' : 'en');
+            localStorage.setItem('hjs_lang', lang);
             if (urlLang) {
-                lang = urlLang;
-                localStorage.setItem('hjs_lang', lang);
-                document.documentElement.lang = lang;
                 const url = new URL(window.location);
                 url.searchParams.delete('lang');
                 window.history.replaceState({}, '', url);
-            } else if (savedLang) {
-                lang = savedLang;
-                document.documentElement.lang = lang;
-            } else if (initialLang && initialLang !== 'en') {
-                lang = initialLang;
-                localStorage.setItem('hjs_lang', lang);
-            } else {
-                const browserLang = navigator.language || navigator.userLanguage;
-                lang = browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en';
-                localStorage.setItem('hjs_lang', lang);
-                document.documentElement.lang = lang;
             }
-            
             switchLang(lang);
         })();
     </script>

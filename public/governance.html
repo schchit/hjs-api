@@ -172,9 +172,28 @@
             document.querySelector('select').value = lang;
         }
         (function() {
-            const saved = localStorage.getItem('hjs_lang');
-            const url = new URLSearchParams(window.location.search);
-            const lang = saved || url.get('lang') || 'en';
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            let lang;
+            
+            if (urlLang) {
+                // URL参数优先级最高
+                lang = urlLang;
+                localStorage.setItem('hjs_lang', lang);
+                // 清理URL参数
+                const url = new URL(window.location);
+                url.searchParams.delete('lang');
+                window.history.replaceState({}, '', url);
+            } else if (localStorage.getItem('hjs_lang')) {
+                // 用户已选择，固定使用
+                lang = localStorage.getItem('hjs_lang');
+            } else {
+                // 第一次访问：检测浏览器语言
+                const browserLang = navigator.language || navigator.userLanguage;
+                lang = browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+                localStorage.setItem('hjs_lang', lang);
+            }
+            
             switchLang(lang);
         })();
     </script>

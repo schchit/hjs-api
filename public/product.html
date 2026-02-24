@@ -10,7 +10,7 @@
         * { font-family: 'Inter', system-ui, sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace !important; }
         body { background: #0a0a0a; color: #e5e5e5; min-height: 100vh; }
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; overflow-y: scroll; }
         .text-steel { color: #3B4B5C; }
         .border-steel { border-color: #3B4B5C; }
         .bg-card { background: rgba(26, 26, 26, 0.5); }
@@ -104,21 +104,12 @@
         body { min-height: 100vh; display: flex; flex-direction: column; }
     
         /* 统一导航栏样式 */
-        nav {
-            display: flex;
-            justify-content: flex-start; gap: 3rem;
-            align-items: center;
-            padding-top: 1.5rem;
-            padding-bottom: 1.5rem;
-        }
-        nav a:first-child {
             font-size: 1.125rem;
             font-weight: 600;
             color: white;
             flex-shrink: 0;
             text-decoration: none;
         }
-        nav .nav-links {
             display: flex;
             align-items: center;
             gap: 1.5rem;
@@ -128,20 +119,16 @@
                 gap: 2rem;
             }
         }
-        nav .nav-link {
             color: #9ca3af;
             font-size: 1rem;
             text-decoration: none;
             transition: color 0.2s;
             white-space: nowrap;
         }
-        nav .nav-link:hover {
             color: #5ee0c0;
         }
-        nav .nav-link.active {
             color: white;
         }
-        nav select {
             background: transparent;
             color: #9ca3af;
             font-size: 0.75rem;

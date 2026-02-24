@@ -23,23 +23,13 @@
         .bg-background { background: #0a0a0a; }
         .hover\:border-steel:hover { border-color: #3B4B5C; }
         .hover\:text-foreground:hover { color: #e5e5e5; }
-        
-        /* 动画 */
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .animate-spin {
-            animation: spin 1s linear infinite;
-        }
-        
-        .test-input { background: #1a1a1a; border: 1px solid #333; color: white; }
-        .test-input:focus { border-color: #5ee0c0; outline: none; }
-        /* 防止页面跳动 */n        html { overflow-y: scroll; }n        body { min-height: 100vh; display: flex; flex-direction: column; }
+        html { overflow-y: scroll; }
+        body { min-height: 100vh; display: flex; flex-direction: column; }
     </style>
 </head>
 <body>
     <div class="mx-auto max-w-4xl px-6 pt-12 pb-12">
-        <!-- ===== 导航栏 ===== -->
+        <!-- 导航栏 -->
         <div class="flex justify-between items-center py-6 text-base">
             <div class="text-white font-semibold text-lg">HJS</div>
             <div class="flex gap-8 md:gap-10 text-gray-400">
@@ -58,235 +48,66 @@
             </select>
         </div>
 
-        <!-- ===== 第一屏：主视觉区 ===== -->
-        <section class="min-h-[calc(100vh-8rem)] flex flex-col justify-center py-20">
-            <!-- 主标题区 -->
+        <!-- 主视觉区 -->
+        <section class="min-h-[calc(100vh-8rem)] flex flex-col justify-center py-16">
             <div class="max-w-4xl">
-                <p class="mb-6 font-mono text-xs text-steel tracking-wider" data-i18n="home_version_tag">
+                <p class="mb-4 font-mono text-xs text-steel" data-i18n="home_version_tag">
                     HJS Responsibility Protocol · v1.0 Beta
                 </p>
                 
-                <h1 class="text-4xl md:text-5xl font-light leading-tight tracking-tight text-white mb-8" data-i18n="home_headline">
+                <h1 class="text-4xl md:text-5xl font-light leading-tight tracking-tight text-white mb-4" data-i18n="home_headline">
                     HJS 责任协议
                 </h1>
                 
-                <p class="text-xl md:text-2xl text-gray-400 leading-relaxed mb-12 max-w-3xl" data-i18n="home_tagline">
-                    让AI的每一笔决策，都有一张<span class="text-steel font-medium">"不可抵赖"</span>的发票
+                <p class="text-xl md:text-2xl text-gray-400 leading-relaxed mb-6" data-i18n="home_tagline">
+                    让AI的每一笔决策，都有一张不可抵赖的发票
                 </p>
             </div>
             
-            <!-- 隐私保护优势 -->
-            <div class="border-l-2 border-steel pl-6 py-5 my-10 max-w-2xl">
-                <p class="text-steel font-mono text-xs mb-3 tracking-wider uppercase" data-i18n="home_privacy_label">
-                    隐私优先设计
-                </p>
+            <!-- 核心优势 -->
+            <div class="border-l-2 border-steel pl-6 py-4 mb-8 max-w-2xl">
                 <p class="text-base text-gray-300 leading-relaxed" data-i18n="home_privacy_desc">
-                    只存储决策哈希，不触碰业务数据。<br>
-                    你的隐私，始终在你手中。
+                    只存储决策哈希，不触碰业务数据。按需上链，独立验证。
                 </p>
             </div>
             
-            <!-- 技术亮点 -->
-            <div class="flex flex-wrap gap-8 text-sm text-gray-500 mb-12">
-                <span class="flex items-center gap-3">
-                    <span class="w-2 h-2 rounded-full bg-steel"></span>
-                    <span data-i18n="home_feature_1">一行代码接入</span>
-                </span>
-                <span class="flex items-center gap-3">
-                    <span class="w-2 h-2 rounded-full bg-steel"></span>
-                    <span data-i18n="home_feature_2">30秒验证</span>
-                </span>
-                <span class="flex items-center gap-3">
-                    <span class="w-2 h-2 rounded-full bg-steel"></span>
-                    <span data-i18n="home_feature_3">按需上链</span>
-                </span>
+            <!-- CTA -->
+            <div class="flex flex-wrap gap-4 mb-8">
+                <a href="/console.html" class="inline-flex items-center gap-2 px-6 py-3 bg-steel/20 border border-steel text-white text-sm font-medium hover:bg-steel/30 transition-colors" data-i18n="home_cta_try">
+                    5分钟免费试用
+                </a>
+                <a href="/developers.html" class="inline-flex items-center gap-2 px-6 py-3 border border-gray-700 text-gray-300 text-sm font-medium hover:border-steel hover:text-white transition-colors" data-i18n="home_cta_docs">
+                    查看API文档
+                </a>
             </div>
             
-            <!-- IETF标准背书 -->
-            <div class="mb-12">
+            <!-- IETF标准 -->
+            <div>
                 <p class="text-xs text-gray-600 font-mono" data-i18n="home_ietf">
                     基于 IETF 草案 draft-wang-tp-definition-00 构建
                 </p>
             </div>
-            
-            <!-- CTA 按钮组 -->
-            <div class="flex flex-wrap gap-4">
-                <a href="/console.html" class="inline-flex items-center gap-2 px-8 py-4 bg-steel/20 border border-steel text-white text-sm font-medium hover:bg-steel/30 transition-colors" data-i18n="home_cta_try">
-                    5分钟免费试用
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </a>
-                <a href="/developers.html" class="inline-flex items-center gap-2 px-8 py-4 border border-gray-700 text-gray-300 text-sm font-medium hover:border-steel hover:text-white transition-colors" data-i18n="home_cta_docs">
-                    查看API文档
-                </a>
-            </div>
         </section>
 
         <hr class="border-gray-800">
 
-        <!-- ===== 应用场景（与其他section一致） ===== -->
-        <section class="py-24">
+        <!-- 应用场景 -->
+        <section class="py-16">
             <div class="max-w-4xl">
-                <p class="font-mono text-xs text-gray-500 mb-4" data-i18n="home_usecases_tag">
-                    USE CASES
-                </p>
-                <h2 class="text-2xl font-light text-white mb-4" data-i18n="home_usecases_title">
-                    适用于高风险AI决策场景
-                </h2>
-                <p class="text-sm text-gray-400 mb-12 max-w-xl" data-i18n="home_usecases_desc">
-                    为需要审计追踪的AI系统提供基础设施支持
-                </p>
+                <p class="font-mono text-xs text-gray-500 mb-3" data-i18n="home_usecases_tag">应用场景</p>
+                <h2 class="text-xl font-light text-white mb-3" data-i18n="home_usecases_title">适用于高风险AI决策场景</h2>
                 
-                <!-- 场景标签（增加呼吸感） -->
-                <div class="flex flex-wrap gap-4">
-                    <div class="border border-gray-800 px-6 py-4 text-gray-400 text-sm hover:border-steel hover:text-white transition-colors cursor-default">
-                        金融风控
-                    </div>
-                    <div class="border border-gray-800 px-6 py-4 text-gray-400 text-sm hover:border-steel hover:text-white transition-colors cursor-default">
-                        医疗诊断
-                    </div>
-                    <div class="border border-gray-800 px-6 py-4 text-gray-400 text-sm hover:border-steel hover:text-white transition-colors cursor-default">
-                        自动驾驶
-                    </div>
-                    <div class="border border-gray-800 px-6 py-4 text-gray-400 text-sm hover:border-steel hover:text-white transition-colors cursor-default">
-                        算法交易
-                    </div>
+                <div class="flex flex-wrap gap-3">
+                    <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">金融风控</span>
+                    <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">医疗诊断</span>
+                    <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">自动驾驶</span>
+                    <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">算法交易</span>
                 </div>
             </div>
         </section>
 
-        <hr class="border-gray-800">
-
-        <!-- ===== 第二屏：四项原语模型图 ===== -->
-        <section class="py-24">
-            <div class="font-mono text-sm leading-loose text-gray-400">
-                <div class="flex flex-col items-start">
-                    <span class="text-white" data-i18n="diagram_actor">Actor</span>
-                    <span class="ml-2 text-steel" aria-hidden="true">│</span>
-                    <span class="ml-2 text-steel" aria-hidden="true">▼</span>
-                    <span class="text-white" data-i18n="diagram_judgment">Judgment</span>
-                    <span class="ml-2 text-steel" aria-hidden="true">│</span>
-                    <span class="ml-2 text-steel" aria-hidden="true">▼</span>
-                    <div class="flex items-start gap-8">
-                        <div class="flex flex-col items-start">
-                            <span class="text-gray-500" data-i18n="diagram_delegation">Delegation (OPTIONAL)</span>
-                            <span class="ml-2 text-steel" aria-hidden="true">│</span>
-                        </div>
-                        <div class="flex flex-col items-start">
-                            <span class="text-gray-500" data-i18n="diagram_termination">Termination (OPTIONAL)</span>
-                            <span class="ml-2 text-steel" aria-hidden="true">│</span>
-                        </div>
-                    </div>
-                    <span class="ml-2 text-steel" aria-hidden="true">▼    ▼</span>
-                    <span class="text-white mt-1" data-i18n="diagram_verification">Verification</span>
-                    <span class="ml-2 text-steel" aria-hidden="true">│</span>
-                    <span class="ml-2 text-steel" aria-hidden="true">▼</span>
-                    <span class="text-gray-500" data-i18n="diagram_integrity">Integrity Proof (OPTIONAL)</span>
-                </div>
-
-                <div class="mt-8 max-w-lg space-y-1 text-xs text-gray-500">
-                    <p data-i18n="home_diagram_note1">Each arrow defines a structural invariant.</p>
-                    <p data-i18n="home_diagram_note2">All primitives are deterministic and verifiable.</p>
-                    <p class="text-steel mt-3 font-mono text-xs">Judgment · Delegation · Termination · Verification</p>
-                </div>
-            </div>
-        </section>
-
-        <hr class="border-gray-800">
-
-        <!-- ===== 第三屏：定义摘要 ===== -->
-        <section class="py-24">
-            <p class="text-sm text-gray-500" data-i18n="home_def_intro">
-                The protocol defines four primitives:
-            </p>
-
-            <div class="mt-10 space-y-10">
-                <!-- Judgment -->
-                <div>
-                    <h3 class="font-mono text-sm font-medium text-white" data-i18n="prim_judgment">Judgment</h3>
-                    <div class="mt-2 space-y-1 text-sm text-gray-400">
-                        <p data-i18n="prim_judgment_must">MUST include actor and timestamp.</p>
-                        <p data-i18n="prim_judgment_may">MAY include context and delegation reference.</p>
-                    </div>
-                </div>
-
-                <!-- Delegation -->
-                <div>
-                    <h3 class="font-mono text-sm font-medium text-white" data-i18n="prim_delegation">Delegation</h3>
-                    <div class="mt-2 space-y-1 text-sm text-gray-400">
-                        <p data-i18n="prim_delegation_must">MUST reference a prior Judgment.</p>
-                        <p data-i18n="prim_delegation_may">MAY define scope and expiry.</p>
-                    </div>
-                </div>
-
-                <!-- Termination -->
-                <div>
-                    <h3 class="font-mono text-sm font-medium text-white" data-i18n="prim_termination">Termination</h3>
-                    <div class="mt-2 space-y-1 text-sm text-gray-400">
-                        <p data-i18n="prim_termination_must">MUST reference a valid Judgment or Delegation.</p>
-                        <p data-i18n="prim_termination_def">Defines the end of responsibility.</p>
-                    </div>
-                </div>
-
-                <!-- Verification -->
-                <div>
-                    <h3 class="font-mono text-sm font-medium text-white" data-i18n="prim_verification">Verification</h3>
-                    <div class="mt-2 space-y-1 text-sm text-gray-400">
-                        <p data-i18n="prim_verification_eval">Evaluates structural validity, delegation chain, termination status.</p>
-                        <p data-i18n="prim_verification_output">Output is deterministic: VALID or INVALID.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <hr class="border-gray-800">
-
-        <!-- ===== 第四屏：实现入口 + 快速测试 ===== -->
-        <section class="py-24">
-            <div class="max-w-2xl space-y-4 text-sm leading-relaxed text-gray-400">
-                <p data-i18n="home_impl_p1">HJS provides a hosted reference implementation.</p>
-                <p class="text-white" data-i18n="home_impl_p2">This service executes the protocol.</p>
-                <p data-i18n="home_impl_p3">You MAY implement the protocol independently.</p>
-                <p data-i18n="home_impl_p4">The specification is open and publicly available.</p>
-            </div>
-
-            <!-- 快速测试区域（真实API） -->
-            <div class="mt-12 p-6 border border-gray-800 bg-card rounded">
-                <h3 class="text-lg font-light text-white mb-4" data-i18n="quick_test">Quick Test</h3>
-                <div class="grid md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs text-gray-500 mb-1" data-i18n="test_email">Email</label>
-                        <input type="email" id="test-email" placeholder="your@email.com" 
-                               class="w-full border border-gray-800 bg-background px-3 py-2 text-sm text-white placeholder:text-gray-600 outline-none focus:border-steel rounded">
-                    </div>
-                    <div class="flex items-end">
-                        <button id="generate-test-key" 
-                                class="w-full border border-steel bg-steel/10 px-4 py-2 text-sm text-steel hover:bg-steel/20 rounded">
-                            Generate Test Key
-                        </button>
-                    </div>
-                </div>
-                <div id="test-key-result" class="mt-3 text-xs text-gray-400"></div>
-            </div>
-
-            <!-- 按钮 -->
-            <div class="mt-12 flex flex-wrap gap-3">
-                <a href="/spec/README.md" class="inline-flex items-center justify-center border border-steel px-5 py-2.5 text-sm text-white transition-colors hover:bg-steel/10" data-i18n="home_btn_spec">
-                    View Specification
-                </a>
-                <a href="/console.html" class="inline-flex items-center justify-center border border-gray-700 px-5 py-2.5 text-sm text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="home_btn_record">
-                    Start Recording
-                </a>
-                <a href="/lookup.html" class="inline-flex items-center justify-center border border-gray-700 px-5 py-2.5 text-sm text-gray-400 transition-colors hover:border-steel hover:text-white" data-i18n="home_btn_verify">
-                    Verify Record
-                </a>
-            </div>
-        </section>
-
-        <!-- ===== 底部 ===== -->
-        <div class="text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-12">
-            <p class="mb-4 font-mono text-steel">HJS v1.0 Beta · 让AI问责成为可验证的事实</p>
+        <!-- 底部 -->
+        <div class="text-center text-xs text-gray-600 pt-8 border-t border-gray-800">
             <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
             <span class="text-gray-700">·</span>
             <a href="/spec/README.md" class="hover:text-gray-400 mx-2">Spec</a>
@@ -295,187 +116,31 @@
         </div>
     </div>
 
-    <!-- ===== 全局语言层 ===== -->
-    <script src="/js/lang.js"></script>
     <script>
-        const API_BASE = 'https://hjs-api.onrender.com';
-
-        document.getElementById('generate-test-key')?.addEventListener('click', async () => {
-            const email = document.getElementById('test-email').value;
-            const resultDiv = document.getElementById('test-key-result');
-            
-            if (!email || !email.includes('@')) {
-                resultDiv.textContent = '❌ Please enter a valid email';
-                return;
-            }
-            
-            resultDiv.textContent = '⏳ Generating...';
-            
-            try {
-                const res = await fetch(`${API_BASE}/developer/keys`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, name: 'quick-test' })
-                });
-                const data = await res.json();
-                
-                if (data.key) {
-                    const shortKey = data.key.substring(0, 8) + '...' + data.key.substring(56);
-                    resultDiv.innerHTML = `
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span>✅ Key generated:</span>
-                            <code class="bg-gray-900 px-2 py-1 rounded text-teal-400 font-mono">${shortKey}</code>
-                            <button onclick="copyToClipboard('${data.key}', this)" class="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white text-xs rounded flex items-center gap-1">
-                                <span>📋</span>
-                                <span class="copy-text">Copy</span>
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    resultDiv.textContent = '❌ Failed to generate key';
-                }
-            } catch (err) {
-                resultDiv.textContent = '❌ Error: ' + err.message;
-            }
-        });
-
-        // Copy to clipboard function
-        async function copyToClipboard(text, btn) {
-            try {
-                await navigator.clipboard.writeText(text);
-                const btnText = btn.querySelector('.copy-text');
-                btnText.textContent = 'Copied!';
-                setTimeout(() => {
-                    btnText.textContent = 'Copy';
-                }, 2000);
-            } catch (err) {
-                console.error('Copy failed:', err);
-                alert('Copy failed: ' + text);
-            }
-        }
-
         const translations = {
             en: {
-                nav_home: "Home",
-                nav_product: "Product",
-                nav_developers: "Developers",
-                nav_console: "Console",
-                nav_lookup: "Lookup",
-                nav_billing: "Billing",
-                nav_roi: "ROI",
-                nav_governance: "Governance",
+                nav_home: "Home", nav_product: "Product", nav_developers: "Developers",
+                nav_console: "Console", nav_lookup: "Lookup", nav_billing: "Billing",
+                nav_roi: "ROI", nav_governance: "Governance",
                 home_version_tag: "HJS Responsibility Protocol · v1.0 Beta",
                 home_headline: "HJS Responsibility Protocol",
-                home_tagline: "Every AI decision gets an <span class='text-steel font-medium'>\"undeniable\"</span> receipt",
-                home_privacy_label: "Privacy-First Design",
-                home_privacy_desc: "We only store decision hashes, never touch your business data. Your privacy stays in your hands.",
-                home_feature_1: "One line of code",
-                home_feature_2: "Verify in 30 seconds",
-                home_feature_3: "On-demand anchoring",
+                home_tagline: "Every AI decision gets an undeniable receipt",
+                home_privacy_desc: "Only decision hashes stored. No business data touches our servers. Anchor on-demand, verify independently.",
+                home_cta_try: "Start Free Trial (5 min)", home_cta_docs: "View API Docs",
                 home_ietf: "Built on IETF draft draft-wang-tp-definition-00",
-                home_cta_try: "Start Free Trial (5 min)",
-                home_cta_docs: "View API Docs",
-                home_usecases_tag: "USE CASES",
-                home_usecases_title: "For high-risk AI decision scenarios",
-                home_usecases_desc: "Infrastructure support for AI systems requiring audit trails",
-                home_pain_point: "When AI makes mistakes, can you prove you did the right thing?",
-                home_solution: "HJS anchors your AI decision records to the Bitcoin blockchain via OpenTimestamps (OTS), the globally recognized timestamp standard. Generate tamper-proof proofs for regulatory audits, customer disputes, and internal accountability—all with one line of code.",
-                home_optional_note: "* Anchoring is optional. Choose record-only or record+anchor to fit your compliance needs.",
-                home_cta_cases: "View Customer Cases",
-                home_trust_1: "Bitcoin Anchored",
-                home_trust_2: "OTS Timestamp",
-                home_trust_3: "One Line of Code",
-                diagram_actor: "Actor",
-                diagram_judgment: "Judgment",
-                diagram_delegation: "Delegation (OPTIONAL)",
-                diagram_termination: "Termination (OPTIONAL)",
-                diagram_verification: "Verification",
-                diagram_integrity: "Integrity Proof (OPTIONAL)",
-                home_diagram_note1: "Each arrow defines a structural invariant.",
-                home_diagram_note2: "All primitives are deterministic and verifiable.",
-                home_def_intro: "The protocol defines four primitives:",
-                prim_judgment: "Judgment",
-                prim_judgment_must: "MUST include actor and timestamp.",
-                prim_judgment_may: "MAY include context and delegation reference.",
-                prim_delegation: "Delegation",
-                prim_delegation_must: "MUST reference a prior Judgment.",
-                prim_delegation_may: "MAY define scope and expiry.",
-                prim_termination: "Termination",
-                prim_termination_must: "MUST reference a valid Judgment or Delegation.",
-                prim_termination_def: "Defines the end of responsibility.",
-                prim_verification: "Verification",
-                prim_verification_eval: "Evaluates structural validity, delegation chain, termination status.",
-                prim_verification_output: "Output is deterministic: VALID or INVALID.",
-                home_impl_p1: "HJS provides a hosted reference implementation.",
-                home_impl_p2: "This service executes the protocol.",
-                home_impl_p3: "You MAY implement the protocol independently.",
-                home_impl_p4: "The specification is open and publicly available.",
-                home_btn_spec: "View Specification",
-                home_btn_record: "Start Recording",
-                home_btn_verify: "Verify Record",
-                quick_test: "Quick Test",
-                test_email: "Email"
+                home_usecases_tag: "USE CASES", home_usecases_title: "For high-risk AI decision scenarios"
             },
             zh: {
-                nav_home: "首页",
-                nav_product: "产品",
-                nav_developers: "开发者",
-                nav_console: "控制台",
-                nav_lookup: "查询",
-                nav_billing: "计费",
-                nav_roi: "ROI",
-                nav_governance: "治理",
+                nav_home: "首页", nav_product: "产品", nav_developers: "开发者",
+                nav_console: "控制台", nav_lookup: "查询", nav_billing: "计费",
+                nav_roi: "ROI", nav_governance: "治理",
                 home_version_tag: "HJS 责任协议 · v1.0 Beta",
                 home_headline: "HJS 责任协议",
-                home_tagline: "让AI的每一笔决策，都有一张<span class='text-steel font-medium'>\"不可抵赖\"</span>的发票",
-                home_privacy_label: "隐私优先设计",
-                home_privacy_desc: "只存储决策哈希，不触碰业务数据。你的隐私，始终在你手中。",
-                home_feature_1: "一行代码接入",
-                home_feature_2: "30秒验证",
-                home_feature_3: "按需上链",
+                home_tagline: "让AI的每一笔决策，都有一张不可抵赖的发票",
+                home_privacy_desc: "只存储决策哈希，不触碰业务数据。按需上链，独立验证。",
+                home_cta_try: "5分钟免费试用", home_cta_docs: "查看API文档",
                 home_ietf: "基于 IETF 草案 draft-wang-tp-definition-00 构建",
-                home_cta_try: "5分钟免费试用",
-                home_cta_docs: "查看API文档",
-                home_usecases_tag: "应用场景",
-                home_usecases_title: "适用于高风险AI决策场景",
-                home_usecases_desc: "为需要审计追踪的AI系统提供基础设施支持",
-                home_pain_point: "当AI出错时，你能证明你做了正确的事吗？",
-                home_solution: "HJS 将你的 AI 决策记录锚定到比特币区块链，生成不可篡改的 OpenTimestamps (OTS) 时间戳证明。监管审计、客户质疑、内部追责——你都有证据。",
-                home_optional_note: "* 锚定是可选的。你可以选择仅记录、或记录+锚定，灵活适配不同合规需求。",
-                home_cta_cases: "查看客户案例",
-                home_trust_1: "比特币锚定",
-                home_trust_2: "OTS时间戳",
-                home_trust_3: "一行代码接入",
-                diagram_actor: "行为者",
-                diagram_judgment: "判断",
-                diagram_delegation: "授权（可选）",
-                diagram_termination: "终止（可选）",
-                diagram_verification: "验证",
-                diagram_integrity: "完整性证明（可选）",
-                home_diagram_note1: "每个箭头定义一个结构不变量",
-                home_diagram_note2: "所有原语都是确定性的且可验证",
-                home_def_intro: "协议定义了四个原语：",
-                prim_judgment: "判断",
-                prim_judgment_must: "必须包含行为者和时间戳",
-                prim_judgment_may: "可包含上下文和授权引用",
-                prim_delegation: "授权",
-                prim_delegation_must: "必须引用一个先前的判断",
-                prim_delegation_may: "可定义范围和有效期",
-                prim_termination: "终止",
-                prim_termination_must: "必须引用一个有效的判断或授权",
-                prim_termination_def: "定义责任的结束",
-                prim_verification: "验证",
-                prim_verification_eval: "评估结构有效性、授权链、终止状态",
-                prim_verification_output: "输出是确定性的：有效或无效",
-                home_impl_p1: "HJS 提供托管的参考实现",
-                home_impl_p2: "该服务执行协议",
-                home_impl_p3: "你可以独立实现该协议",
-                home_impl_p4: "规范是开放且公开可用的",
-                home_btn_spec: "查看规范",
-                home_btn_record: "开始记录",
-                home_btn_verify: "验证记录",
-                quick_test: "快速测试",
-                test_email: "邮箱"
+                home_usecases_tag: "应用场景", home_usecases_title: "适用于高风险AI决策场景"
             }
         };
 
@@ -488,6 +153,7 @@
             });
             const select = document.querySelector('select');
             if (select) select.value = lang;
+            localStorage.setItem('hjs_lang', lang);
         }
 
         (function() {
@@ -496,18 +162,14 @@
             let lang;
             
             if (urlLang) {
-                // URL参数优先级最高
                 lang = urlLang;
                 localStorage.setItem('hjs_lang', lang);
-                // 清理URL参数
                 const url = new URL(window.location);
                 url.searchParams.delete('lang');
                 window.history.replaceState({}, '', url);
             } else if (localStorage.getItem('hjs_lang')) {
-                // 用户已选择，固定使用
                 lang = localStorage.getItem('hjs_lang');
             } else {
-                // 第一次访问：检测浏览器语言
                 const browserLang = navigator.language || navigator.userLanguage;
                 lang = browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en';
                 localStorage.setItem('hjs_lang', lang);

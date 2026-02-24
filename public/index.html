@@ -97,7 +97,7 @@
                 </span>
                 <span class="flex items-center gap-2">
                     <span class="w-1.5 h-1.5 rounded-full bg-steel"></span>
-                    <span data-i18n="home_feature_3">区块链锚定</span>
+                    <span data-i18n="home_feature_3">按需上链</span>
                 </span>
             </div>
             
@@ -124,16 +124,34 @@
 
         <hr class="border-gray-800">
 
-        <!-- ===== 行业应用场景 ===== -->
-        <section class="py-16">
-            <p class="text-center text-sm text-gray-500 mb-8" data-i18n="home_industries_label">
-                适用于高风险AI决策场景
-            </p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <span class="px-4 py-2 border border-gray-800 text-gray-400 text-sm">金融科技</span>
-                <span class="px-4 py-2 border border-gray-800 text-gray-400 text-sm">医疗AI</span>
-                <span class="px-4 py-2 border border-gray-800 text-gray-400 text-sm">自动驾驶</span>
-                <span class="px-4 py-2 border border-gray-800 text-gray-400 text-sm">能源调度</span>
+        <!-- ===== 应用场景（与其他section一致） ===== -->
+        <section class="py-24">
+            <div class="max-w-4xl">
+                <p class="font-mono text-xs text-gray-500 mb-4" data-i18n="home_usecases_tag">
+                    USE CASES
+                </p>
+                <h2 class="text-2xl font-light text-white mb-4" data-i18n="home_usecases_title">
+                    适用于高风险AI决策场景
+                </h2>
+                <p class="text-sm text-gray-400 mb-12 max-w-xl" data-i18n="home_usecases_desc">
+                    为需要审计追踪的AI系统提供基础设施支持
+                </p>
+                
+                <!-- 场景标签（增加呼吸感） -->
+                <div class="flex flex-wrap gap-4">
+                    <div class="border border-gray-800 px-6 py-4 text-gray-400 text-sm hover:border-steel hover:text-white transition-colors cursor-default">
+                        金融风控
+                    </div>
+                    <div class="border border-gray-800 px-6 py-4 text-gray-400 text-sm hover:border-steel hover:text-white transition-colors cursor-default">
+                        医疗诊断
+                    </div>
+                    <div class="border border-gray-800 px-6 py-4 text-gray-400 text-sm hover:border-steel hover:text-white transition-colors cursor-default">
+                        自动驾驶
+                    </div>
+                    <div class="border border-gray-800 px-6 py-4 text-gray-400 text-sm hover:border-steel hover:text-white transition-colors cursor-default">
+                        算法交易
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -352,11 +370,13 @@
                 home_privacy_desc: "We only store decision hashes, never touch your business data. Your privacy stays in your hands.",
                 home_feature_1: "One line of code",
                 home_feature_2: "Verify in 30 seconds",
-                home_feature_3: "Blockchain anchored",
+                home_feature_3: "On-demand anchoring",
                 home_ietf: "Built on IETF draft draft-wang-tp-definition-00",
                 home_cta_try: "Start Free Trial (5 min)",
                 home_cta_docs: "View API Docs",
-                home_industries_label: "For high-risk AI decision scenarios",
+                home_usecases_tag: "USE CASES",
+                home_usecases_title: "For high-risk AI decision scenarios",
+                home_usecases_desc: "Infrastructure support for AI systems requiring audit trails",
                 home_pain_point: "When AI makes mistakes, can you prove you did the right thing?",
                 home_solution: "HJS anchors your AI decision records to the Bitcoin blockchain via OpenTimestamps (OTS), the globally recognized timestamp standard. Generate tamper-proof proofs for regulatory audits, customer disputes, and internal accountability—all with one line of code.",
                 home_optional_note: "* Anchoring is optional. Choose record-only or record+anchor to fit your compliance needs.",
@@ -411,11 +431,13 @@
                 home_privacy_desc: "只存储决策哈希，不触碰业务数据。你的隐私，始终在你手中。",
                 home_feature_1: "一行代码接入",
                 home_feature_2: "30秒验证",
-                home_feature_3: "区块链锚定",
+                home_feature_3: "按需上链",
                 home_ietf: "基于 IETF 草案 draft-wang-tp-definition-00 构建",
                 home_cta_try: "5分钟免费试用",
                 home_cta_docs: "查看API文档",
-                home_industries_label: "适用于高风险AI决策场景",
+                home_usecases_tag: "应用场景",
+                home_usecases_title: "适用于高风险AI决策场景",
+                home_usecases_desc: "为需要审计追踪的AI系统提供基础设施支持",
                 home_pain_point: "当AI出错时，你能证明你做了正确的事吗？",
                 home_solution: "HJS 将你的 AI 决策记录锚定到比特币区块链，生成不可篡改的 OpenTimestamps (OTS) 时间戳证明。监管审计、客户质疑、内部追责——你都有证据。",
                 home_optional_note: "* 锚定是可选的。你可以选择仅记录、或记录+锚定，灵活适配不同合规需求。",

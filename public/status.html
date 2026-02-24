@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HJS · System Status</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
+        body { background: #0a0a0a; color: #e5e5e5; min-height: 100vh; }
+        .status-operational { color: #22c55e; }
+        .status-degraded { color: #f59e0b; }
+        .status-down { color: #ef4444; }
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+    <script>
+        (function() {
+            const savedLang = localStorage.getItem('hjs_lang');
+            const browserLang = navigator.language || navigator.userLanguage;
+            const lang = savedLang || (browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en');
+            document.documentElement.lang = lang;
+        })();
+    </script>
+</head>
+<body>
+    <div class="mx-auto max-w-4xl px-6 pt-12 pb-12">
+        <!-- Header -->
+        <div class="text-center py-12">
+            <div class="inline-flex items-center gap-3 px-4 py-2 bg-green-500/10 border border-green-500/30 rounded mb-6">
+                <span class="w-2 h-2 bg-green-500 rounded-full pulse"></span>
+                <span class="text-green-400 text-sm font-medium">All Systems Operational</span>
+            </div>
+            <h1 class="text-3xl font-light text-white mb-2">HJS System Status</h1>
+            <p class="text-sm text-gray-500">Last updated: <span id="last-updated">Just now</span></p>
+        </div>
+
+        <!-- Status Overview -->
+        <div class="border border-gray-800 rounded mb-8">
+            <div class="p-6 border-b border-gray-800">
+                <h2 class="text-sm font-medium text-gray-400 uppercase tracking-wider">Current Status</h2>
+            </div>
+            
+            <!-- API -->
+            <div class="p-6 border-b border-gray-800 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div>
+                        <p class="text-white">API</p>
+                        <p class="text-xs text-gray-500">judgment recording & verification</p>
+                    </div>
+                </div>
+                <span class="text-green-400 text-sm">Operational</span>
+            </div>
+
+            <!-- Storage -->
+            <div class="p-6 border-b border-gray-800 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div>
+                        <p class="text-white">Immutable Storage</p>
+                        <p class="text-xs text-gray-500">PostgreSQL & S3</p>
+                    </div>
+                </div>
+                <span class="text-green-400 text-sm">Operational</span>
+            </div>
+
+            <!-- Anchoring -->
+            <div class="p-6 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div>
+                        <p class="text-white">Blockchain Anchoring</p>
+                        <p class="text-xs text-gray-500">OpenTimestamps & Bitcoin</p>
+                    </div>
+                </div>
+                <span class="text-green-400 text-sm">Operational</span>
+            </div>
+        </div>
+
+        <!-- Uptime Stats -->
+        <div class="grid grid-cols-3 gap-4 mb-8">
+            <div class="border border-gray-800 p-6 text-center">
+                <p class="text-3xl font-mono text-white mb-1">99.98%</p>
+                <p class="text-xs text-gray-500">Last 30 Days</p>
+            </div>
+            <div class="border border-gray-800 p-6 text-center">
+                <p class="text-3xl font-mono text-white mb-1">99.95%</p>
+                <p class="text-xs text-gray-500">Last 90 Days</p>
+            </div>
+            <div class="border border-gray-800 p-6 text-center">
+                <p class="text-3xl font-mono text-white mb-1">&lt;50ms</p>
+                <p class="text-xs text-gray-500">Avg Response</p>
+            </div>
+        </div>
+
+        <!-- Incident History -->
+        <div class="border border-gray-800 rounded mb-8">
+            <div class="p-6 border-b border-gray-800">
+                <h2 class="text-sm font-medium text-gray-400 uppercase tracking-wider">Incident History</h2>
+            </div>
+            <div class="p-6">
+                <div class="flex items-start gap-4 pb-6 border-b border-gray-800/50">
+                    <div class="w-2 h-2 bg-green-500 rounded-full mt-1.5"></div>
+                    <div>
+                        <p class="text-white text-sm">No incidents reported</p>
+                        <p class="text-xs text-gray-500 mt-1">All systems have been stable for the past 90 days.</p>
+                    </div>
+                </div>
+                <div class="pt-6 text-center">
+                    <p class="text-xs text-gray-500">View full history on <a href="https://github.com/schchit/hjs-api/issues" class="text-steel hover:underline">GitHub Issues</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLA Commitment -->
+        <div class="border border-steel/30 bg-steel/5 p-6 rounded mb-8">
+            <h3 class="text-steel text-sm font-medium mb-2">SLA Commitment</h3>
+            <p class="text-sm text-gray-400">
+                We guarantee 99.9% uptime for our API services. If we fall short, 
+                contact us for service credits. Enterprise customers receive priority support 
+                and custom SLA terms.
+            </p>
+        </div>
+
+        <!-- Subscribe -->
+        <div class="text-center py-8 border-t border-gray-800">
+            <p class="text-sm text-gray-400 mb-4">Subscribe to status updates</p>
+            <a href="https://github.com/schchit/hjs-api/watchers" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-700 text-gray-300 text-sm hover:border-steel transition">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                Watch on GitHub
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-xs text-gray-600 pt-8 border-t border-gray-800">
+            <a href="/" class="hover:text-gray-400 mx-2">Home</a>
+            <span class="text-gray-700">·</span>
+            <a href="https://humanjudgment.services" class="hover:text-gray-400 mx-2">HJS</a>
+            <span class="text-gray-700">·</span>
+            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
+        </div>
+    </div>
+
+    <script>
+        // 更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>

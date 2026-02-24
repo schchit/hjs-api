@@ -402,6 +402,8 @@
         };
 
         function switchLang(lang) {
+            localStorage.setItem('hjs_lang', lang);
+            document.documentElement.lang = lang;
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[lang] && translations[lang][key]) {
@@ -421,6 +423,7 @@
                 // URL参数优先级最高
                 lang = urlLang;
                 localStorage.setItem('hjs_lang', lang);
+            document.documentElement.lang = lang;
                 // 清理URL参数
                 const url = new URL(window.location);
                 url.searchParams.delete('lang');
@@ -433,6 +436,7 @@
                 const browserLang = navigator.language || navigator.userLanguage;
                 lang = browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en';
                 localStorage.setItem('hjs_lang', lang);
+            document.documentElement.lang = lang;
             }
             
             switchLang(lang);

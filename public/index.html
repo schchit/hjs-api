@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HJS · Responsibility Protocol</title>
     <script src="https://cdn.tailwindcss.com"></script>
-        <style>
+    <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
         .font-mono, code, pre { font-family: 'JetBrains Mono', monospace !important; }
@@ -58,7 +58,7 @@
             </select>
         </div>
 
-        <!-- 主视觉区 -->
+        <!-- Header -->
         <section class="py-24">
             <p class="mb-4 font-mono text-xs text-gray-500" data-i18n="home_version_tag">
                 HJS Responsibility Protocol · v1.0 Beta
@@ -74,26 +74,18 @@
         <hr class="border-gray-800">
 
         <!-- 四词原语 -->
-        <section class="py-16">
-            <h2 class="text-sm text-gray-500 mb-4">四层原语</h2>
-            <div class="flex flex-wrap items-center gap-2 text-sm text-gray-500 mb-8">
-                <span class="px-3 py-1.5 border border-steel text-steel">Judgment</span>
-                <span>→</span>
-                <span class="px-3 py-1.5 border border-steel text-steel">Delegation</span>
-                <span>→</span>
-                <span class="px-3 py-1.5 border border-steel text-steel">Termination</span>
-                <span>→</span>
-                <span class="px-3 py-1.5 border border-steel text-steel">Verification</span>
+        <section class="py-24">
+            <h2 class="text-sm text-gray-500 mb-8">四层原语</h2>
+            <div class="flex flex-wrap gap-3 mb-8">
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm">Judgment → Delegation → Termination → Verification</span>
             </div>
             
-            <!-- 核心优势 -->
             <div class="border-l-2 border-steel pl-6 py-4 mb-8 max-w-2xl">
                 <p class="text-base text-gray-300 leading-relaxed" data-i18n="home_privacy_desc">
                     只存储决策哈希，不触碰业务数据。按需上链，独立验证。
                 </p>
             </div>
             
-            <!-- CTA -->
             <div class="flex flex-wrap gap-4 mb-6">
                 <a href="/console.html" class="inline-flex items-center gap-2 px-6 py-3 bg-steel/20 border border-steel text-white text-sm font-medium hover:bg-steel/30 transition-colors" data-i18n="home_cta_try">
                     5分钟免费试用
@@ -103,7 +95,6 @@
                 </a>
             </div>
             
-            <!-- IETF标准 -->
             <p class="text-xs text-gray-600 font-mono" data-i18n="home_ietf">
                 基于 IETF 草案 draft-wang-tp-definition-00 构建
             </p>
@@ -112,15 +103,14 @@
         <hr class="border-gray-800">
 
         <!-- 应用场景 -->
-        <section class="py-16">
+        <section class="py-24">
             <p class="font-mono text-xs text-gray-500 mb-3" data-i18n="home_usecases_tag">应用场景</p>
             <h2 class="text-xl font-light text-white mb-3" data-i18n="home_usecases_title">适用于高风险AI决策场景</h2>
-            
             <div class="flex flex-wrap gap-3">
-                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors" data-i18n="industry_fintech">金融风控</span>
-                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors" data-i18n="industry_medical">医疗诊断</span>
-                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors" data-i18n="industry_autonomous">自动驾驶</span>
-                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors" data-i18n="industry_trading">算法交易</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">金融风控</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">医疗诊断</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">自动驾驶</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">算法交易</span>
             </div>
         </section>
 
@@ -146,11 +136,7 @@
                 home_privacy_desc: "Only decision hashes stored. No business data touches our servers. Anchor on-demand, verify independently.",
                 home_cta_try: "Start Free Trial (5 min)", home_cta_docs: "View API Docs",
                 home_ietf: "Built on IETF draft draft-wang-tp-definition-00",
-                home_usecases_tag: "应用场景", home_usecases_title: "适用于高风险AI决策场景",
-                primitive_judgment: "Judgment", primitive_delegation: "Delegation",
-                primitive_termination: "Termination", primitive_verification: "Verification",
-                industry_fintech: "FinTech", industry_medical: "Medical AI",
-                industry_autonomous: "Autonomous", industry_trading: "Algo Trading"
+                home_usecases_tag: "USE CASES", home_usecases_title: "For high-risk AI decision scenarios"
             },
             zh: {
                 nav_home: "首页", nav_product: "产品", nav_developers: "开发者",
@@ -162,11 +148,7 @@
                 home_privacy_desc: "只存储决策哈希，不触碰业务数据。按需上链，独立验证。",
                 home_cta_try: "5分钟免费试用", home_cta_docs: "查看API文档",
                 home_ietf: "基于 IETF 草案 draft-wang-tp-definition-00 构建",
-                home_usecases_tag: "应用场景", home_usecases_title: "适用于高风险AI决策场景",
-                primitive_judgment: "判断", primitive_delegation: "授权",
-                primitive_termination: "终止", primitive_verification: "验证",
-                industry_fintech: "金融风控", industry_medical: "医疗诊断",
-                industry_autonomous: "自动驾驶", industry_trading: "算法交易"
+                home_usecases_tag: "应用场景", home_usecases_title: "适用于高风险AI决策场景"
             }
         };
 
@@ -179,7 +161,6 @@
             });
             const select = document.querySelector('select');
             if (select) select.value = lang;
-            localStorage.setItem('hjs_lang', lang);
         }
 
         (function() {

@@ -1,126 +1,40 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HJS · 案例</title>
+    <title>HJS · Use Cases</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
-        .font-mono, code, pre { font-family: 'JetBrains Mono', monospace !important; }
-        body { background: #0a0a0a; color: #e5e5e5; min-height: 100vh; }
+        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
+        body { background: #0a0a0a; color: #e5e5e5; min-height: 100vh; opacity: 0; }
+        body.translated { opacity: 1; transition: opacity 0.1s; }
         html { scroll-behavior: smooth; overflow-y: scroll; }
         .text-steel { color: #3B4B5C; }
         .border-steel { border-color: #3B4B5C; }
-        .bg-steel\/10 { background-color: rgba(59, 75, 92, 0.1); }
-        .hover\:bg-steel\/20:hover { background-color: rgba(59, 75, 92, 0.2); }
         .bg-card { background: rgba(26, 26, 26, 0.5); }
-        .border-border { border-color: #1f1f1f; }
-        .text-muted-foreground { color: #9ca3af; }
-        .text-foreground { color: #e5e5e5; }
-        .bg-background { background: #0a0a0a; }
-        .hover\:border-steel:hover { border-color: #3B4B5C; }
-        .hover\:text-foreground:hover { color: #e5e5e5; }
-        
-        /* 卡片样式 */
-        .case-card {
-            transition: all 0.2s;
-            border: 1px solid #1f1f1f;
-            background: rgba(26, 26, 26, 0.3);
-            border-radius: 0.5rem;
-        }
-        .case-card:hover {
-            border-color: #3B4B5C;
-            background: rgba(26, 26, 26, 0.5);
-        }
-        .case-card.hidden {
-            display: none;
-        }
-        /* 行业标签筛选 */
-        .industry-tab {
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid #1f1f1f;
-            background: rgba(26, 26, 26, 0.3);
-        }
-        .industry-tab:hover {
-            border-color: #3B4B5C;
-        }
-        .industry-tab.active {
-            border-color: #3B4B5C;
-            background: rgba(59, 75, 92, 0.2);
-        }
-        /* 行业徽章 */
-        .industry-badge {
-            display: inline-block;
-            padding: 0.125rem 0.5rem;
-            font-size: 0.625rem;
-            border-radius: 0.25rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .badge-healthcare { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .badge-autonomous { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
-        .badge-energy { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
-        .badge-robotics { background: rgba(168, 85, 247, 0.1); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3); }
-        /* 防止页面跳动 */n        html { overflow-y: scroll; }n        body { min-height: 100vh; display: flex; flex-direction: column; }
-    
-        /* 统一导航栏样式 */
-        nav {
-            display: flex;
-            justify-content: flex-start; gap: 3rem;
-            align-items: center;
-            padding-top: 1.5rem;
-            padding-bottom: 1.5rem;
-        }
-        nav a:first-child {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: white;
-            flex-shrink: 0;
-            text-decoration: none;
-        }
-        nav .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-        @media (min-width: 768px) {
-            nav .nav-links {
-                gap: 2rem;
-            }
-        }
-        nav .nav-link {
-            color: #9ca3af;
-            font-size: 1rem;
-            text-decoration: none;
-            transition: color 0.2s;
-            white-space: nowrap;
-        }
-        nav .nav-link:hover {
-            color: #5ee0c0;
-        }
-        nav .nav-link.active {
-            color: white;
-        }
-        nav select {
-            background: transparent;
-            color: #9ca3af;
-            font-size: 0.75rem;
-            border: none;
-            cursor: pointer;
-            flex-shrink: 0;
-            margin-left: 1rem;
-        }
-</style>
-<script>
-        // 同步设置语言，避免闪烁
+    </style>
+    <script>
         (function() {
             const savedLang = localStorage.getItem('hjs_lang');
             const urlParams = new URLSearchParams(window.location.search);
             const urlLang = urlParams.get('lang');
-            const lang = urlLang || savedLang || 'en';
+            const browserLang = navigator.language || navigator.userLanguage;
+            let lang;
+            if (urlLang) {
+                lang = urlLang;
+                localStorage.setItem('hjs_lang', lang);
+                const url = new URL(window.location);
+                url.searchParams.delete('lang');
+                window.history.replaceState({}, '', url);
+            } else if (savedLang) {
+                lang = savedLang;
+            } else {
+                lang = browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+                localStorage.setItem('hjs_lang', lang);
+            }
             document.documentElement.lang = lang;
             document.documentElement.setAttribute('data-initial-lang', lang);
         })();
@@ -128,13 +42,11 @@
 </head>
 <body>
     <div class="mx-auto max-w-4xl px-6 pt-12 pb-12">
-        <!-- ===== 导航栏 ===== -->
-        <!-- 导航栏 -->
         <!-- 导航栏 -->
         <div class="flex items-center py-6 text-base gap-8">
             <a href="/" class="text-white font-semibold text-lg flex-shrink-0">HJS</a>
             <div class="flex gap-6 md:gap-8 text-gray-400">
-                <a href="/" class="text-white" data-i18n="nav_home">Home</a>
+                <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
                 <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
                 <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
                 <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
@@ -149,150 +61,59 @@
             </select>
         </div>
 
-        <!-- 页面标题 -->
+        <!-- Header -->
         <section class="py-24">
-            <p class="font-mono text-xs text-gray-500 mb-4" data-i18n="cases_version_tag">
-                HJS Responsibility Protocol · v1.0 Beta
-            </p>
-            <h1 class="text-3xl font-light leading-tight tracking-tight text-white md:text-4xl max-w-3xl" data-i18n="cases_title">
-                When Technology Advances, Accountability Can't Lag Behind
-            </h1>
-            <p class="mt-4 max-w-2xl text-sm leading-relaxed text-gray-400" data-i18n="cases_subtitle">
-                Every innovation brings accountability questions. Traceable records make progress trustworthy.
-            </p>
+            <p class="mb-4 font-mono text-xs text-gray-500" data-i18n="cases_version_tag">HJS Responsibility Protocol · v1.0 Beta</p>
+            <h1 class="mt-6 text-3xl font-light tracking-tight text-white md:text-4xl" data-i18n="cases_title">Use Cases</h1>
+            <p class="mt-6 max-w-2xl text-base text-gray-400" data-i18n="cases_subtitle">High-risk AI decision scenarios where audit trails are critical.</p>
         </section>
 
         <hr class="border-gray-800">
 
-        <!-- 行业筛选标签 -->
-        <section class="py-8">
-            <div class="flex flex-wrap gap-3 justify-center" id="industry-tabs">
-                <button class="industry-tab active px-4 py-2 text-sm text-gray-300 rounded" data-filter="all" data-i18n="filter_all">
-                    All Industries
-                </button>
-                <button class="industry-tab px-4 py-2 text-sm text-gray-300 rounded" data-filter="healthcare" data-i18n="filter_healthcare">
-                    Healthcare
-                </button>
-                <button class="industry-tab px-4 py-2 text-sm text-gray-300 rounded" data-filter="autonomous" data-i18n="filter_autonomous">
-                    Autonomous Driving
-                </button>
-                <button class="industry-tab px-4 py-2 text-sm text-gray-300 rounded" data-filter="energy" data-i18n="filter_energy">
-                    Energy
-                </button>
-                <button class="industry-tab px-4 py-2 text-sm text-gray-300 rounded" data-filter="robotics" data-i18n="filter_robotics">
-                    Robotics
-                </button>
-            </div>
-        </section>
-
-        <!-- 案例网格 (2x2) -->
-        <section class="py-8">
-            <div class="grid md:grid-cols-2 gap-6" id="cases-grid">
-                
-                <!-- 案例 1：医疗AI辅助诊断 -->
-                <div class="case-card p-6" data-industry="healthcare">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="industry-badge badge-healthcare" data-i18n="badge_healthcare">Healthcare</span>
-                    </div>
-                    <h2 class="text-lg font-light text-white mb-3" data-i18n="case1_title">Medical AI Assistance</h2>
-                    <p class="text-sm text-gray-400 mb-4 leading-relaxed" data-i18n="case1_desc">
-                        A German hospital uses AI to screen thousands of medical images annually, increasing early cancer detection by 30%.
-                    </p>
-                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-gray-700 mb-3">
-                        <p class="text-xs text-gray-500 mb-1" data-i18n="without_label">❌ Without records</p>
-                        <p class="text-sm text-gray-400" data-i18n="case1_without">When misdiagnosis occurs, there's no trace of what the AI saw or why. Hospitals face trust crises, doctors hesitate to use AI.</p>
-                    </div>
-                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-steel">
-                        <p class="text-xs text-steel mb-1" data-i18n="with_label">✅ With HJS</p>
-                        <p class="text-sm text-gray-400" data-i18n="case1_with">Every diagnosis forms a complete responsibility chain: Judgment (AI output with confidence), Delegation (hospital authorization), Verification (any party can verify records).</p>
-                    </div>
+        <!-- Use Cases Grid -->
+        <section class="py-24">
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- FinTech -->
+                <div class="border border-gray-800 bg-card p-6">
+                    <p class="text-xs text-steel font-mono mb-2" data-i18n="cases_fintech_tag">FinTech</p>
+                    <h3 class="text-lg font-light text-white mb-3" data-i18n="cases_fintech_title">Algorithmic Trading Audit</h3>
+                    <p class="text-sm text-gray-400" data-i18n="cases_fintech_desc">Every trade decision is recorded with context, model version, and risk parameters. Regulators can verify compliance without accessing proprietary algorithms.</p>
                 </div>
 
-                <!-- 案例 2：护理机器人决策 -->
-                <div class="case-card p-6" data-industry="robotics">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="industry-badge badge-robotics" data-i18n="badge_robotics">Robotics</span>
-                    </div>
-                    <h2 class="text-lg font-light text-white mb-3" data-i18n="case2_title">Care Robot Decisions</h2>
-                    <p class="text-sm text-gray-400 mb-4 leading-relaxed" data-i18n="case2_desc">
-                        A Japanese nursing home uses AI robots to assist elderly with waking, medication reminders, and fall detection. Thousands of decisions daily.
-                    </p>
-                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-gray-700 mb-3">
-                        <p class="text-xs text-gray-500 mb-1" data-i18n="without_label">❌ Without records</p>
-                        <p class="text-sm text-gray-400" data-i18n="case2_without">When robots misjudge, no trace of decision logic exists. Families worry, facilities face lawsuits.</p>
-                    </div>
-                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-steel">
-                        <p class="text-xs text-steel mb-1" data-i18n="with_label">✅ With HJS</p>
-                        <p class="text-sm text-gray-400" data-i18n="case2_with">Every decision becomes auditable: Judgment (triggers and logic), Termination (when human overrides), Verification (families verify anytime).</p>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-3" data-i18n="case2_source">— Japan MHLW Pilot Project, 2025</p>
+                <!-- Medical AI -->
+                <div class="border border-gray-800 bg-card p-6">
+                    <p class="text-xs text-steel font-mono mb-2" data-i18n="cases_medical_tag">Medical AI</p>
+                    <h3 class="text-lg font-light text-white mb-3" data-i18n="cases_medical_title">Diagnostic Decision Tracking</h3>
+                    <p class="text-sm text-gray-400" data-i18n="cases_medical_desc">AI-assisted diagnoses are anchored with patient symptoms, confidence scores, and physician overrides. Creates immutable evidence for malpractice disputes.</p>
                 </div>
 
-                <!-- 案例 3：能源AI调度 -->
-                <div class="case-card p-6" data-industry="energy">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="industry-badge badge-energy" data-i18n="badge_energy">Energy</span>
-                    </div>
-                    <h2 class="text-lg font-light text-white mb-3" data-i18n="case3_title">Energy AI Dispatch</h2>
-                    <p class="text-sm text-gray-400 mb-4 leading-relaxed" data-i18n="case3_desc">
-                        UK National Grid uses AI to optimize renewable energy, balancing wind, solar and traditional power, reducing carbon emissions by 1.2M tons annually.
-                    </p>
-                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-gray-700 mb-3">
-                        <p class="text-xs text-gray-500 mb-1" data-i18n="without_label">❌ Without records</p>
-                        <p class="text-sm text-gray-400" data-i18n="case3_without">When grid anomalies occur, no trace of AI decisions exists. Regulators can't assign responsibility.</p>
-                    </div>
-                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-steel">
-                        <p class="text-xs text-steel mb-1" data-i18n="with_label">✅ With HJS</p>
-                        <p class="text-sm text-gray-400" data-i18n="case3_with">Every dispatch is recorded: Judgment (real-time data, AI logic), Delegation (operator confirmation), Verification (any party can verify).</p>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-3" data-i18n="case3_source">— UK National Grid 'Zero Carbon Dispatch' Project, 2025</p>
+                <!-- Autonomous -->
+                <div class="border border-gray-800 bg-card p-6">
+                    <p class="text-xs text-steel font-mono mb-2" data-i18n="cases_auto_tag">Autonomous</p>
+                    <h3 class="text-lg font-light text-white mb-3" data-i18n="cases_auto_title">Self-Driving Responsibility Chain</h3>
+                    <p class="text-sm text-gray-400" data-i18n="cases_auto_desc">Every maneuver decision is logged with sensor data and neural network state. Determines liability in accident investigations.</p>
                 </div>
 
-                <!-- 案例 4：沃尔沃透明责任 -->
-                <div class="case-card p-6" data-industry="autonomous">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="industry-badge badge-autonomous" data-i18n="badge_autonomous">Autonomous</span>
-                    </div>
-                    <h2 class="text-lg font-light text-white mb-3" data-i18n="case4_title">Volvo Transparent Responsibility</h2>
-                    <p class="text-sm text-gray-400 mb-4 leading-relaxed" data-i18n="case4_desc">
-                        Volvo's Swedish autonomous driving test program equips all vehicles with complete decision records, showing responsibility transparently.
-                    </p>
-                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-gray-700 mb-3">
-                        <p class="text-xs text-gray-500 mb-1" data-i18n="without_label">❌ Without records</p>
-                        <p class="text-sm text-gray-400" data-i18n="case4_without">Public lacks trust in autonomous driving: when accidents happen, who's responsible? Blurred liability hinders adoption.</p>
-                    </div>
-                    <div class="bg-gray-900/50 p-4 rounded border-l-2 border-steel">
-                        <p class="text-xs text-steel mb-1" data-i18n="with_label">✅ With HJS</p>
-                        <p class="text-sm text-gray-400" data-i18n="case4_with">Every moment is recorded: Judgment (sensor data, commands), Termination (when driver takes over), Verification (any party can verify data).</p>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-3" data-i18n="case4_source">— Volvo 'Transparent Drive' Project, 2024</p>
+                <!-- Energy -->
+                <div class="border border-gray-800 bg-card p-6">
+                    <p class="text-xs text-steel font-mono mb-2" data-i18n="cases_energy_tag">Energy</p>
+                    <h3 class="text-lg font-light text-white mb-3" data-i18n="cases_energy_title">Grid Dispatch Compliance</h3>
+                    <p class="text-sm text-gray-400" data-i18n="cases_energy_desc">AI grid optimization decisions are recorded for regulatory audits. Ensures transparent energy market operations.</p>
                 </div>
             </div>
         </section>
 
-        <!-- CTA Section -->
-        <section class="py-16 text-center border-t border-gray-800">
-            <h2 class="text-xl font-light text-white mb-4" data-i18n="cases_cta_title">
-                Ready to make your AI decisions traceable?
-            </h2>
-            <p class="text-sm text-gray-400 mb-8 max-w-xl mx-auto" data-i18n="cases_cta_subtitle">
-                Join leading organizations in building trustworthy AI systems.
-            </p>
+        <!-- CTA -->
+        <section class="py-16 border-t border-gray-800 text-center">
+            <h2 class="text-xl font-light text-white mb-4" data-i18n="cases_cta_title">Ready to make your AI decisions traceable?</h2>
             <div class="flex flex-wrap justify-center gap-4">
-                <a href="/console.html" class="inline-flex items-center gap-2 px-6 py-3 bg-steel/20 border border-steel text-white text-sm font-medium hover:bg-steel/30 transition-colors" data-i18n="cases_cta_primary">
-                    Start Free Trial
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </a>
-                <a href="/product.html" class="inline-flex items-center gap-2 px-6 py-3 border border-gray-700 text-gray-300 text-sm font-medium hover:border-steel hover:text-white transition-colors" data-i18n="cases_cta_secondary">
-                    View Technical Details
-                </a>
+                <a href="/console.html" class="px-6 py-3 bg-steel/20 border border-steel text-white text-sm hover:bg-steel/30 transition" data-i18n="cases_cta_try">Start Free Trial</a>
+                <a href="/developers.html" class="px-6 py-3 border border-gray-700 text-gray-300 text-sm hover:border-steel hover:text-white transition" data-i18n="cases_cta_docs">View Documentation</a>
             </div>
         </section>
 
-        <!-- ===== 底部 ===== -->
-        <div class="text-center text-xs text-gray-600 pt-10 border-t border-gray-800 mt-12">
+        <!-- Footer -->
+        <div class="text-center text-xs text-gray-600 pt-8 border-t border-gray-800">
             <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
             <span class="text-gray-700">·</span>
             <a href="/spec/README.md" class="hover:text-gray-400 mx-2">Spec</a>
@@ -301,103 +122,53 @@
         </div>
     </div>
 
-    <!-- ===== 全局语言层 ===== -->
-    <script src="/js/lang.js"></script>
     <script>
         const translations = {
             en: {
-                nav_home: "Home",
-                nav_product: "Product",
-                nav_developers: "Developers",
-                nav_console: "Console",
-                nav_lookup: "Lookup",
-                nav_billing: "Billing",
-                nav_roi: "ROI",
-                nav_governance: "Governance",
+                nav_home: "Home", nav_product: "Product", nav_developers: "Developers",
+                nav_console: "Console", nav_lookup: "Lookup", nav_billing: "Billing",
+                nav_roi: "ROI", nav_governance: "Governance",
                 cases_version_tag: "HJS Responsibility Protocol · v1.0 Beta",
-                cases_title: "When Technology Advances, Accountability Can't Lag Behind",
-                cases_subtitle: "Every innovation brings accountability questions. Traceable records make progress trustworthy.",
-                case1_title: "Medical AI Assistance",
-                case1_desc: "A German hospital uses AI to screen thousands of medical images annually, increasing early cancer detection by 30%.",
-                case1_without: "When misdiagnosis occurs, there's no trace of what the AI saw or why. Hospitals face trust crises, doctors hesitate to use AI.",
-                case1_with: "Every diagnosis forms a complete responsibility chain: Judgment (AI output with confidence), Delegation (hospital authorization), Verification (any party can verify records).",
-                case2_title: "Care Robot Decisions",
-                case2_desc: "A Japanese nursing home uses AI robots to assist elderly with waking, medication reminders, and fall detection. Thousands of decisions daily.",
-                case2_without: "When robots misjudge, no trace of decision logic exists. Families worry, facilities face lawsuits.",
-                case2_with: "Every decision becomes auditable: Judgment (triggers and logic), Termination (when human overrides), Verification (families verify anytime).",
-                case2_source: "— Japan MHLW Pilot Project, 2025",
-                case3_title: "Energy AI Dispatch",
-                case3_desc: "UK National Grid uses AI to optimize renewable energy, balancing wind, solar and traditional power, reducing carbon emissions by 1.2M tons annually.",
-                case3_without: "When grid anomalies occur, no trace of AI decisions exists. Regulators can't assign responsibility.",
-                case3_with: "Every dispatch is recorded: Judgment (real-time data, AI logic), Delegation (operator confirmation), Verification (any party can verify).",
-                case3_source: "— UK National Grid 'Zero Carbon Dispatch' Project, 2025",
-                case4_title: "Volvo Transparent Responsibility",
-                case4_desc: "Volvo's Swedish autonomous driving test program equips all vehicles with complete decision records, showing responsibility transparently.",
-                case4_without: "Public lacks trust in autonomous driving: when accidents happen, who's responsible? Blurred liability hinders adoption.",
-                case4_with: "Every moment is recorded: Judgment (sensor data, commands), Termination (when driver takes over), Verification (any party can verify data).",
-                case4_source: "— Volvo 'Transparent Drive' Project, 2024",
-                without_label: "❌ Without records",
-                with_label: "✅ With HJS",
+                cases_title: "Use Cases",
+                cases_subtitle: "High-risk AI decision scenarios where audit trails are critical.",
+                cases_fintech_tag: "FinTech",
+                cases_fintech_title: "Algorithmic Trading Audit",
+                cases_fintech_desc: "Every trade decision is recorded with context, model version, and risk parameters. Regulators can verify compliance without accessing proprietary algorithms.",
+                cases_medical_tag: "Medical AI",
+                cases_medical_title: "Diagnostic Decision Tracking",
+                cases_medical_desc: "AI-assisted diagnoses are anchored with patient symptoms, confidence scores, and physician overrides. Creates immutable evidence for malpractice disputes.",
+                cases_auto_tag: "Autonomous",
+                cases_auto_title: "Self-Driving Responsibility Chain",
+                cases_auto_desc: "Every maneuver decision is logged with sensor data and neural network state. Determines liability in accident investigations.",
+                cases_energy_tag: "Energy",
+                cases_energy_title: "Grid Dispatch Compliance",
+                cases_energy_desc: "AI grid optimization decisions are recorded for regulatory audits. Ensures transparent energy market operations.",
                 cases_cta_title: "Ready to make your AI decisions traceable?",
-                cases_cta_subtitle: "Join leading organizations in building trustworthy AI systems.",
-                cases_cta_primary: "Start Free Trial",
-                cases_cta_secondary: "View Technical Details",
-                filter_all: "All Industries",
-                filter_healthcare: "Healthcare",
-                filter_autonomous: "Autonomous Driving",
-                filter_energy: "Energy",
-                filter_robotics: "Robotics",
-                badge_healthcare: "Healthcare",
-                badge_autonomous: "Autonomous",
-                badge_energy: "Energy",
-                badge_robotics: "Robotics"
+                cases_cta_try: "Start Free Trial",
+                cases_cta_docs: "View Documentation"
             },
             zh: {
-                nav_home: "首页",
-                nav_product: "产品",
-                nav_developers: "开发者",
-                nav_console: "控制台",
-                nav_lookup: "查询",
-                nav_billing: "计费",
-                nav_roi: "ROI",
-                nav_governance: "治理",
+                nav_home: "首页", nav_product: "产品", nav_developers: "开发者",
+                nav_console: "控制台", nav_lookup: "查询", nav_billing: "计费",
+                nav_roi: "ROI", nav_governance: "治理",
                 cases_version_tag: "HJS 责任协议 · v1.0 Beta",
-                cases_title: "当技术向前，责任不能落后",
-                cases_subtitle: "每一次创新都伴随着责任的拷问。可追溯的记录让技术进步更值得信任。",
-                case1_title: "医疗AI辅助诊断",
-                case1_desc: "德国一家医院使用AI辅助诊断系统，每年帮助医生筛查数万份医学影像，早期发现癌症率提升30%。",
-                case1_without: "当出现漏诊时，无法追溯AI当时看到了什么、为什么给出那个判断。医院面临信任危机，医生不敢采纳AI建议。",
-                case1_with: "每一次诊断都形成完整的责任链：判断（AI输出与置信度）、授权（医院授权）、验证（任何方可独立验证）。",
-                case2_title: "护理机器人决策",
-                case2_desc: "日本某养老院引入AI护理机器人，协助老人起床、服药提醒、跌倒检测。机器人每天执行数千次决策。",
-                case2_without: "当机器人误判时，无法追溯决策依据。家属担忧安全，养老院面临诉讼风险。",
-                case2_with: "每次决策都成为可审计的记录：判断（触发条件与逻辑）、终止（人工接管）、验证（家属随时验证）。",
-                case2_source: "—— 日本厚生劳动省试点项目，2025",
-                case3_title: "能源AI调度",
-                case3_desc: "英国国家电网引入AI优化可再生能源调度，实时平衡风能、太阳能与传统发电，每年减少碳排放120万吨。",
-                case3_without: "当电网调度出现异常时，无法追溯AI决策依据。监管机构难以定责。",
-                case3_with: "每一次调度都被记录：判断（实时数据、AI逻辑）、授权（调度员确认）、验证（任何方可验证）。",
-                case3_source: "—— 英国国家电网「零碳调度」项目，2025",
-                case4_title: "沃尔沃透明责任",
-                case4_desc: "沃尔沃在瑞典推出自动驾驶测试项目，所有测试车辆都配备完整决策记录系统，向公众透明展示责任归属。",
-                case4_without: "公众对自动驾驶缺乏信任：一旦出事，是车主、车企还是算法负责？责任模糊阻碍技术推广。",
-                case4_with: "每一刻都被记录：判断（传感器数据、指令）、终止（驾驶员接管）、验证（任何方可验证数据）。",
-                case4_source: "—— 沃尔沃「透明驾驶」项目，2024",
-                without_label: "❌ 如果没有记录",
-                with_label: "✅ 如果有 HJS",
-                cases_cta_title: "准备好让你的AI决策可追溯了吗？",
-                cases_cta_subtitle: "加入领先企业，共建可信AI系统。",
-                cases_cta_primary: "免费试用",
-                cases_cta_secondary: "查看技术详情",
-                filter_all: "全部行业",
-                filter_healthcare: "医疗健康",
-                filter_autonomous: "自动驾驶",
-                filter_energy: "能源",
-                filter_robotics: "机器人",
-                badge_healthcare: "医疗",
-                badge_autonomous: "自动驾驶",
-                badge_energy: "能源",
-                badge_robotics: "机器人"
+                cases_title: "应用场景",
+                cases_subtitle: "需要审计追踪的高风险AI决策场景。",
+                cases_fintech_tag: "金融科技",
+                cases_fintech_title: "算法交易审计",
+                cases_fintech_desc: "每笔交易决策都记录上下文、模型版本和风险参数。监管机构可在不访问专有算法的情况下验证合规性。",
+                cases_medical_tag: "医疗AI",
+                cases_medical_title: "诊断决策追踪",
+                cases_medical_desc: "AI辅助诊断与患者症状、置信度和医生覆盖意见一并锚定。为医疗纠纷创建不可篡改的证据。",
+                cases_auto_tag: "自动驾驶",
+                cases_auto_title: "自动驾驶责任链",
+                cases_auto_desc: "每个操作决策都记录传感器数据和神经网络状态。在事故调查中确定责任。",
+                cases_energy_tag: "能源",
+                cases_energy_title: "电网调度合规",
+                cases_energy_desc: "AI电网优化决策被记录用于监管审计。确保能源市场透明运营。",
+                cases_cta_title: "准备好让您的AI决策可追溯了吗？",
+                cases_cta_try: "免费试用",
+                cases_cta_docs: "查看文档"
             }
         };
 
@@ -410,63 +181,14 @@
                     el.innerHTML = translations[lang][key];
                 }
             });
-            const select = document.querySelector('select');
-            if (select) select.value = lang;
+            document.querySelector('select').value = lang;
         }
 
         (function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const urlLang = urlParams.get('lang');
-            let lang;
-            
-            if (urlLang) {
-                // URL参数优先级最高
-                lang = urlLang;
-                localStorage.setItem('hjs_lang', lang);
-            document.documentElement.lang = lang;
-                // 清理URL参数
-                const url = new URL(window.location);
-                url.searchParams.delete('lang');
-                window.history.replaceState({}, '', url);
-            } else if (localStorage.getItem('hjs_lang')) {
-                // 用户已选择，固定使用
-                lang = localStorage.getItem('hjs_lang');
-            } else {
-                // 第一次访问：检测浏览器语言
-                const browserLang = navigator.language || navigator.userLanguage;
-                lang = browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en';
-                localStorage.setItem('hjs_lang', lang);
-            document.documentElement.lang = lang;
-            }
-            
+            const lang = document.documentElement.getAttribute('data-initial-lang') || localStorage.getItem('hjs_lang') || 'en';
             switchLang(lang);
+            document.body.classList.add('translated');
         })();
-
-        // Industry filter functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const tabs = document.querySelectorAll('.industry-tab');
-            const cards = document.querySelectorAll('.case-card');
-
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const filter = this.dataset.filter;
-                    
-                    // Update active tab
-                    tabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Filter cards
-                    cards.forEach(card => {
-                        if (filter === 'all' || card.dataset.industry === filter) {
-                            card.classList.remove('hidden');
-                        } else {
-                            card.classList.add('hidden');
-                        }
-                    });
-                });
-            });
-        });
     </script>
-
 </body>
 </html>

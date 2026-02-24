@@ -30,7 +30,7 @@
 <body>
     <div class="mx-auto max-w-4xl px-6 pt-12 pb-12">
         <!-- 导航栏 -->
-        <div class="flex justify-between items-center py-6 text-base">
+        <div class="flex items-center py-6 text-base gap-8">
             <div class="text-white font-semibold text-lg">HJS</div>
             <div class="flex gap-8 md:gap-10 text-gray-400">
                 <a href="/" class="text-white" data-i18n="nav_home">Home</a>
@@ -42,7 +42,7 @@
                 <a href="/roi-calculator.html" class="hover:text-teal-400 transition" data-i18n="nav_roi">ROI</a>
                 <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
             </div>
-            <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
+            <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400text-xs ml-auto">
                 <option value="en">EN</option>
                 <option value="zh">中文</option>
             </select>
@@ -59,7 +59,7 @@
                     HJS 责任协议
                 </h1>
                 
-                <p class="text-xl md:text-2xl text-gray-400 leading-relaxed mb-6" data-i18n="home_tagline">
+                <p class="text-xl md:text-2xl text-gray-400leading-relaxed mb-6" data-i18n="home_tagline">
                     让AI的每一笔决策，都有一张不可抵赖的发票
                 </p>
             </div>
@@ -98,21 +98,21 @@
                 <h2 class="text-xl font-light text-white mb-3" data-i18n="home_usecases_title">适用于高风险AI决策场景</h2>
                 
                 <div class="flex flex-wrap gap-3">
-                    <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">金融风控</span>
-                    <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">医疗诊断</span>
-                    <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">自动驾驶</span>
-                    <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">算法交易</span>
+                    <span class="border border-gray-800 px-4 py-2 text-gray-400text-sm hover:border-steel transition-colors">金融风控</span>
+                    <span class="border border-gray-800 px-4 py-2 text-gray-400text-sm hover:border-steel transition-colors">医疗诊断</span>
+                    <span class="border border-gray-800 px-4 py-2 text-gray-400text-sm hover:border-steel transition-colors">自动驾驶</span>
+                    <span class="border border-gray-800 px-4 py-2 text-gray-400text-sm hover:border-steel transition-colors">算法交易</span>
                 </div>
             </div>
         </section>
 
         <!-- 底部 -->
         <div class="text-center text-xs text-gray-600 pt-8 border-t border-gray-800">
-            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400 mx-2">GitHub</a>
+            <a href="https://github.com/schchit/hjs-api" class="hover:text-gray-400mx-2">GitHub</a>
             <span class="text-gray-700">·</span>
-            <a href="/spec/README.md" class="hover:text-gray-400 mx-2">Spec</a>
+            <a href="/spec/README.md" class="hover:text-gray-400mx-2">Spec</a>
             <span class="text-gray-700">·</span>
-            <a href="/cases.html" class="hover:text-gray-400 mx-2">Cases</a>
+            <a href="/cases.html" class="hover:text-gray-400mx-2">Cases</a>
         </div>
     </div>
 

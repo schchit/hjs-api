@@ -452,6 +452,7 @@
             const urlLang = urlParams.get('lang');
             const lang = savedLang || urlLang || 'en';
             switchLang(lang);
+            document.body.classList.add('translated');
         })();
     </script>
 

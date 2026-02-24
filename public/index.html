@@ -50,32 +50,28 @@
 
         <!-- 主视觉区 -->
         <section class="py-24">
-            <p class="mb-4 font-mono text-xs text-steel" data-i18n="home_version_tag">
+            <p class="mb-4 font-mono text-xs text-gray-500" data-i18n="home_version_tag">
                 HJS Responsibility Protocol · v1.0 Beta
             </p>
             
-            <h1 class="text-4xl md:text-5xl font-light leading-tight tracking-tight text-white mb-4" data-i18n="home_headline">
+            <h1 class="mt-6 text-3xl font-light leading-tight tracking-tight text-white md:text-4xl" data-i18n="home_headline">
                 HJS 责任协议
             </h1>
             
-            <p class="text-xl md:text-2xl text-gray-400 leading-relaxed mb-4" data-i18n="home_tagline">
+            <p class="mt-6 text-xl md:text-2xl text-gray-400 leading-relaxed mb-4" data-i18n="home_tagline">
                 让AI的每一笔决策，都有一张不可抵赖的发票
-            </p>
-            
-            <p class="mb-6 max-w-2xl text-base text-gray-500" data-i18n="home_subtitle">
-                基于四层原语的决策审计基础设施，为AI系统提供可追溯、可验证的责任证明。
             </p>
             
             <!-- 四词原语 -->
             <div class="mb-8">
                 <div class="flex flex-wrap items-center gap-2 text-sm text-gray-500">
-                    <span class="px-3 py-1.5 border border-steel text-steel">Judgment</span>
+                    <span class="px-3 py-1.5 border border-steel text-steel" data-i18n="primitive_judgment">Judgment</span>
                     <span>→</span>
-                    <span class="px-3 py-1.5 border border-steel text-steel">Delegation</span>
+                    <span class="px-3 py-1.5 border border-steel text-steel" data-i18n="primitive_delegation">Delegation</span>
                     <span>→</span>
-                    <span class="px-3 py-1.5 border border-steel text-steel">Termination</span>
+                    <span class="px-3 py-1.5 border border-steel text-steel" data-i18n="primitive_termination">Termination</span>
                     <span>→</span>
-                    <span class="px-3 py-1.5 border border-steel text-steel">Verification</span>
+                    <span class="px-3 py-1.5 border border-steel text-steel" data-i18n="primitive_verification">Verification</span>
                 </div>
             </div>
             
@@ -112,10 +108,10 @@
             <h2 class="text-xl font-light text-white mb-3" data-i18n="home_usecases_title">适用于高风险AI决策场景</h2>
             
             <div class="flex flex-wrap gap-3">
-                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">金融风控</span>
-                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">医疗诊断</span>
-                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">自动驾驶</span>
-                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors">算法交易</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors" data-i18n="industry_fintech">金融风控</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors" data-i18n="industry_medical">医疗诊断</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors" data-i18n="industry_autonomous">自动驾驶</span>
+                <span class="border border-gray-800 px-4 py-2 text-gray-400 text-sm hover:border-steel transition-colors" data-i18n="industry_trading">算法交易</span>
             </div>
         </section>
 
@@ -138,11 +134,14 @@
                 home_version_tag: "HJS Responsibility Protocol · v1.0 Beta",
                 home_headline: "HJS Responsibility Protocol",
                 home_tagline: "Every AI decision gets an undeniable receipt",
-                home_subtitle: "Decision audit infrastructure based on four primitives, providing traceable and verifiable responsibility proof for AI systems.",
                 home_privacy_desc: "Only decision hashes stored. No business data touches our servers. Anchor on-demand, verify independently.",
                 home_cta_try: "Start Free Trial (5 min)", home_cta_docs: "View API Docs",
                 home_ietf: "Built on IETF draft draft-wang-tp-definition-00",
-                home_usecases_tag: "应用场景", home_usecases_title: "适用于高风险AI决策场景"
+                home_usecases_tag: "应用场景", home_usecases_title: "适用于高风险AI决策场景",
+                primitive_judgment: "Judgment", primitive_delegation: "Delegation",
+                primitive_termination: "Termination", primitive_verification: "Verification",
+                industry_fintech: "FinTech", industry_medical: "Medical AI",
+                industry_autonomous: "Autonomous", industry_trading: "Algo Trading"
             },
             zh: {
                 nav_home: "首页", nav_product: "产品", nav_developers: "开发者",
@@ -151,11 +150,14 @@
                 home_version_tag: "HJS 责任协议 · v1.0 Beta",
                 home_headline: "HJS 责任协议",
                 home_tagline: "让AI的每一笔决策，都有一张不可抵赖的发票",
-                home_subtitle: "基于四层原语的决策审计基础设施，为AI系统提供可追溯、可验证的责任证明。",
                 home_privacy_desc: "只存储决策哈希，不触碰业务数据。按需上链，独立验证。",
                 home_cta_try: "5分钟免费试用", home_cta_docs: "查看API文档",
                 home_ietf: "基于 IETF 草案 draft-wang-tp-definition-00 构建",
-                home_usecases_tag: "应用场景", home_usecases_title: "适用于高风险AI决策场景"
+                home_usecases_tag: "应用场景", home_usecases_title: "适用于高风险AI决策场景",
+                primitive_judgment: "判断", primitive_delegation: "授权",
+                primitive_termination: "终止", primitive_verification: "验证",
+                industry_fintech: "金融风控", industry_medical: "医疗诊断",
+                industry_autonomous: "自动驾驶", industry_trading: "算法交易"
             }
         };
 

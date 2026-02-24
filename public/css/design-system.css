@@ -1,0 +1,216 @@
+/* HJS Design System - Unified UI Components */
+
+/* ===== Layout ===== */
+html {
+  scroll-behavior: smooth;
+  overflow-y: scroll; /* Prevent scrollbar flicker */
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #0a0a0a;
+  color: #e5e5e5;
+}
+
+/* ===== Typography ===== */
+.font-mono {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+.text-steel {
+  color: #3B4B5C;
+}
+
+.border-steel {
+  border-color: #3B4B5C;
+}
+
+.bg-steel-10 {
+  background-color: rgba(59, 75, 92, 0.1);
+}
+
+.bg-steel-20 {
+  background-color: rgba(59, 75, 92, 0.2);
+}
+
+.hover\:bg-steel-20:hover {
+  background-color: rgba(59, 75, 92, 0.2);
+}
+
+/* ===== Buttons ===== */
+
+/* Primary Button */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background-color: rgba(59, 75, 92, 0.2);
+  border: 1px solid #3B4B5C;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: rgba(59, 75, 92, 0.3);
+}
+
+/* Secondary Button */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border: 1px solid #374151;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  border-color: #3B4B5C;
+  color: white;
+}
+
+/* Small Button */
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+}
+
+/* ===== Cards ===== */
+.card {
+  border: 1px solid #1f1f1f;
+  background: rgba(26, 26, 26, 0.5);
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.card:hover {
+  border-color: #3B4B5C;
+  background: rgba(26, 26, 26, 0.7);
+}
+
+.card-bordered {
+  border: 1px solid #1f1f1f;
+  padding: 1.5rem;
+}
+
+/* ===== Inputs ===== */
+.input {
+  width: 100%;
+  border: 1px solid #1f1f1f;
+  background: #0a0a0a;
+  padding: 0.625rem 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+  color: white;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input::placeholder {
+  color: #6b7280;
+}
+
+.input:focus {
+  border-color: #3B4B5C;
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== Tags/Badges ===== */
+.tag {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid #1f1f1f;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.tag:hover {
+  border-color: #3B4B5C;
+  color: white;
+}
+
+/* ===== Navigation ===== */
+.nav-link {
+  color: #9ca3af;
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  color: #5ee0c0;
+}
+
+.nav-link.active {
+  color: white;
+}
+
+/* ===== Page Structure ===== */
+.page-container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 56rem; /* max-w-4xl */
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.page-section {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+.page-header {
+  padding-bottom: 2rem;
+}
+
+.page-header h1 {
+  margin-top: 1.5rem;
+}
+
+/* ===== Animations ===== */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* ===== Utilities ===== */
+.bg-card {
+  background: rgba(26, 26, 26, 0.5);
+}
+
+.border-border {
+  border-color: #1f1f1f;
+}
+
+.text-muted {
+  color: #9ca3af;
+}
+
+.text-foreground {
+  color: #e5e5e5;
+}

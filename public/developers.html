@@ -36,7 +36,7 @@
         /* 统一导航栏样式 */
         nav {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start; gap: 3rem;
             align-items: center;
             padding-top: 1.5rem;
             padding-bottom: 1.5rem;
@@ -98,7 +98,7 @@
                 <a href="/roi-calculator.html" class="nav-link" data-i18n="nav_roi">ROI</a>
                 <a href="/governance.html" class="nav-link" data-i18n="nav_governance">Governance</a>
             </div>
-            <select onchange="switchLang(this.value)">
+            <select onchange="switchLang(this.value)" style="margin-left: auto;">
                 <option value="en">EN</option>
                 <option value="zh">中文</option>
             </select>

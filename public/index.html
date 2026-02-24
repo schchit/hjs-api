@@ -171,6 +171,7 @@
         (function() {
             const lang = document.documentElement.lang || localStorage.getItem('hjs_lang') || 'en';
             switchLang(lang);
+            document.body.classList.add('translated');
         })();
     </script>
 </body>

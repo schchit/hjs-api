@@ -1775,6 +1775,29 @@ app.post('/billing/create-order', express.json(), async (req, res) => {
   }
   
   try {
+    // 确保 users 和 transactions 表存在
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        email VARCHAR(255) PRIMARY KEY,
+        balance DECIMAL(10, 2) DEFAULT 0.00,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      );
+      
+      CREATE TABLE IF NOT EXISTS transactions (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) NOT NULL,
+        amount DECIMAL(10, 2) NOT NULL,
+        type VARCHAR(50) NOT NULL,
+        status VARCHAR(50) DEFAULT 'pending',
+        reference_id VARCHAR(255),
+        metadata JSONB DEFAULT '{}',
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_transactions_email ON transactions(email);
+      CREATE INDEX IF NOT EXISTS idx_transactions_reference_id ON transactions(reference_id);
+    `);
+    
     // 生成订单ID
     const orderId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
     

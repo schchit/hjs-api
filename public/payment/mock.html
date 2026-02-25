@@ -32,22 +32,97 @@
 </head>
 <body class="min-h-screen flex items-center justify-center">
     <div class="w-full max-w-md px-6">
-        <div id="processing-state" class="bg-card border border-gray-800 rounded-lg p-8 text-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-steel mx-auto mb-4"></div>
-            <h1 class="text-xl font-light text-white mb-2">Processing Payment...</h1>
-            <p class="text-gray-400 text-sm">Amount: <span id="amount-display" class="font-mono text-white"></span></p>
-            <p class="text-xs text-gray-600 mt-4">Secure payment by Airwallex</p>
+        <!-- 收单页面 -->
+        <div id="checkout-state" class="bg-card border border-gray-800 rounded-lg p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-light text-white mb-2">确认支付</h1>
+                <p class="text-gray-400 text-sm">HJS 账户充值</p>
+            </div>
+            
+            <!-- 订单信息 -->
+            <div class="bg-gray-900/50 rounded-lg p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-400 text-sm">充值金额</span>
+                    <span class="text-3xl font-mono text-white font-bold">$<span id="amount-display">0</span></span>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-400 text-sm">手续费</span>
+                    <span class="text-gray-300">$0.00</span>
+                </div>
+                <div class="border-t border-gray-700 pt-4 flex justify-between items-center">
+                    <span class="text-gray-300">应付总额</span>
+                    <span class="text-2xl font-mono text-white font-bold">$<span id="total-display">0</span></span>
+                </div>
+            </div>
+            
+            <!-- 订单详情 -->
+            <div class="mb-6 text-sm">
+                <div class="flex justify-between text-gray-500 mb-2">
+                    <span>订单号</span>
+                    <span id="order-id-display" class="font-mono text-gray-400">-</span>
+                </div>
+                <div class="flex justify-between text-gray-500">
+                    <span>充值账户</span>
+                    <span id="email-display" class="text-gray-400">-</span>
+                </div>
+            </div>
+            
+            <!-- 支付方式 -->
+            <div class="mb-6">
+                <p class="text-xs text-gray-500 mb-3">支付方式</p>
+                <div class="border border-steel bg-steel/10 rounded-lg p-4 flex items-center gap-3">
+                    <div class="w-10 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded"></div>
+                    <span class="text-white">模拟支付（演示模式）</span>
+                </div>
+                <p class="text-xs text-gray-600 mt-2">* 实际环境将支持信用卡/借记卡</p>
+            </div>
+            
+            <!-- 支付按钮 -->
+            <button id="pay-btn" class="w-full py-4 bg-steel hover:bg-steel/80 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
+                <span id="pay-btn-text">确认支付</span>
+            </button>
+            
+            <button id="cancel-btn" class="w-full mt-3 py-3 border border-gray-700 hover:border-gray-600 text-gray-400 rounded-lg transition-colors text-sm">
+                取消支付
+            </button>
         </div>
         
+        <!-- 处理中 -->
+        <div id="processing-state" class="hidden bg-card border border-gray-800 rounded-lg p-8 text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-steel mx-auto mb-4"></div>
+            <h1 class="text-xl font-light text-white mb-2">处理支付...</h1>
+            <p class="text-gray-400">请稍候，正在完成交易</p>
+        </div>
+        
+        <!-- 支付成功 -->
         <div id="success-state" class="hidden bg-card border border-gray-800 rounded-lg p-8 text-center animate-in">
             <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
             </div>
-            <h1 class="text-xl font-light text-white mb-2">Payment Successful!</h1>
-            <p class="text-gray-400 text-sm mb-4">Your balance has been updated</p>
-            <p class="text-xs text-gray-600">This window will close in <span id="countdown">3</span> seconds</p>
+            <h1 class="text-2xl font-light text-white mb-2">支付成功！</h1>
+            <p class="text-gray-400 mb-4">您的账户余额已更新</p>
+            <div class="bg-gray-900/50 rounded-lg p-4 mb-4">
+                <p class="text-sm text-gray-500 mb-1">充值金额</p>
+                <p class="text-2xl font-mono text-white font-bold">$<span id="success-amount">0</span></p>
+            </div>
+            <p class="text-sm text-gray-500">此窗口将在 <span id="countdown">3</span> 秒后自动关闭</p>
+        </div>
+        
+        <!-- 支付失败 -->
+        <div id="error-state" class="hidden bg-card border border-gray-800 rounded-lg p-8 text-center">
+            <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </div>
+            <h1 class="text-xl font-light text-white mb-2">支付失败</h1>
+            <p class="text-gray-400 mb-4">处理过程中出现错误</p>
+            <p id="error-message" class="text-sm text-red-400 mb-6"></p>
+            <button onclick="location.reload()" class="px-6 py-2 bg-steel hover:bg-steel/80 text-white rounded-lg transition-colors">
+                重试
+            </button>
         </div>
     </div>
 
@@ -60,22 +135,44 @@
         const amount = params.get('amount');
         const email = params.get('email');
         
-        document.getElementById('amount-display').textContent = '$' + amount;
+        // 显示订单信息
+        document.getElementById('amount-display').textContent = amount;
+        document.getElementById('total-display').textContent = amount;
+        document.getElementById('order-id-display').textContent = orderId ? orderId.substring(0, 16) + '...' : '-';
+        document.getElementById('email-display').textContent = email || '-';
         
-        // 模拟支付处理
-        setTimeout(async () => {
+        // 取消按钮
+        document.getElementById('cancel-btn').addEventListener('click', () => {
+            window.close();
+        });
+        
+        // 支付按钮
+        document.getElementById('pay-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('pay-btn');
+            const btnText = document.getElementById('pay-btn-text');
+            
+            btn.disabled = true;
+            btnText.textContent = '处理中...';
+            
+            // 显示处理中状态
+            document.getElementById('checkout-state').classList.add('hidden');
+            document.getElementById('processing-state').classList.remove('hidden');
+            
             try {
-                // 调用模拟支付回调
+                // 调用支付回调
                 const res = await fetch(`${API_BASE}/billing/mock-callback`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ orderId, email, amount: parseFloat(amount) })
                 });
                 
-                if (res.ok) {
-                    // 显示成功
+                const data = await res.json();
+                
+                if (data.success) {
+                    // 支付成功
                     document.getElementById('processing-state').classList.add('hidden');
                     document.getElementById('success-state').classList.remove('hidden');
+                    document.getElementById('success-amount').textContent = amount;
                     
                     // 倒计时关闭
                     let count = 3;
@@ -89,16 +186,15 @@
                         }
                     }, 1000);
                 } else {
-                    throw new Error('Payment failed');
+                    throw new Error(data.error || '支付处理失败');
                 }
             } catch (err) {
                 console.error('Payment error:', err);
-                document.getElementById('processing-state').innerHTML = `
-                    <div class="text-red-400 mb-4">❌ Payment Failed</div>
-                    <p class="text-sm text-gray-400">Please try again or contact support</p>
-                `;
+                document.getElementById('processing-state').classList.add('hidden');
+                document.getElementById('error-state').classList.remove('hidden');
+                document.getElementById('error-message').textContent = err.message;
             }
-        }, 2000);
+        });
     </script>
 </body>
 </html>

@@ -21,6 +21,7 @@ const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
 const crypto = require('crypto');
 const cors = require('cors');
+const path = require('path');
 
 // HJS Protocol Core Extension - Delegation, Termination, Verification
 let hjsExtension;
@@ -42,6 +43,11 @@ const pool = new Pool({
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
+
+// 显式路由：模拟支付页面
+app.get('/payment/mock', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'payment', 'mock.html'));
+});
 app.use(cors({
   origin: [
     'https://humanjudgment.services',

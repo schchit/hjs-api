@@ -25,6 +25,12 @@
         .disabled\:opacity-60:disabled { opacity: 0.6; }
         .disabled\:cursor-not-allowed:disabled { cursor: not-allowed; }
         .focus\:border-steel:focus { border-color: #3B4B5C; }
+        
+        /* 预设按钮选中状态 */
+        .preset-btn.selected {
+            border-color: #3B4B5C !important;
+            background-color: rgba(59, 75, 92, 0.3) !important;
+        }
         .focus\:ring-steel:focus { ring-color: #3B4B5C; }
         
         /* 动画 */
@@ -524,8 +530,14 @@
             renderTransactions();
         }
 
+        // 选中的充值金额
+        let selectedAmount = 0;
+
         async function addFunds(amount) {
-            if (amount <= 0 || !currentEmail) return;
+            if (amount <= 0 || !currentEmail) {
+                topupStatus.textContent = '❌ 请选择或输入充值金额';
+                return;
+            }
             
             addFundsBtn.disabled = true;
             addFundsBtn.textContent = 'Processing...';
@@ -578,17 +590,51 @@
             }
         }
 
+        // 预设金额按钮点击 - 只设置选中状态，不直接跳转
         presetBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                const amount = parseFloat(btn.getAttribute('data-amount'));
-                addFunds(amount);
+                // 移除其他按钮的选中状态
+                presetBtns.forEach(b => {
+                    b.classList.remove('selected', 'border-steel', 'bg-steel/20');
+                    b.classList.add('border-gray-700');
+                });
+                // 添加当前按钮的选中状态
+                btn.classList.add('selected', 'border-steel', 'bg-steel/20');
+                btn.classList.remove('border-gray-700');
+                
+                // 设置选中的金额
+                selectedAmount = parseFloat(btn.getAttribute('data-amount'));
+                
+                // 清空自定义输入框
+                customAmount.value = '';
+                
+                // 更新提示
+                topupStatus.textContent = `已选择 $${selectedAmount}，点击「Add Funds」充值`;
             });
         });
 
+        // 自定义金额输入 - 清除预设按钮的选中状态
+        customAmount.addEventListener('input', () => {
+            presetBtns.forEach(b => {
+                b.classList.remove('selected', 'border-steel', 'bg-steel/20');
+                b.classList.add('border-gray-700');
+            });
+            selectedAmount = parseFloat(customAmount.value) || 0;
+            if (selectedAmount > 0) {
+                topupStatus.textContent = `将充值 $${selectedAmount}`;
+            } else {
+                topupStatus.textContent = '';
+            }
+        });
+
+        // 充值按钮点击 - 使用选中的金额
         addFundsBtn.addEventListener('click', () => {
-            const amount = parseFloat(customAmount.value);
+            // 优先使用预设按钮选中的金额，否则使用自定义输入
+            const amount = selectedAmount || parseFloat(customAmount.value) || 0;
             if (amount > 0) {
                 addFunds(amount);
+            } else {
+                topupStatus.textContent = '❌ 请先选择或输入充值金额';
             }
         });
 

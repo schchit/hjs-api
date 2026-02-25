@@ -1776,13 +1776,14 @@ app.post('/billing/create-order', express.json(), async (req, res) => {
   
   try {
     // 生成订单ID
-    const orderId = 'ord_' + crypto.randomBytes(16).toString('hex');
+    const orderId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
     
     // 保存订单到数据库（待支付状态）
-    await pool.query(
-      'INSERT INTO transactions (id, email, amount, type, status, metadata) VALUES ($1, $2, $3, $4, $5, $6)',
-      [orderId, email, amount, 'deposit', 'pending', JSON.stringify({ provider: 'airwallex' })]
+    const insertResult = await pool.query(
+      'INSERT INTO transactions (email, amount, type, status, reference_id, metadata) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+      [email, amount, 'deposit', 'pending', orderId, JSON.stringify({ provider: 'airwallex' })]
     );
+    const dbOrderId = insertResult.rows[0].id;
     
     // 检查是否配置了 Airwallex
     if (!process.env.AIRWALLEX_CLIENT_ID || !process.env.AIRWALLEX_API_KEY) {
@@ -1808,7 +1809,7 @@ app.post('/billing/create-order', express.json(), async (req, res) => {
     // 更新订单记录 payment intent ID
     await pool.query(
       'UPDATE transactions SET metadata = $1 WHERE id = $2',
-      [JSON.stringify({ provider: 'airwallex', paymentIntentId: payment.id }), orderId]
+      [JSON.stringify({ provider: 'airwallex', paymentIntentId: payment.id }), dbOrderId]
     );
     
     res.json({
@@ -1836,9 +1837,9 @@ app.post('/webhooks/airwallex', express.raw({ type: 'application/json' }), async
         return res.json({ received: true });
       }
       
-      // 查找订单
+      // 查找订单（通过 reference_id 匹配，因为 orderId 是字符串）
       const orderResult = await pool.query(
-        'SELECT * FROM transactions WHERE id = $1 AND status = $2',
+        'SELECT * FROM transactions WHERE reference_id = $1 AND status = $2',
         [orderId, 'pending']
       );
       
@@ -1891,7 +1892,7 @@ app.post('/billing/mock-callback', express.json(), async (req, res) => {
   try {
     // 更新订单
     await pool.query(
-      'UPDATE transactions SET status = $1, updated_at = NOW() WHERE id = $2',
+      'UPDATE transactions SET status = $1, updated_at = NOW() WHERE reference_id = $2',
       ['completed', orderId]
     );
     

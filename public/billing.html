@@ -567,7 +567,7 @@
                     // 清空输入
                     customAmount.value = '';
                 } else {
-                    topupStatus.textContent = `❌ ${data.error || '创建订单失败'}`;
+                    topupStatus.textContent = `❌ ${data.error || '创建订单失败'}${data.details ? ': ' + data.details : ''}`;
                 }
             } catch (err) {
                 console.error('Top-up error:', err);

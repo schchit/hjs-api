@@ -1819,7 +1819,7 @@ app.post('/billing/create-order', express.json(), async (req, res) => {
     });
   } catch (err) {
     console.error('Error creating order:', err);
-    res.status(500).json({ error: 'Failed to create order' });
+    res.status(500).json({ error: 'Failed to create order', details: err.message });
   }
 });
 
@@ -2037,5 +2037,15 @@ app.get('/developer/stats', async (req, res) => {
   } catch (err) {
     console.error('Error fetching stats:', err);
     res.status(500).json({ error: 'Failed to fetch stats' });
+  }
+});
+
+// 健康检查端点（包含数据库状态）
+app.get('/health/db', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT COUNT(*) as count FROM transactions LIMIT 1');
+    res.json({ status: 'ok', transactions_table: 'exists', count: result.rows[0].count });
+  } catch (err) {
+    res.status(500).json({ status: 'error', error: err.message });
   }
 });

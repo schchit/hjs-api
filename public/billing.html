@@ -9,8 +9,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
         .font-mono, code, pre { font-family: 'JetBrains Mono', monospace !important; }
-        body { background: #0a0a0a; color: #e5e5e5; min-height: 100vh; }
-        html { scroll-behavior: smooth; overflow-y: scroll; }
+        body { background: #0a0a0a; color: #e5e5e5; }
         .text-steel { color: #3B4B5C; }
         .border-steel { border-color: #3B4B5C; }
         .bg-steel\/10 { background-color: rgba(59, 75, 92, 0.1); }
@@ -45,123 +44,34 @@
         
         /* 圆角 */
         .rounded { border-radius: 0.25rem; }
-        /* 防止页面跳动 */n        html { overflow-y: scroll; }n        body { min-height: 100vh; display: flex; flex-direction: column; }
-    
-        /* 统一导航栏样式 */
-        nav {
-            display: flex;
-            justify-content: flex-start; gap: 3rem;
-            align-items: center;
-            padding-top: 1.5rem;
-            padding-bottom: 1.5rem;
-        }
-        nav a:first-child {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: white;
-            flex-shrink: 0;
-            text-decoration: none;
-        }
-        nav .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-        @media (min-width: 768px) {
-            nav .nav-links {
-                gap: 2rem;
-            }
-        }
-        nav .nav-link {
-            color: #9ca3af;
-            font-size: 1rem;
-            text-decoration: none;
-            transition: color 0.2s;
-            white-space: nowrap;
-        }
-        nav .nav-link:hover {
-            color: #5ee0c0;
-        }
-        nav .nav-link.active {
-            color: white;
-        }
-        nav select {
-            background: transparent;
-            color: #9ca3af;
-            font-size: 0.75rem;
-            border: none;
-            cursor: pointer;
-            flex-shrink: 0;
-            margin-left: 1rem;
-        }
-        /* 防止语言闪烁 */
-        body { opacity: 0; transition: opacity 0.1s; }
-        body.translated { opacity: 1; }
     </style>
-<script>
-        // 语言设置：URL参数 > 用户选择 > 浏览器语言 > 默认英文
-        (function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const urlLang = urlParams.get('lang');
-            const savedLang = localStorage.getItem('hjs_lang');
-            const browserLang = navigator.language || navigator.userLanguage;
-            
-            // 确定语言优先级
-            let lang;
-            if (urlLang) {
-                // URL参数优先级最高
-                lang = urlLang;
-                localStorage.setItem('hjs_lang', lang);
-            document.documentElement.lang = lang;
-                // 清理URL参数
-                const url = new URL(window.location);
-                url.searchParams.delete('lang');
-                window.history.replaceState({}, '', url);
-            } else if (savedLang) {
-                // 用户使用手动选择的语言（优先级第二）
-                lang = savedLang;
-            } else {
-                // 首次访问，根据浏览器语言
-                lang = browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en';
-                localStorage.setItem('hjs_lang', lang);
-            document.documentElement.lang = lang;
-            }
-            
-            // 设置HTML lang属性
-            document.documentElement.lang = lang;
-            document.documentElement.setAttribute('data-initial-lang', lang);
-        })();
-    </script>
 </head>
 <body>
-    <div class="mx-auto max-w-4xl px-6 pt-12 pb-12">
+    <div class="mx-auto max-w-5xl px-6">
         <!-- ===== 导航栏 ===== -->
-        <!-- 导航栏 -->
-        <!-- 导航栏 -->
-        <div class="flex items-center py-6 text-base gap-8">
-            <a href="/" class="text-white font-semibold text-lg flex-shrink-0">HJS</a>
-            <div class="flex gap-6 md:gap-8 text-gray-400">
+        <div class="flex justify-between items-center py-6 text-base">
+            <div class="text-white font-semibold text-lg">HJS</div>
+            <div class="flex gap-8 md:gap-10 text-gray-400">
                 <a href="/" class="hover:text-teal-400 transition" data-i18n="nav_home">Home</a>
                 <a href="/product.html" class="hover:text-teal-400 transition" data-i18n="nav_product">Product</a>
                 <a href="/developers.html" class="hover:text-teal-400 transition" data-i18n="nav_developers">Developers</a>
                 <a href="/console.html" class="hover:text-teal-400 transition" data-i18n="nav_console">Console</a>
                 <a href="/lookup.html" class="hover:text-teal-400 transition" data-i18n="nav_lookup">Lookup</a>
                 <a href="/billing.html" class="text-white" data-i18n="nav_billing">Billing</a>
-                <a href="/roi-calculator.html" class="hover:text-teal-400 transition" data-i18n="nav_roi">ROI</a>
                 <a href="/governance.html" class="hover:text-teal-400 transition" data-i18n="nav_governance">Governance</a>
             </div>
-            <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs ml-auto">
+            <select onchange="switchLang(this.value)" class="bg-transparent text-gray-400 text-xs">
                 <option value="en">EN</option>
                 <option value="zh">中文</option>
             </select>
         </div>
 
         <!-- Header -->
-        <section class="py-24">
-            <p class="mb-4 font-mono text-xs text-gray-500" data-i18n="bill_version_tag">
+        <section class="pb-8 pt-24">
+            <p class="font-mono text-xs text-gray-500" data-i18n="bill_version_tag">
                 HJS Responsibility Protocol · v1.0 Beta
             </p>
-            <h1 class="mt-6 text-3xl font-light leading-tight tracking-tight text-white md:text-4xl" data-i18n="bill_title">
+            <h1 class="mt-4 text-3xl font-light leading-tight tracking-tight text-white md:text-4xl" data-i18n="bill_title">
                 Usage & Billing
             </h1>
             <p class="mt-4 max-w-xl text-sm leading-relaxed text-gray-400" data-i18n="bill_subtitle">
@@ -387,12 +297,6 @@
             <a href="/spec/README.md" class="hover:text-gray-400 mx-2">Spec</a>
             <span class="text-gray-700">·</span>
             <a href="/cases.html" class="hover:text-gray-400 mx-2">Cases</a>
-            <span class="text-gray-700">·</span>
-            <a href="/privacy.html" class="hover:text-gray-400 mx-2">Privacy</a>
-            <span class="text-gray-700">·</span>
-            <a href="/terms.html" class="hover:text-gray-400 mx-2">Terms</a>
-            <span class="text-gray-700">·</span>
-            <a href="/status.html" class="hover:text-gray-400 mx-2">Status</a>
         </div>
     </div>
 
@@ -628,33 +532,42 @@
             topupStatus.textContent = '';
             
             try {
-                const res = await fetch(`${API_BASE}/billing/topup`, {
+                // 创建支付订单
+                const res = await fetch(`${API_BASE}/billing/create-order`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: currentEmail, amount })
                 });
                 
-                if (res.ok) {
-                    const data = await res.json();
-                    balance = data.new_balance;
-                    
-                    // 显示成功提示
-                    topupSuccess.textContent = `+$${amount.toFixed(2)}`;
-                    topupSuccess.classList.remove('hidden');
-                    setTimeout(() => topupSuccess.classList.add('hidden'), 2500);
-                    
-                    // 重新获取交易历史
-                    await fetchTransactions();
-                    
-                    updateUI();
+                const data = await res.json();
+                
+                if (data.success) {
+                    // 跳转到支付页面
+                    if (data.mock) {
+                        // 模拟支付模式 - 打开新窗口支付
+                        const paymentWindow = window.open(data.checkoutUrl, '_blank', 'width=600,height=700');
+                        
+                        // 监听支付完成
+                        const checkPayment = setInterval(async () => {
+                            if (paymentWindow.closed) {
+                                clearInterval(checkPayment);
+                                // 支付窗口关闭，刷新余额
+                                await fetchBalance();
+                                await fetchTransactions();
+                                updateUI();
+                                topupStatus.textContent = '✅ 支付完成';
+                                setTimeout(() => topupStatus.textContent = '', 3000);
+                            }
+                        }, 1000);
+                    } else {
+                        // 真实 Airwallex 支付 - 直接跳转
+                        window.location.href = data.checkoutUrl;
+                    }
                     
                     // 清空输入
                     customAmount.value = '';
-                    topupStatus.textContent = '✅ 充值成功';
-                    setTimeout(() => topupStatus.textContent = '', 3000);
                 } else {
-                    const err = await res.json();
-                    topupStatus.textContent = `❌ ${err.error || '充值失败'}`;
+                    topupStatus.textContent = `❌ ${data.error || '创建订单失败'}`;
                 }
             } catch (err) {
                 console.error('Top-up error:', err);
@@ -720,9 +633,7 @@
                 nav_console: "Console",
                 nav_lookup: "Lookup",
                 nav_billing: "Billing",
-                nav_roi: "ROI",
                 nav_governance: "Governance",
-                nav_roi: "ROI",
                 con_auth_current: "Current",
                 bill_version_tag: "HJS Responsibility Protocol · v1.0 Beta",
                 bill_title: "Usage & Billing",
@@ -758,9 +669,7 @@
                 nav_console: "控制台",
                 nav_lookup: "查询",
                 nav_billing: "计费",
-                nav_roi: "ROI",
                 nav_governance: "治理",
-                nav_roi: "ROI",
                 con_auth_current: "当前邮箱",
                 bill_version_tag: "HJS 责任协议 · v1.0 Beta",
                 bill_title: "用量与计费",
@@ -792,8 +701,6 @@
         };
 
         function switchLang(lang) {
-            localStorage.setItem('hjs_lang', lang);
-            document.documentElement.lang = lang;
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[lang] && translations[lang][key]) {
@@ -805,11 +712,12 @@
         }
 
         (function() {
-            const lang = document.documentElement.lang || localStorage.getItem('hjs_lang') || 'en';
+            const savedLang = localStorage.getItem('hjs_lang');
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            const lang = savedLang || urlLang || 'en';
             switchLang(lang);
-            document.body.classList.add('translated');
         })();
     </script>
-
 </body>
 </html>

@@ -1422,7 +1422,10 @@ app.post('/judgments', limiter, authenticateApiKey, auditLog, sanitizeInput, lim
       status: 'recorded',
       protocol: 'HJS/1.0',
       timestamp: recordedAt,
-      immutability_anchor: responseAnchor
+      immutability_anchor: responseAnchor,
+      anchor_notice: anchorType === 'ots' 
+        ? '已锚定到区块链，获得第三方时间证明。'
+        : '未锚定到区块链。如需时间证明，请删除重录并选择锚定。创建后不可更改。'
     };
     
     // 如果是锚定，添加计费信息
@@ -1756,3 +1759,283 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   console.log('⏰ Anchor upgrade task skipped in development mode');
 }
+// ==================== Airwallex 支付集成 ====================
+const { createPaymentIntent } = require('./lib/airwallex-payment');
+const crypto = require('crypto');
+
+// 创建充值订单（跳转 Airwallex 支付）
+app.post('/billing/create-order', express.json(), async (req, res) => {
+  const { email, amount } = req.body;
+  
+  if (!email || !amount) {
+    return res.status(400).json({ error: 'Email and amount required' });
+  }
+  
+  if (amount < 10) {
+    return res.status(400).json({ error: 'Minimum deposit is $10' });
+  }
+  
+  try {
+    // 生成订单ID
+    const orderId = 'ord_' + crypto.randomBytes(16).toString('hex');
+    
+    // 保存订单到数据库（待支付状态）
+    await pool.query(
+      'INSERT INTO transactions (id, email, amount, type, status, metadata) VALUES ($1, $2, $3, $4, $5, $6)',
+      [orderId, email, amount, 'deposit', 'pending', JSON.stringify({ provider: 'airwallex' })]
+    );
+    
+    // 检查是否配置了 Airwallex
+    if (!process.env.AIRWALLEX_CLIENT_ID || !process.env.AIRWALLEX_API_KEY) {
+      // 模拟支付模式
+      return res.json({
+        success: true,
+        mock: true,
+        orderId,
+        checkoutUrl: `/payment/mock?orderId=${orderId}&amount=${amount}&email=${encodeURIComponent(email)}`
+      });
+    }
+    
+    // 创建 Airwallex 支付
+    const origin = req.headers.origin || process.env.API_BASE || 'https://api.hjs.sh';
+    const payment = await createPaymentIntent({
+      amount,
+      currency: 'USD',
+      orderId,
+      email,
+      description: `HJS充值 $${amount}`,
+    });
+    
+    // 更新订单记录 payment intent ID
+    await pool.query(
+      'UPDATE transactions SET metadata = $1 WHERE id = $2',
+      [JSON.stringify({ provider: 'airwallex', paymentIntentId: payment.id }), orderId]
+    );
+    
+    res.json({
+      success: true,
+      orderId,
+      checkoutUrl: payment.checkoutUrl,
+    });
+  } catch (err) {
+    console.error('Error creating order:', err);
+    res.status(500).json({ error: 'Failed to create order' });
+  }
+});
+
+// Airwallex Webhook 回调
+app.post('/webhooks/airwallex', express.raw({ type: 'application/json' }), async (req, res) => {
+  try {
+    const event = JSON.parse(req.body);
+    console.log('Airwallex webhook:', event.name);
+    
+    if (event.name === 'payment_intent.succeeded') {
+      const paymentIntent = event.data;
+      const orderId = paymentIntent.merchant_order_id;
+      
+      if (!orderId) {
+        return res.json({ received: true });
+      }
+      
+      // 查找订单
+      const orderResult = await pool.query(
+        'SELECT * FROM transactions WHERE id = $1 AND status = $2',
+        [orderId, 'pending']
+      );
+      
+      if (orderResult.rows.length === 0) {
+        return res.json({ received: true });
+      }
+      
+      const order = orderResult.rows[0];
+      
+      // 更新订单状态
+      await pool.query(
+        'UPDATE transactions SET status = $1, updated_at = NOW() WHERE id = $2',
+        ['completed', orderId]
+      );
+      
+      // 给用户加余额
+      const userResult = await pool.query(
+        'SELECT * FROM users WHERE email = $1',
+        [order.email]
+      );
+      
+      if (userResult.rows.length === 0) {
+        // 创建新用户
+        await pool.query(
+          'INSERT INTO users (email, balance) VALUES ($1, $2)',
+          [order.email, order.amount]
+        );
+      } else {
+        // 更新余额
+        await pool.query(
+          'UPDATE users SET balance = balance + $1 WHERE email = $2',
+          [order.amount, order.email]
+        );
+      }
+      
+      console.log(`Payment completed: ${orderId}, added $${order.amount} to ${order.email}`);
+    }
+    
+    res.json({ received: true });
+  } catch (err) {
+    console.error('Webhook error:', err);
+    res.json({ received: true }); // 返回 200 防止重试
+  }
+});
+
+// 模拟支付成功回调（演示模式用）
+app.post('/billing/mock-callback', express.json(), async (req, res) => {
+  const { orderId, email, amount } = req.body;
+  
+  try {
+    // 更新订单
+    await pool.query(
+      'UPDATE transactions SET status = $1, updated_at = NOW() WHERE id = $2',
+      ['completed', orderId]
+    );
+    
+    // 给用户加余额
+    const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    
+    if (userResult.rows.length === 0) {
+      await pool.query('INSERT INTO users (email, balance) VALUES ($1, $2)', [email, amount]);
+    } else {
+      await pool.query('UPDATE users SET balance = balance + $1 WHERE email = $2', [amount, email]);
+    }
+    
+    // 获取新余额
+    const result = await pool.query('SELECT balance FROM users WHERE email = $1', [email]);
+    
+    res.json({ success: true, new_balance: parseFloat(result.rows[0].balance) });
+  } catch (err) {
+    console.error('Mock callback error:', err);
+    res.status(500).json({ error: 'Failed to process mock payment' });
+  }
+});
+
+// ==================== API 密钥管理和统计 ====================
+
+// 获取用户的 API Keys
+app.get('/developer/keys', async (req, res) => {
+  const { email } = req.query;
+  
+  if (!email) {
+    return res.status(400).json({ error: 'Email required' });
+  }
+  
+  try {
+    const result = await pool.query(
+      'SELECT key, name, created_at, last_used FROM api_keys WHERE user_id = $1 ORDER BY created_at DESC',
+      [email]
+    );
+    
+    res.json({
+      keys: result.rows.map(k => ({
+        id: k.key.substring(0, 16) + '...',
+        full_key: k.key,
+        name: k.name,
+        created_at: k.created_at,
+        last_used: k.last_used
+      }))
+    });
+  } catch (err) {
+    console.error('Error fetching keys:', err);
+    res.status(500).json({ error: 'Failed to fetch keys' });
+  }
+});
+
+// 创建新的 API Key
+app.post('/developer/keys', express.json(), async (req, res) => {
+  const { email, name } = req.body;
+  
+  if (!email) {
+    return res.status(400).json({ error: 'Email required' });
+  }
+  
+  try {
+    const apiKey = 'hjs_' + crypto.randomBytes(32).toString('hex');
+    
+    await pool.query(
+      'INSERT INTO api_keys (key, user_id, name) VALUES ($1, $2, $3)',
+      [apiKey, email, name || 'Default Key']
+    );
+    
+    res.json({
+      success: true,
+      key: apiKey,
+      name: name || 'Default Key'
+    });
+  } catch (err) {
+    console.error('Error creating key:', err);
+    res.status(500).json({ error: 'Failed to create key' });
+  }
+});
+
+// 撤销 API Key
+app.delete('/developer/keys/:keyId', async (req, res) => {
+  const { email } = req.query;
+  const { keyId } = req.params;
+  
+  if (!email || !keyId) {
+    return res.status(400).json({ error: 'Email and keyId required' });
+  }
+  
+  try {
+    const result = await pool.query(
+      'DELETE FROM api_keys WHERE user_id = $1 AND key = $2',
+      [email, keyId]
+    );
+    
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Key not found' });
+    }
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error revoking key:', err);
+    res.status(500).json({ error: 'Failed to revoke key' });
+  }
+});
+
+// 获取用量统计
+app.get('/developer/stats', async (req, res) => {
+  const { email } = req.query;
+  
+  if (!email) {
+    return res.status(400).json({ error: 'Email required' });
+  }
+  
+  try {
+    const totalResult = await pool.query(
+      'SELECT COUNT(*) as count FROM judgments WHERE entity = $1',
+      [email]
+    );
+    
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    const monthlyResult = await pool.query(
+      'SELECT COUNT(*) as count FROM judgments WHERE entity = $1 AND anchor_processed_at >= $2',
+      [email, currentMonth + '-01']
+    );
+    
+    const balanceResult = await pool.query(
+      'SELECT balance FROM users WHERE email = $1',
+      [email]
+    );
+    
+    const currentCount = parseInt(monthlyResult.rows[0]?.count) || 0;
+    const tier = billingSystem.getTierPrice(currentCount);
+    
+    res.json({
+      total_records: parseInt(totalResult.rows[0]?.count) || 0,
+      monthly_anchors: currentCount,
+      balance: parseFloat(balanceResult.rows[0]?.balance) || 0,
+      current_tier: tier.name,
+      current_price: tier.price
+    });
+  } catch (err) {
+    console.error('Error fetching stats:', err);
+    res.status(500).json({ error: 'Failed to fetch stats' });
+  }
+});

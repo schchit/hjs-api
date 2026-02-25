@@ -1761,7 +1761,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 // ==================== Airwallex 支付集成 ====================
 const { createPaymentIntent } = require('./lib/airwallex-payment');
-const crypto = require('crypto');
 
 // 创建充值订单（跳转 Airwallex 支付）
 app.post('/billing/create-order', express.json(), async (req, res) => {

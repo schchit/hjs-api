@@ -1077,6 +1077,38 @@
             switchLang(lang);
             document.body.classList.add('translated');
         })();
+
+        // 显示 anchor_notice 提示
+        function showAnchorNotice(data) {
+            if (!data.anchor_notice) return;
+            
+            const isAnchored = data.immutability_anchor && data.immutability_anchor.type === 'ots';
+            const noticeClass = isAnchored ? 'bg-green-900/30 border-green-700' : 'bg-yellow-900/30 border-yellow-700';
+            const icon = isAnchored ? '✓' : '⚠️';
+            
+            const notice = document.createElement('div');
+            notice.className = `fixed bottom-4 right-4 max-w-md p-4 rounded border ${noticeClass} text-sm z-50`;
+            notice.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <span class="text-lg">${icon}</span>
+                    <div>
+                        <p class="text-white font-medium mb-1">${isAnchored ? '已锚定到区块链' : '未锚定到区块链'}</p>
+                        <p class="text-gray-400">${data.anchor_notice}</p>
+                        ${data.billing ? `<p class="text-steel mt-2 font-mono text-xs">费用: $${data.billing.charged} (${data.billing.tier})</p>` : ''}
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-gray-500 hover:text-white ml-2">×</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notice);
+            
+            // 10秒后自动消失
+            setTimeout(() => {
+                notice.style.opacity = '0';
+                notice.style.transition = 'opacity 0.5s';
+                setTimeout(() => notice.remove(), 500);
+            }, 10000);
+        }
     </script>
 
 </body>
